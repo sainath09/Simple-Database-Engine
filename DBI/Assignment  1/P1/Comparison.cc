@@ -5,7 +5,7 @@
 
 #include "Comparison.h"
 
-
+  
 Comparison::Comparison()
 {
 }
