@@ -1,0 +1,28 @@
+Dependencies::
+sudo apt install clang valgrind flex bison
+
+
+How to Run
+Goto main.cc and change file location
+make ./main
+./main
+(l_orderkey > 27) AND (l_orderkey < 45) 
+and then press <control-D>
+
+
+Git stuff
+git init
+git pull https://github.com/gauravsingh90/DatabaseImplementation.git
+git add remote https://github.com/gauravsingh90/DatabaseImplementation.git
+
+
+
+git config --global user.email "gaurav.koolz@gmail.com"
+
+
+git config --global credential.helper cache
+git config --global credential.helper 'cache --timeout=360000'
+
+Questions:
+What does the line 433 do in comparison.cc
+
