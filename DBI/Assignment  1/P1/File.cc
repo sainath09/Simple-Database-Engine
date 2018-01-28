@@ -26,7 +26,7 @@ Page :: Page () {
 Page :: ~Page () {
 	delete myRecs;
 }
-
+  
 
 void Page :: EmptyItOut () {
 
