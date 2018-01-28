@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-
+  
 
 Page :: Page () {
 	curSizeInBytes = sizeof (int);
