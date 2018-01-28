@@ -30,7 +30,7 @@ Page :: ~Page () {
 
 void Page :: EmptyItOut () {
 
-	// get rid of all of the records
+	// get rid of all of the record s
 	while (1) {
 		Record temp;
 		if (!GetFirst (&temp))
