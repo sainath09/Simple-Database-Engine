@@ -12,10 +12,11 @@ DBI/Assignment  1/P1/Schema.o
 DBI/Assignment  1/P1/y.tab.c
 DBI/Assignment  1/P1/y.tab.h
 DBI/Assignment  1/P1/.vscode/settings.json
-.DS_Store
-PLP/.DS_Store
-PLP/Assignment 1/gaurav_singh_36398850_hw1.jar
-PLP
 DBI/Assignment  1/P1/DBFile.o
 DBI/Assignment  1/P1/Makefile
 DBI/Assignment  1/P1/main.cc
+
+PLP/Assignment 1/gaurav_singh_36398850_hw1.jar
+PLP/.DS_Store
+PLP/
+.DS_Store
