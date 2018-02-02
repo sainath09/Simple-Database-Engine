@@ -15,12 +15,18 @@ DBFile::DBFile () {
 
 int DBFile::Create (const char *f_path, fType f_type, void *startup) {
     //Create a file object
-    File file;
-    //File open with 0 would create a new file.
-    file.Open(0, (char *)f_path);
+    DBFile DBFile;
+    //Check if meta data object exists, else create new
+ 
     
+    //File open with 0 would create a new file.
+    DBFile.file.Open(0, (char *)f_path);
+    //Create some error handling in case DBFIle cannot be created.
+
      if(f_type==heap){
-         
+            //store type of DBFile .. heap, b+, or anything else.
+          //Put first position of FILEH Record in MetaData file
+
      }
 
 
