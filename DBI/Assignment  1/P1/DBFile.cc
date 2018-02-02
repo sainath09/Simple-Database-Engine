@@ -14,6 +14,16 @@ DBFile::DBFile () {
 }
 
 int DBFile::Create (const char *f_path, fType f_type, void *startup) {
+    //Create a file object
+    File file;
+    //File open with 0 would create a new file.
+    file.Open(0, (char *)f_path);
+    
+     if(f_type==heap){
+         
+     }
+
+
 }
 
 void DBFile::Load (Schema &f_schema, const char *loadpath) {

@@ -4,8 +4,16 @@ What does the line 433 do in comparison.cc
  
 
 Dependencies::
+Linux:
 sudo apt install clang valgrind flex bison
 
+Mac:
+-   xcode-select --install
+-   Instal BREW :   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+-   brew install --HEAD valgrind
+-   brew install flex
+-   brew install bison
+-   brew link bison --force
 
 How to Run
 Goto main.cc and change file location
@@ -18,7 +26,7 @@ and then press <control-D>
 Git stuff::
 git init
 git pull https://github.com/gauravsingh90/DatabaseImplementation.git
-git add remote https://github.com/gauravsingh90/DatabaseImplementation.git
+git remote add origin https://github.com/gauravsingh90/DatabaseImplementation.git
 git push --set-upstream origin master
 git config --global user.email "gaurav.koolz@gmail.com"
 git config --global credential.helper cache
