@@ -1,5 +1,9 @@
 Questions:
 What does the line 433 do in comparison.cc
+how does page gets populated from a file .  is the code already written?
+how does record gets into a page. is the code already written?
+What is the difference between DBfile and file
+
 
  
 

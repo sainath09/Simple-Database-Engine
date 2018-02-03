@@ -7,12 +7,20 @@
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
+#include <vector>
+#include <string>
 
 typedef enum {heap, sorted, tree} fType;
 
 // stub DBFile header..replace it with your own DBFile.h 
 
 class DBFile {
+	vector<File> files;
+	int currFileIndex;
+	fType type;
+	string metaFile;
+	Record *currRecord;
+
 
 public:
 	DBFile (); 
