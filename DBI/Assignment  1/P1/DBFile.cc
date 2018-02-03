@@ -10,6 +10,8 @@
 // stub file .. replace it with your own DBFile.cc
 
 DBFile::DBFile () {
+    //set the current file index to zero initially;
+    currFileIndex  = 0 ;
 
 }
 
