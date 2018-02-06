@@ -37,4 +37,6 @@ git config --global credential.helper cache
 git config --global credential.helper 'cache --timeout=360000'
 
 
-
+Extensions:
+TODO highlight 
+https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight

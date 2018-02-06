@@ -1,5 +1,5 @@
-#ifndef DBFILE_H
-#define DBFILE_H
+#ifndef HEAP_H
+#define HEAP_H
 
 #include "TwoWayList.h"
 #include "Record.h"
@@ -7,27 +7,24 @@
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
-#include <vector>
-#include <string>
+#include "AbstractDBFile.h"
+#include "DBFile.h"
 
-typedef enum {heap, sorted, tree} fType;
 
 // stub DBFile header..replace it with your own DBFile.h 
 
-class DBFile {
-
-	
-	// vector<File> files;
-	// int currFileIndex;
-	// fType type;
-	// string metaFile;
-	// Record *currRecord;
-
-private:
-	AbstractDBFile *AbsDBFile;
+class Heap: virtual public AbstractDBFile {
+private: 
+    File *refFile;
+    Page *wBuffer;
+    Page *rBuffer;
+    fType type;
+    int currPageInd;
+    bool dirtyPage;
 
 public:
-	DBFile (); 
+	Heap (); 
+    ~Heap (); 
 
 	int Create (const char *fpath, fType file_type, void *startup);
 	int Open (const char *fpath);
