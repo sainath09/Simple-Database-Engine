@@ -5,6 +5,7 @@
 #include "Comparison.h"
 #include "ComparisonEngine.h"
 #include "DBFile.h"
+#include "AbstractDBFile.h"
 #include "Defs.h"
 #include "Heap.h"
 
