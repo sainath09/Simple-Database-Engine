@@ -155,6 +155,20 @@ void Page :: FromBinary (char *bits) {
 
 	delete temp;
 }
+//ADDED by KPS:
+void Page::MoveToStart(){
+	myRecs->MoveToStart();
+}
+int Page::getNumRecs(){
+	return numRecs;
+}
+int Page::getRecord(Record* fetchMe){
+	if(myRecs->RightLength()){
+		fetchMe->Copy(myRecs->Current(0));
+	}
+	else return 0;
+	return 1;
+}
 
 File :: File () {
 }

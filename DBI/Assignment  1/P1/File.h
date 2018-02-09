@@ -42,6 +42,16 @@ public:
 	// empty it out
 	void EmptyItOut ();
 
+	//ADDED by KPS:
+	//move the two way list pointer to start
+	void MoveToStart();
+
+	//to get number of records as numRecs is a private member
+	int getNumRecs();
+
+	//to get the current record and copies to fetchMe returns 1 on success and 0 on failure
+	int getRecord(Record *fetchMe);
+
 };
 
 

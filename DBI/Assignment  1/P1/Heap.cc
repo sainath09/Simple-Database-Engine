@@ -18,7 +18,7 @@ Heap::Heap()
     wBuffer = new Page();
     rBuffer = new Page();
     refFile = new File();
-    dirtyPage = false;
+    
 }
 
 int Heap::Create(const char *f_path, fType f_type, void *startup)
@@ -37,7 +37,7 @@ void Heap::Load(Schema &f_schema, const char *loadpath)
     {
         //throw error
         std::cerr << "File has no records";
-        exit(1);
+        //exit(1);
     }
     else
     {
@@ -90,11 +90,78 @@ void Heap::Add(Record &rec)
         wBuffer->Append(&rec);
     }
 }
-//TODO:
 int Heap::GetNext(Record &fetchme)
 {
+    off_t heapLength = refFile->GetLength();
+    if(currPageInd == 0){
+        //did not start to read before
+        if(heapLength > 0){
+            currPageInd++;
+            refFile->GetPage(rBuffer,currPageInd - 1);
+            rBuffer->MoveToStart();
+        }
+        else{
+            //have nothing in file and wBuffer may contain some data
+            if(wBuffer->getNumRecs() > 0 ){
+                //wBuffer has some records - write it to file and read from there
+                refFile->AddPage(wBuffer,currPageInd);
+                wBuffer->EmptyItOut();
+                rBuffer->EmptyItOut();
+                refFile->GetPage(rBuffer,currPageInd);
+                //make sure first record is boing pointed to
+                rBuffer->MoveToStart();
+                currPageInd++;
+            }
+            else{
+                //have nothing to read
+                cout<<"no record to read";
+            }
+        }
+
+    }
+    //current page is loaded to rBuffer
+    int returnVal = rBuffer->getRecord(&fetchme);
+
+    //if 1 end next here or else read next page to rBuffer
+    heapLength = refFile->GetLength();
+    if(!returnVal){
+        if(currPageInd == heapLength - 1 && wBuffer->getNumRecs() == 0 ){
+            //ran out of pages to read in memory 
+            cout<<"Ran out of records to read"<<endl;
+        }
+        else if(currPageInd == heapLength - 1 && wBuffer->getNumRecs() != 0){
+            //have some records in wBuffer
+            refFile->AddPage(wBuffer,currPageInd);
+            wBuffer->EmptyItOut();
+            rBuffer->EmptyItOut();
+            refFile->GetPage(rBuffer,currPageInd);
+            rBuffer->MoveToStart();
+            returnVal = rBuffer->getRecord(&fetchme);
+            if(returnVal == 0){
+                cout<<"should not ever come here . Return value should not be zero"<<endl;
+            }
+            currPageInd++;
+        }
+        else if(currPageInd < heapLength - 1){
+            rBuffer->EmptyItOut();
+            refFile->GetPage(rBuffer,currPageInd);
+            rBuffer->MoveToStart();
+            returnVal = rBuffer->getRecord(&fetchme);
+            if(returnVal == 0){
+                cout<<"should not ever come here. Return value should not be zero . some problem in getrecord"<<endl;
+            }
+            currPageInd++;
+
+        }
+        else{
+            cout<<"should not ever come here";
+        }
+
+    }
+    return returnVal;
+
 }
-//TODO:
+
 int Heap::GetNext(Record &fetchme, CNF &cnf, Record &literal)
 {
     bool compFlag = false;

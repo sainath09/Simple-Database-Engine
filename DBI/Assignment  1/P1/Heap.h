@@ -13,8 +13,7 @@ private:
     Page *wBuffer;
     Page *rBuffer;
     fType type;
-    int currPageInd;
-    bool dirtyPage;
+    int currPageInd; //index of file to read
 
 public:
 	Heap (); 
