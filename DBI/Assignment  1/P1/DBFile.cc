@@ -9,12 +9,7 @@
 #include "Defs.h"
 #include "Heap.h"
 
-
 DBFile::DBFile () {
-    //set the current file index to zero initially;
-    // currFileIndex  = 0 ;
-
-    
 }
 
 //TODO: 

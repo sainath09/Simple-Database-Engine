@@ -6,8 +6,9 @@
 #include "Comparison.h"
 #include "ComparisonEngine.h"
 #include "DBFile.h"
-#include "Heap.h"
+#include "AbstractDBFile.h"
 #include "Defs.h"
+#include "Heap.h"
 
 Heap::Heap()
 {
@@ -18,14 +19,6 @@ Heap::Heap()
     rBuffer = new Page();
     refFile = new File();
     dirtyPage = false;
-}
-
-Heap::~Heap()
-{
-    //DESTROY THE OBJECT CREATE ABOVE
-    delete wBuffer;
-    delete rBuffer;
-    delete refFile;
 }
 
 int Heap::Create(const char *f_path, fType f_type, void *startup)
@@ -43,7 +36,7 @@ void Heap::Load(Schema &f_schema, const char *loadpath)
     if (table == NULL)
     {
         //throw error
-        cerr << "File has no records";
+        std::cerr << "File has no records";
         exit(1);
     }
     else
@@ -116,4 +109,11 @@ int Heap::GetNext(Record &fetchme, CNF &cnf, Record &literal)
             return 0; //FIXME: try return false;
     }
     return (int)compFlag; //FIXME: try return compFlag;
+}
+Heap::~Heap()
+{
+    //DESTROY THE OBJECT CREATE ABOVE
+    delete wBuffer;
+    delete rBuffer;
+    delete refFile;
 }
