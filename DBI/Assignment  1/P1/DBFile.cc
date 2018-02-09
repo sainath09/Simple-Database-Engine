@@ -1,3 +1,4 @@
+
 #include "TwoWayList.h"
 #include "Record.h"
 #include "Schema.h"
@@ -8,7 +9,9 @@
 #include "AbstractDBFile.h"
 #include "Defs.h"
 #include "Heap.h"
-
+#include <string>
+#include <fstream>
+#include <iostream>
 DBFile::DBFile () {
 }
 
@@ -16,24 +19,24 @@ DBFile::DBFile () {
 int DBFile::Create (const char *f_path, fType f_type, void *startup) {
     //Create a file object
     DBFile DBFile;
-    //Check if meta data object exists, else create new
-    //create a meta file with some sort of METAINF tag using Stringstream (#include sstream)
-    
-    //File open with 0 would create a new file.
-    // DBFile.file.Open(0, (char *)f_path);
-    //Create some error handling in case DBFIle cannot be created.
-
+    string metaFile(f_path); 
+     //create a meta file with some sort of METAINF tag using Stringstream (#include sstream)
+    metaFile +=  ".METAINF";
+    ofstream out;
+    out.open(metaFile.c_str(),std::ofstream::out);
      if(f_type==heap){
          //CREATE NEW HEAP CLASS OBJECT INTO A GENERIC DB FILE. 
             AbsDBFile = new Heap();
-            //store type of DBFile .. heap, b+, or anything else.
-
-          //Put first position of FILEH Record in MetaData file
-
+            out<<"heap";
+            //store type of DBFile .. heap, b+, or anything else in meta
      }
+     else {
+         //work for sorted 
+         out<<"sorted";
+     }
+     out.close();
      //CALL THE FUNCTION "CREATE" FOR THE HEAPDB OBJECT
     return AbsDBFile->Create(f_path,f_type,startup);
-
 }
 
 void DBFile::Load (Schema &f_schema, const char *loadpath) {
@@ -41,6 +44,29 @@ void DBFile::Load (Schema &f_schema, const char *loadpath) {
 }
 //TODO: 
 int DBFile::Open (const char *f_path) {
+    ifstream in;
+    string metaFile(f_path);
+    metaFile += ".METAINF";
+    in.open(metaFile.c_str(),ifstream::in);
+    if(!in.is_open()){
+        cout<<"meta file not created. Please check the create method";
+    }
+    else{
+        string type = "";
+        getline(in,type);
+        if(type == "heap"){
+            AbsDBFile = new Heap();
+        }
+        else if(type == "sorted"){
+            cout<<"implemented in sorted DS";
+
+        }
+        else {
+            cout<<"to be implemented";
+        }
+    }
+    return AbsDBFile->Open(f_path);
+
 }
 
 void DBFile::MoveFirst () {
