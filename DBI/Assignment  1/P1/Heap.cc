@@ -7,7 +7,7 @@
 #include "ComparisonEngine.h"
 #include "DBFile.h"
 #include "AbstractDBFile.h"
-#include "Defs.h"
+//#include "Defs.h"
 #include "Heap.h"
 
 Heap::Heap()
@@ -21,7 +21,7 @@ Heap::Heap()
     
 }
 
-int Heap::Create(const char *f_path, fType f_type, void *startup)
+int Heap::Create(const char *f_path, fType file_type,void *startup)
 {
     //JUST RUN THE HEAP->OPEN WITH ZERO FLAG ON REFFILE
     refFile->Open(0, (char *)f_path);

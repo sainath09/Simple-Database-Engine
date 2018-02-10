@@ -1,13 +1,12 @@
 
-#include "TwoWayList.h"
-#include "Record.h"
-#include "Schema.h"
-#include "File.h"
-#include "Comparison.h"
-#include "ComparisonEngine.h"
+// #include "TwoWayList.h"
+//#include "Record.h"
+//#include "Schema.h"
+//#include "File.h"
+//#include "Comparison.h"
+//#include "ComparisonEngine.h"
 #include "DBFile.h"
 #include "AbstractDBFile.h"
-#include "Defs.h"
 #include "Heap.h"
 #include <string>
 #include <fstream>
@@ -15,12 +14,11 @@
 DBFile::DBFile () {
 }
 
-//TODO: 
 int DBFile::Create (const char *f_path, fType f_type, void *startup) {
     //Create a file object
     DBFile DBFile;
     string metaFile(f_path); 
-     //create a meta file with some sort of METAINF tag using Stringstream (#include sstream)
+     //create a meta file with some sort of METAINF tag using fstreams
     metaFile +=  ".METAINF";
     ofstream out;
     out.open(metaFile.c_str(),std::ofstream::out);
@@ -42,7 +40,6 @@ int DBFile::Create (const char *f_path, fType f_type, void *startup) {
 void DBFile::Load (Schema &f_schema, const char *loadpath) {
     AbsDBFile->Load(f_schema,loadpath);
 }
-//TODO: 
 int DBFile::Open (const char *f_path) {
     ifstream in;
     string metaFile(f_path);

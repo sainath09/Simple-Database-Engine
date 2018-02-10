@@ -3,11 +3,14 @@
 #include "Record.h"
 #include "Schema.h"
 #include "File.h"
-#include "DBFile.h"
+// #include "DBFile.h"
+typedef enum {heap, sorted, tree} fType;
 class AbstractDBFile {
 
 public:
-	virtual int Create (const char *fpath, fType file_type, void *startup);
+	AbstractDBFile();
+	~AbstractDBFile();
+	virtual int Create (const char *fpath,fType file_type, void *startup);
 	virtual int Open (const char *fpath);
 	virtual int Close ();
 	virtual void Load (Schema &myschema, const char *loadpath);

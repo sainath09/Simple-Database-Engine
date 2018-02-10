@@ -1,28 +1,20 @@
 DBI/Assignment  1/.~lock.A1.docx#
-DBI/Assignment  1/P1/y.tab.o
-DBI/Assignment  1/P1/Comparison.o
-DBI/Assignment  1/P1/ComparisonEngine.o
-DBI/Assignment  1/P1/File.o
 DBI/Assignment  1/P1/lex.yy.c
-DBI/Assignment  1/P1/lex.yy.o
 DBI/Assignment  1/P1/main
-DBI/Assignment  1/P1/main.o
-DBI/Assignment  1/P1/Record.o
-DBI/Assignment  1/P1/Schema.o
 DBI/Assignment  1/P1/y.tab.c
 DBI/Assignment  1/P1/y.tab.h
-DBI/Assignment  1/P1/.vscode/settings.json
-DBI/Assignment  1/P1/DBFile.o
+DBI/Assignment  1/P1/.vscode/
 DBI/Assignment  1/P1/Makefile
 DBI/Assignment  1/P1/main.cc
-
-PLP/Assignment 1/gaurav_singh_36398850_hw1.jar
-PLP/.DS_Store
 PLP/
-.DS_Store
+*.DS_Store
 DBI/Assignment  1/P1/main.cc
 database-implementation-master.zip
 DBI/Assignment  1/~$A1.docx
 DBI/database-implementation-master/
 DBI/Weekly assignment/
 Mobility/
+DBI/Assignment  1/P1/*.o
+DBI/Assignment  1/P1/*.bin
+DBI/Assignment  1/P1/*.METAINF
+DBI/Assignment  1/P1/*.out

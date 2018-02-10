@@ -5,7 +5,7 @@
 #include "Schema.h"
 #include "File.h"
 #include "AbstractDBFile.h"
-#include "DBFile.h"
+
 // stub DBFile header..replace it with your own DBFile.h 
 class Heap: virtual public AbstractDBFile {
 private: 
@@ -18,7 +18,7 @@ private:
 public:
 	Heap (); 
     ~Heap (); 
-	int Create (const char *fpath, fType file_type, void *startup);
+	int Create (const char *fpath, fType file_type,void *startup);
 	int Open (const char *fpath);
 	int Close ();
 	void Load (Schema &myschema, const char *loadpath);
