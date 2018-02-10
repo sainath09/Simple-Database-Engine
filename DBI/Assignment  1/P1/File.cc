@@ -165,9 +165,10 @@ int Page::getNumRecs(){
 int Page::getRecord(Record* fetchMe){
 	if(myRecs->RightLength()){
 		fetchMe->Copy(myRecs->Current(0));
+		myRecs->Advance();
+		return 1;
 	}
-	else return 0;
-	return 1;
+	return 0;
 }
 
 File :: File () {

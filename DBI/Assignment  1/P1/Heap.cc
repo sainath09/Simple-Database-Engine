@@ -97,6 +97,7 @@ int Heap::GetNext(Record &fetchme)
         //did not start to read before
         if(heapLength > 0){
             currPageInd++;
+            rBuffer->EmptyItOut();
             refFile->GetPage(rBuffer,currPageInd - 1);
             rBuffer->MoveToStart();
         }
