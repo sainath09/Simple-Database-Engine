@@ -36,6 +36,11 @@ git config --global user.email "gaurav.koolz@gmail.com"
 git config --global credential.helper cache
 git config --global credential.helper 'cache --timeout=360000'
 
+-- fix gitignore problems
+git rm . -r --cached
+git add .
+git commit -m "fixed untracked files"
+
 
 Extensions:
 TODO highlight 
