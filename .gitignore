@@ -4,7 +4,6 @@ DBI/Assignment  1/P1/main
 DBI/Assignment  1/P1/y.tab.c
 DBI/Assignment  1/P1/y.tab.h
 DBI/Assignment  1/P1/.vscode/
-DBI/Assignment  1/P1/main.cc
 PLP/
 *.DS_Store
 DBI/Assignment  1/P1/main.cc
@@ -17,9 +16,5 @@ DBI/Assignment  1/P1/*.o
 DBI/Assignment  1/P1/*.bin
 DBI/Assignment  1/P1/*.METAINF
 DBI/Assignment  1/P1/*.out
-DBI/Assignment  1/P1/y.tab.c-e
-
-
-
 DBI/Assignment  1/P1/Makefile
-DBI/Assignment  1/P1/test.cc
+DBI/Assignment  1/P1/y.tab.c-e

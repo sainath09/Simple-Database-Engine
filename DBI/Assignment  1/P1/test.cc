@@ -3,7 +3,7 @@
 #include "test.h"
 
 // make sure that the file path/dir information below is correct
-const char *dbfile_dir = ""; // dir where binary heap files should be stored
+const char *dbfile_dir = "/Volumes/Data/Padai/DBI/Assignment  1/P1/"; // dir where binary heap files should be stored
 const char *tpch_dir ="/Volumes/Data/Padai/DBI/Assignment  1/P1/data/"; // dir where dbgen tpch files (extension *.tbl) can be found
 const char *catalog_path = "/Volumes/Data/Padai/DBI/Assignment  1/P1/catalog"; // full path of the catalog file
 
@@ -63,6 +63,7 @@ void test3 () {
 	Record temp;
 
 	int counter = 0;
+	const clock_t begin_time = clock();
 	while (dbfile.GetNext (temp, cnf, literal) == 1) {
 		counter += 1;
 		temp.Print (rel->schema());
@@ -70,7 +71,9 @@ void test3 () {
 			cout << counter << "\n";
 		}
 	}
-	cout << " selected " << counter << " recs \n";
+	cout<<"Time taken: ";
+	cout << float( clock () - begin_time ) /  CLOCKS_PER_SEC;
+	cout << "\n"<<"Selected " << counter << " recs \n";
 	dbfile.Close ();
 }
 
@@ -79,7 +82,7 @@ int main () {
 	setup (catalog_path, dbfile_dir, tpch_dir);
 
 	void (*test) ();
-	relation *rel_ptr[] = {n, r, c, p, ps, o, li};
+	relation *rel_ptr[] = {n, r, c, p, ps, o, li,s};
 	void (*test_ptr[]) () = {&test1, &test2, &test3};  
 
 	int tindx = 0;
@@ -92,7 +95,7 @@ int main () {
 	}
 
 	int findx = 0;
-	while (findx < 1 || findx > 7) {
+	while (findx < 1 || findx > 8) {
 		cout << "\n select table: \n";
 		cout << "\t 1. nation \n";
 		cout << "\t 2. region \n";
@@ -100,7 +103,8 @@ int main () {
 		cout << "\t 4. part \n";
 		cout << "\t 5. partsupp \n";
 		cout << "\t 6. orders \n";
-		cout << "\t 7. lineitem \n \t ";
+		cout << "\t 7. lineitem \n";
+		cout << "\t 8. supplier \n \t ";
 		cin >> findx;
 	}
 

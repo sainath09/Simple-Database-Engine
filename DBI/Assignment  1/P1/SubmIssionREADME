@@ -1,0 +1,10 @@
+Project 1 Submission
+COP6726
+
+-Group Members
+Gaurav Singh 36398850
+Poorna Kanamathareddy 35915896
+
+-How to run Code
+
+Setup the three variables, dbfile_dir, tpch_dir, catalog_path
