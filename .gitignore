@@ -1,20 +1,26 @@
+PLP/
+Mobility/
+Sainaths/
+workspace/
+
 DBI/Assignment  1/.~lock.A1.docx#
 DBI/Assignment  1/P1/lex.yy.c
 DBI/Assignment  1/P1/main
 DBI/Assignment  1/P1/y.tab.c
 DBI/Assignment  1/P1/y.tab.h
 DBI/Assignment  1/P1/.vscode/
-PLP/
+
 *.DS_Store
 DBI/Assignment  1/P1/main.cc
 database-implementation-master.zip
 DBI/Assignment  1/~$A1.docx
 DBI/database-implementation-master/
-DBI/Weekly assignment/
-Mobility/
+
 DBI/Assignment  1/P1/*.o
 DBI/Assignment  1/P1/*.bin
 DBI/Assignment  1/P1/*.METAINF
 DBI/Assignment  1/P1/*.out
-DBI/Assignment  1/P1/Makefile
+
 DBI/Assignment  1/P1/y.tab.c-e
+
+DBI/Assignment  1/P1/Makefile
