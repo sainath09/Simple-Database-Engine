@@ -1,12 +1,12 @@
 #ifndef BIGQ_H
 #define BIGQ_H
-#include <pthread.h>
 #include <iostream>
 #include "Pipe.h"
 #include "File.h"
 #include "Record.h"
 #include <stdlib.h>
 #include <vector>
+#include <algorithm>
 #include <map>
 #include <string>
 #include <queue>

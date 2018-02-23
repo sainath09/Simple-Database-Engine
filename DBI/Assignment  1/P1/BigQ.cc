@@ -20,9 +20,6 @@
 
 
 
-
-
-
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	//Check if there is data to be read otherwise shutdown
 	if(runlen<=0){
@@ -236,7 +233,7 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	}
 
 	oFile.Close(); 
-	remove((char *)metaFile.c_str); 
+	remove((char *)metaFile.c_str()); 
 		
     // finally shut down the out pipe
 	out.ShutDown();
