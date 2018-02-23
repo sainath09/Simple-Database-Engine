@@ -18,6 +18,26 @@
 //     return str;
 // }
 
+OrderMaker *orderMaker;
+
+static bool sortOrder(Record* r1,Record* r2){
+	ComparisonEngine comp;
+	if(comp.Compare(r1,r2,orderMaker)<0) return true;
+	else return false;
+}
+
+class sortMergeOrder{
+
+public:
+	sortMergeOrder(){}
+
+	bool operator()(Record* r1,Record* r2) {
+		ComparisonEngine comp;
+		if(comp.Compare(r1,r2,orderMaker)<0) return false;
+		else return true;
+	}
+};
+
 
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {

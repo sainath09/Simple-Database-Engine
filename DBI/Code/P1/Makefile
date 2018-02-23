@@ -6,14 +6,18 @@ ifdef linux
 tag = -n
 endif
 
-test.out: AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
-	$(CC) -o test.out AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o 
+test.out: BigQ.o Pipe.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
+	$(CC) -pthread -o test.out Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o -lfl
 	
-main: Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o
-	$(CC) -o main Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o 
+main: BigQ.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o
+	$(CC) -o main BigQ.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o -lfl
 	
 test.o: test.cc
 	$(CC) -g -c test.cc
+Pipe.o : Pipe.cc
+	$(CC)  -g -c Pipe.cc
+BigQ.o : BigQ.cc
+	$(CC) -g -c BigQ.cc
 
 Heap.o: Heap.cc
 	$(CC) -g -c Heap.cc
@@ -41,10 +45,10 @@ Schema.o: Schema.cc
 	
 y.tab.o: Parser.y
 	yacc -d Parser.y
-	sed -i -e "s/  __attribute__ ((__unused__))$\/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" y.tab.c
+	sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
 	g++ -c y.tab.c
 
-lex.yy.o: Lexer.l
+lex.yy.o: Lexer.l 
 	lex  Lexer.l
 	gcc  -c lex.yy.c
 
