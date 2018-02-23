@@ -2,26 +2,27 @@ PLP/
 Mobility/
 Sainaths/
 workspace/
-DBI/Assignment  1/.~lock.A1.docx#
-DBI/Assignment  1/P1/lex.yy.c
-DBI/Assignment  1/P1/main
-DBI/Assignment  1/P1/y.tab.c
-DBI/Assignment  1/P1/y.tab.h
-DBI/Assignment  1/P1/.vscode/
+DBI/Code/.~lock.A1.docx#
+DBI/Code/P1/lex.yy.c
+DBI/Code/P1/main
+DBI/Code/P1/y.tab.c
+DBI/Code/P1/y.tab.h
+DBI/Code/P1/.vscode/
 *.DS_Store
-DBI/Assignment  1/P1/main.cc
+DBI/Code/P1/main.cc
 database-implementation-master.zip
-DBI/Assignment  1/~$A1.docx
+DBI/Code/~$A1.docx
 DBI/database-implementation-master/
 
-DBI/Assignment  1/P1/*.o
-DBI/Assignment  1/P1/*.bin
-DBI/Assignment  1/P1/*.METAINF
-DBI/Assignment  1/P1/*.out
+DBI/Code/P1/*.o
+DBI/Code/P1/*.bin
+DBI/Code/P1/*.METAINF
+DBI/Code/P1/*.out
 
-DBI/Assignment  1/P1/y.tab.c-e
+DBI/Code/P1/y.tab.c-e
 
-DBI/Assignment  1/P1/Makefile
+DBI/Code/P1/Makefile
 DBI/Weekly assignment/~$ekly3_36398850.docx
 DBI/Assignment 2/~$A2.docx
-DBI/Assignment  1/.vscode/settings.json
+DBI/Code/.vscode/settings.json
+DBI/Code/P1/Makefile
