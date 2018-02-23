@@ -5,7 +5,17 @@ how does record gets into a page. is the code already written?
 What is the difference between DBfile and file
 
 
- 
+tpch
+To generate TPCH data, get the data generator from github
+
+mkdir ~/git; cd git; git clone https://github.com/electrum/tpch-dbgen.git (Links to an external site.)Links to an external site.
+Compile it: 
+make
+Generate 10MB data
+./dbgen -s 0.01
+(latter) Generate 1GB data
+./dbgen -s 1
+This will generate 8 *.tbl files containing the data in CSV format with | separator
 
 Dependencies::
 Linux:
