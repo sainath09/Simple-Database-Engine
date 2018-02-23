@@ -1,0 +1,24 @@
+{
+    "files.associations": {
+        "__bit_reference": "cpp",
+        "algorithm": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp",
+        "map": "cpp",
+        "ios": "cpp",
+        "iostream": "cpp",
+        "iosfwd": "cpp",
+        "iterator": "cpp",
+        "stdexcept": "cpp",
+        "string": "cpp",
+        "new": "cpp",
+        "__config": "cpp",
+        "__nullptr": "cpp",
+        "exception": "cpp",
+        "initializer_list": "cpp",
+        "typeinfo": "cpp",
+        "__locale": "cpp",
+        "memory": "cpp",
+        "__tree": "cpp"
+    }
+}
