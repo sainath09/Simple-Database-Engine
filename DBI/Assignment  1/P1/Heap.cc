@@ -21,17 +21,17 @@ Heap::Heap()
     
 }
 
-int Heap::Create(const char *f_path, fType file_type,void *startup)
+int Heap::Create(char *f_path, fType file_type,void *startup)
 {
     //JUST RUN THE HEAP->OPEN WITH ZERO FLAG ON REFFILE
-    refFile->Open(0, (char *)f_path);
+    refFile->Open(0,f_path);
     return 1;
 }
 
-void Heap::Load(Schema &f_schema, const char *loadpath)
+void Heap::Load(Schema &f_schema,  char *loadpath)
 {
     //
-    FILE *table = fopen((char *)loadpath, "r");
+    FILE *table = fopen(loadpath, "r");
     //Check if file is empty
     if (table == NULL)
     {
@@ -59,9 +59,9 @@ void Heap::Load(Schema &f_schema, const char *loadpath)
     //FIXME: DEBUG
 }
 
-int Heap::Open(const char *f_path)
+int Heap::Open(char *f_path)
 {
-    refFile->Open(1, (char *)f_path);
+    refFile->Open(1, f_path);
     return 1;
 }
 
