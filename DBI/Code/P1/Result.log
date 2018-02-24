@@ -1,278 +1,102 @@
 .......Q1.....
- 
-*
- 	  DBFile will be created at /home/kps/DBI/DatabaseImplementation/DBI/Assignment  1/P1/region.bin
- tpch file will be loaded from /home/kps/DBI/DatabaseImplementation/DBI/Assignment  1/P1/data/region.tbl
- 
-*
- 	  Filter with CNF for : region
- Enter CNF predicate (when done press ctrl-D):
-	r_regionkey: [3], r_name: [EUROPE], r_comment: [ly final courts cajole furiously final excuse]
+
+
+ select test option: 
+ 	 1. sort 
+ 	 2. sort + display 
+ 	 3. sort + write 
+	 2
+ select dbfile to use: 
+	 1. nation 
+	 2. region 
+	 3. customer 
+	 4. part 
+	 5. partsupp 
+	 6. orders 
+	 7. lineitem 
+	 8. supplier 
+ 	 2	
+ specify runlength:
+	 2
+ specify sort ordering (when done press ctrl-D):
+	(r_name)
+ producer: opened DBFile /Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/bin/region.bin
 Ran out of records to read
- selected 1 recs 
-
-
-
-
+ producer: inserted 5 recs into the pipe
+r_regionkey: [0], r_name: [AFRICA], r_comment: [lar deposits. blithely final packages cajole. regular waters are final requests. regular accounts are according to ]
+r_regionkey: [1], r_name: [AMERICA], r_comment: [hs use ironic, even requests. s]
+r_regionkey: [2], r_name: [ASIA], r_comment: [ges. thinly even pinto beans ca]
+r_regionkey: [3], r_name: [EUROPE], r_comment: [ly final courts cajole furiously final excuse]
+r_regionkey: [4], r_name: [MIDDLE EAST], r_comment: [uickly special accounts cajole carefully blithely close requests. carefully final asymptotes haggle furiousl]
+consumer: removed 5 recs from the pipe
+consumer: 5 recs out of 5 recs in sorted order
 
 .......Q2.....
+
+  
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/catalog
+ tpch files dir: 	/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/data/
+ heap files dir: 	/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/bin/
  
-*
- 	  Filter with CNF for : region
- Enter CNF predicate (when done press ctrl-D):
-	r_regionkey: [2], r_name: [ASIA], r_comment: [ges. thinly even pinto beans ca]
-r_regionkey: [3], r_name: [EUROPE], r_comment: [ly final courts cajole furiously final excuse]
+
+ select test option: 
+ 	 1. sort 
+ 	 2. sort + display 
+ 	 3. sort + write 
+	 1
+ select dbfile to use: 
+	 1. nation 
+	 2. region 
+	 3. customer 
+	 4. part 
+	 5. partsupp 
+	 6. orders 
+	 7. lineitem 
+	 8. supplier 
+ 	5
+ specify runlength:
+	 2
+ specify sort ordering (when done press ctrl-D):
+	(ps_suppkey) AND (ps_partkey)
+ producer: opened DBFile /Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/bin/partsupp.bin
 Ran out of records to read
- selected 2 recs 
+ producer: inserted 800000 recs into the pipe
+ consumer: removed 800000 recs from the pipe
+consumer: 800000 recs out of 800000 recs in sorted order
 
 
-
- 
 .......Q3.....
+
+
  
-*
- 	  DBFile will be created at /home/kps/DBI/DatabaseImplementation/DBI/Assignment  1/P1/nation.bin
- tpch file will be loaded from /home/kps/DBI/DatabaseImplementation/DBI/Assignment  1/P1/data/nation.tbl
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/catalog
+ tpch files dir: 	/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/data/
+ heap files dir: 	/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/bin/
  
-*
- 	  Filter with CNF for : nation
- Enter CNF predicate (when done press ctrl-D):
-	n_nationkey: [19], n_name: [ROMANIA], n_regionkey: [3], n_comment: [ular asymptotes are about the furious multipliers. express dependencies nag above the ironically ironic account]
-n_nationkey: [22], n_name: [RUSSIA], n_regionkey: [3], n_comment: [ requests against the platelets use never according to the quickly regular pint]
-n_nationkey: [23], n_name: [UNITED KINGDOM], n_regionkey: [3], n_comment: [eans boost carefully special requests. accounts are. carefull]
+
+ select test option: 
+ 	 1. sort 
+ 	 2. sort + display 
+ 	 3. sort + write 
+	 1
+ select dbfile to use: 
+	 1. nation 
+	 2. region 
+	 3. customer 
+	 4. part 
+	 5. partsupp 
+	 6. orders 
+	 7. lineitem 
+	 8. supplier 
+ 	 7	
+ specify runlength:
+	 20
+ specify sort ordering (when done press ctrl-D):
+	 (l_shipdate) AND (l_extendedprice) AND (l_quantity) 
+ producer: opened DBFile /Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/bin/lineitem.bin
 Ran out of records to read
- selected 3 recs 
-
- 
-.........Q4...........
-  
-** 
- 	  DBFile will be created at /Volumes/Data/Padai/DBI/Assignment  1/P1/supplier.bin
- tpch file will be loaded from /Volumes/Data/Padai/DBI/Assignment  1/P1/data/supplier.tbl
- 
-** 
- 	  Filter with CNF for : supplier
- Enter CNF predicate (when done press ctrl-D):
-	s_suppkey: [1], s_name: [Supplier#000000001], s_address: [ N kD4on9OM Ipw3,gf0JBoQDd7tgrzrddZ], s_nationkey: [17], s_phone: [27-918-335-1736], s_acctbal: [5755.94], s_comment: [each slyly above the careful]
-s_suppkey: [2], s_name: [Supplier#000000002], s_address: [89eJ5ksX3ImxJQBvxObC,], s_nationkey: [5], s_phone: [15-679-861-2259], s_acctbal: [4032.68], s_comment: [ slyly bold instructions. idle dependen]
-s_suppkey: [3], s_name: [Supplier#000000003], s_address: [q1,G3Pj6OjIuUYfUoH18BFTKP5aU9bEV3], s_nationkey: [1], s_phone: [11-383-516-1199], s_acctbal: [4192.4], s_comment: [blithely silent requests after the express dependencies are sl]
-s_suppkey: [4], s_name: [Supplier#000000004], s_address: [Bk7ah4CK8SYQTepEmvMkkgMwg], s_nationkey: [15], s_phone: [25-843-787-7479], s_acctbal: [4641.08], s_comment: [riously even requests above the exp]
-s_suppkey: [5], s_name: [Supplier#000000005], s_address: [Gcdm2rJRzl5qlTVzc], s_nationkey: [11], s_phone: [21-151-690-3663], s_acctbal: [-283.84], s_comment: [. slyly regular pinto bea]
-s_suppkey: [6], s_name: [Supplier#000000006], s_address: [tQxuVm7s7CnK], s_nationkey: [14], s_phone: [24-696-997-4969], s_acctbal: [1365.79], s_comment: [final accounts. regular dolphins use against the furiously ironic decoys. ]
-s_suppkey: [7], s_name: [Supplier#000000007], s_address: [s,4TicNGB4uO6PaSqNBUq], s_nationkey: [23], s_phone: [33-990-965-2201], s_acctbal: [6820.35], s_comment: [s unwind silently furiously regular courts. final requests are deposits. requests wake quietly blit]
-s_suppkey: [8], s_name: [Supplier#000000008], s_address: [9Sq4bBH2FQEmaFOocY45sRTxo6yuoG], s_nationkey: [17], s_phone: [27-498-742-3860], s_acctbal: [7627.85], s_comment: [al pinto beans. asymptotes haggl]
-s_suppkey: [9], s_name: [Supplier#000000009], s_address: [1KhUgZegwM3ua7dsYmekYBsK], s_nationkey: [10], s_phone: [20-403-398-8662], s_acctbal: [5302.37], s_comment: [s. unusual, even requests along the furiously regular pac]
-Ran out of records to read
-Time taken: 0.008015
-Selected 9 recs 
- 
-
- 
-.........Q5...........
-  
-
-
-** 
- 	  Filter with CNF for : supplier
- Enter CNF predicate (when done press ctrl-D):
-	s_suppkey: [11], s_name: [Supplier#000000011], s_address: [JfwTs,LZrV, M,9C], s_nationkey: [18], s_phone: [28-613-996-1505], s_acctbal: [3393.08], s_comment: [y ironic packages. slyly ironic accounts affix furiously; ironically unusual excuses across the flu]
-s_suppkey: [27], s_name: [Supplier#000000027], s_address: [lC4CjKwNHUr6L4xIpzOBK4NlHkFTg], s_nationkey: [18], s_phone: [28-708-999-2028], s_acctbal: [1887.62], s_comment: [s according to the quickly regular hockey playe]
-s_suppkey: [41], s_name: [Supplier#000000041], s_address: [G 1FKHR435 wMKFmyt], s_nationkey: [18], s_phone: [28-739-447-2525], s_acctbal: [6942.67], s_comment: [odolites boost across the furiously regular fo]
-s_suppkey: [72], s_name: [Supplier#000000072], s_address: [mKpAJojtawk2alqV4 ZEbJ3PH3wfYqy AM8rGq1], s_nationkey: [18], s_phone: [28-113-898-6643], s_acctbal: [7014.5], s_comment: [ theodolites sublate furiously about the regularly e]
-s_suppkey: [99], s_name: [Supplier#000000099], s_address: [4SxkTHG28nZrtT0,MnVF9H], s_nationkey: [18], s_phone: [28-272-909-1617], s_acctbal: [3671.34], s_comment: [nic dependencies dazzle flu]
-s_suppkey: [117], s_name: [Supplier#000000117], s_address: [ZnlLNC,8YN10T4mjI8eq5bJ], s_nationkey: [18], s_phone: [28-470-879-3141], s_acctbal: [4589.18], s_comment: [ymptotes. blithely regular theodolites are slyly according to the ]
-s_suppkey: [119], s_name: [Supplier#000000119], s_address: [4CxBrM0o4yt6LYFxZIyZ89Xnf8LZNn6KcYc], s_nationkey: [18], s_phone: [28-558-264-1202], s_acctbal: [2060.13], s_comment: [ctions: quickly final courts wake quietly foxes. packages hag]
-s_suppkey: [187], s_name: [Supplier#000000187], s_address: [oMtyTl6hTyLQhiBwrUaa42zKOjfNobEq], s_nationkey: [18], s_phone: [28-127-320-9230], s_acctbal: [8517.04], s_comment: [riously along the carefully silent instructions. ]
-s_suppkey: [191], s_name: [Supplier#000000191], s_address: [X dZg6Dtv17X7], s_nationkey: [18], s_phone: [28-437-699-1621], s_acctbal: [1445], s_comment: [en packages haggle blithely regular requests. silently ironic packages n]
-s_suppkey: [196], s_name: [Supplier#000000196], s_address: [TQX4fMwB5tXoz4Fi4CEhALhi6], s_nationkey: [18], s_phone: [28-430-406-1127], s_acctbal: [4710.62], s_comment: [ke fluffily regular requests. furiously final]
-s_suppkey: [201], s_name: [Supplier#000000201], s_address: [e3lZO QY9QpCVdc0HXrqXB5uxXnOi r], s_nationkey: [18], s_phone: [28-782-585-7326], s_acctbal: [9537.73], s_comment: [kly above the special ideas. even requests nag carefully. quickly pending t]
-s_suppkey: [213], s_name: [Supplier#000000213], s_address: [1s7 4odatD2BWz1QjXR2 2SnFhc,Rvr2Icxh1m7f], s_nationkey: [18], s_phone: [28-317-938-6979], s_acctbal: [2616.54], s_comment: [, regular packages. request]
-s_suppkey: [255], s_name: [Supplier#000000255], s_address: [qx16XyCEUh9OawVeQWOlGlhAU32iHFPNkO], s_nationkey: [18], s_phone: [28-629-327-4139], s_acctbal: [4663.08], s_comment: [s boost. ironic pinto beans along the slyly unusual foxes haggle regular, final asymptotes. reque]
-s_suppkey: [294], s_name: [Supplier#000000294], s_address: [20vnacv,dtZ0mr5kukNf], s_nationkey: [18], s_phone: [28-299-788-1836], s_acctbal: [6700.75], s_comment: [en accounts. silent, regular instructio]
-s_suppkey: [302], s_name: [Supplier#000000302], s_address: [ow8Io1JHkPnIAGCQYCWC], s_nationkey: [18], s_phone: [28-734-845-8630], s_acctbal: [4422.77], s_comment: [tructions after the foxes cajole regularly ironic tithes. ruthless forges across the slyly express ]
-s_suppkey: [319], s_name: [Supplier#000000319], s_address: [tcES8Ay3zcHQER9K6gAKFWlDvcg nrbPl], s_nationkey: [18], s_phone: [28-288-466-7847], s_acctbal: [1578.18], s_comment: [ts are furiously even, pending pinto beans. fluffily idle courts cajole bl]
-s_suppkey: [324], s_name: [Supplier#000000324], s_address: [QDsgOSozg jniYR2HzxofLZyk0qGdJe], s_nationkey: [18], s_phone: [28-637-452-5085], s_acctbal: [8042.43], s_comment: [ithely slyly special waters. ]
-s_suppkey: [385], s_name: [Supplier#000000385], s_address: [4RDwKCNc6 yBY], s_nationkey: [18], s_phone: [28-730-866-8837], s_acctbal: [5836.17], s_comment: [frays. requests sleep ironic theodolites. carefully even requests doubt furious]
-s_suppkey: [388], s_name: [Supplier#000000388], s_address: [n27XQohXrXlJRLdsyXNoljPS], s_nationkey: [18], s_phone: [28-306-827-7902], s_acctbal: [6540.34], s_comment: [rate around the regular accounts. furiously special pinto beans use bli]
-Ran out of records to read
-Time taken: 0.009143
-Selected 19 recs 
-
-
-
-.......Q6...............
-
-** 
- 	  DBFile will be created at /Volumes/Data/Padai/DBI/Assignment  1/P1/customer.bin
- tpch file will be loaded from /Volumes/Data/Padai/DBI/Assignment  1/P1/data/customer.tbl
- 
-** 
- 	  Filter with CNF for : customer
- Enter CNF predicate (when done press ctrl-D):
-	c_custkey: [30970], c_name: [Customer#000030970], c_address: [O,N4bwYdHoSdg64DGAc6OuxWjn5rlP63sWAT], c_nationkey: [23], c_phone: [33-739-174-9054], c_acctbal: [7054.59], c_mktsegment: [FURNITURE], c_comment: [sly unusual platelets alongside of the express depos]
-c_custkey: [35802], c_name: [Customer#000035802], c_address: [r8fEXhwF4MKMZQ,lIRTTVjSBqEnb7kENEVDEY], c_nationkey: [23], c_phone: [33-931-338-6655], c_acctbal: [7027.91], c_mktsegment: [FURNITURE], c_comment: [pecial ideas. regular, even pinto beans above the slyly pending pinto beans are blithely across]
-c_custkey: [38796], c_name: [Customer#000038796], c_address: [nIGHXXDiaVBoX  BCrIx1JUKx], c_nationkey: [23], c_phone: [33-893-935-9650], c_acctbal: [7079.41], c_mktsegment: [FURNITURE], c_comment: [dolites are furiously fluffily final accounts. unusual dugouts cajole furiously careful]
-c_custkey: [61179], c_name: [Customer#000061179], c_address: [dpdbiV6kFYz x6OT84qR9j], c_nationkey: [23], c_phone: [33-825-707-8461], c_acctbal: [7075.72], c_mktsegment: [FURNITURE], c_comment: [ully final accounts. slyly special instructions above the quickly expr]
-c_custkey: [72898], c_name: [Customer#000072898], c_address: [lzr8Pa4oWhhXCH,Lj3Iv], c_nationkey: [23], c_phone: [33-119-734-3569], c_acctbal: [7096.31], c_mktsegment: [FURNITURE], c_comment: [ unusual accounts haggle carefully final, fluffy excuses. regu]
-c_custkey: [73441], c_name: [Customer#000073441], c_address: [7BHFD659A qNnOliO], c_nationkey: [23], c_phone: [33-868-482-1168], c_acctbal: [7038.25], c_mktsegment: [FURNITURE], c_comment: [jole carefully silent foxes. asymptotes snooze after the furiously final depende]
-c_custkey: [85818], c_name: [Customer#000085818], c_address: [nahgIhPPabGH5P7Xsk40qdUmJm,], c_nationkey: [23], c_phone: [33-688-221-5550], c_acctbal: [7073.67], c_mktsegment: [FURNITURE], c_comment: [s. carefully even pinto beans haggle quickly bold packages. blithely ironic requests ]
-c_custkey: [98151], c_name: [Customer#000098151], c_address: [hEk1 FNtkn9wwr,1nmPgPBPrz6CWjvjikbG ], c_nationkey: [23], c_phone: [33-870-939-7560], c_acctbal: [7045.3], c_mktsegment: [FURNITURE], c_comment: [ unusual ideas. unusual, final accounts are carefully packages. furiously ironic excuses sleep never. regula]
-c_custkey: [125850], c_name: [Customer#000125850], c_address: [g0870ozQ6flfrpcDBi0EdzslbTZuXH2Y], c_nationkey: [23], c_phone: [33-577-932-3052], c_acctbal: [7076.18], c_mktsegment: [FURNITURE], c_comment: [g requests about the accounts sleep ]
-c_custkey: [145598], c_name: [Customer#000145598], c_address: [Sn6XgG8wImdX1i7h2AWfsoNVBCIJ4oSaa], c_nationkey: [23], c_phone: [33-685-336-6690], c_acctbal: [7064.61], c_mktsegment: [FURNITURE], c_comment: [ix fluffily special, even deposits. slyly regular reques]
-Ran out of records to read
-Time taken: 0.129073
-Selected 10 recs 
-
-
-
-
-.........Q7...........
- 
-** 
- 	  DBFile will be created at /Volumes/Data/Padai/DBI/Assignment  1/P1/part.bin
- tpch file will be loaded from /Volumes/Data/Padai/DBI/Assignment  1/P1/data/part.tbl
- 
-** 
- 	  Filter with CNF for : part
- Enter CNF predicate (when done press ctrl-D):
-	p_partkey: [1022], p_name: [slate mint plum drab khaki], p_mfgr: [Manufacturer#1], p_brand: [Brand#13], p_type: [SMALL BURNISHED COPPER], p_size: [33], p_container: [WRAP CAN], p_retailprice: [923.02], p_comment: [sly quickly ]
-p_partkey: [3001], p_name: [powder wheat blush gainsboro saddle], p_mfgr: [Manufacturer#1], p_brand: [Brand#13], p_type: [PROMO POLISHED TIN], p_size: [36], p_container: [MED CAN], p_retailprice: [904], p_comment: [fily. sly]
-p_partkey: [3022], p_name: [chiffon orange plum violet saddle], p_mfgr: [Manufacturer#1], p_brand: [Brand#13], p_type: [LARGE BURNISHED BRASS], p_size: [41], p_container: [LG BAG], p_retailprice: [925.02], p_comment: [ding asymptotes sl]
-p_partkey: [4005], p_name: [sienna sky steel green orchid], p_mfgr: [Manufacturer#1], p_brand: [Brand#13], p_type: [ECONOMY PLATED STEEL], p_size: [34], p_container: [SM JAR], p_retailprice: [909], p_comment: [al packages. pending,]
-p_partkey: [8000], p_name: [plum chiffon yellow goldenrod pale], p_mfgr: [Manufacturer#1], p_brand: [Brand#13], p_type: [LARGE PLATED STEEL], p_size: [36], p_container: [LG PKG], p_retailprice: [908], p_comment: [ts-- carefully ]
-p_partkey: [10011], p_name: [spring lawn saddle drab cyan], p_mfgr: [Manufacturer#1], p_brand: [Brand#13], p_type: [PROMO ANODIZED NICKEL], p_size: [32], p_container: [JUMBO BAG], p_retailprice: [921.01], p_comment: [r instructions:]
-p_partkey: [17008], p_name: [puff indian snow ghost grey], p_mfgr: [Manufacturer#1], p_brand: [Brand#13], p_type: [MEDIUM BRUSHED COPPER], p_size: [46], p_container: [MED BOX], p_retailprice: [925], p_comment: [e blithely ]
-p_partkey: [24005], p_name: [khaki ghost metallic navy yellow], p_mfgr: [Manufacturer#1], p_brand: [Brand#13], p_type: [ECONOMY ANODIZED BRASS], p_size: [38], p_container: [JUMBO PKG], p_retailprice: [929], p_comment: [ironic packages. caref]
-Ran out of records to read
-Time taken: 0.129696
-Selected 8 recs 
-
-
-
-
-
-.........Q8...........
- 
-** 
- 	  DBFile will be created at /Volumes/Data/Padai/DBI/Assignment  1/P1/partsupp.bin
- tpch file will be loaded from /Volumes/Data/Padai/DBI/Assignment  1/P1/data/partsupp.tbl
- 
-** 
- 	  Filter with CNF for : partsupp
- Enter CNF predicate (when done press ctrl-D):
-	ps_partkey: [1213], ps_suppkey: [3714], ps_availqty: [5070], ps_supplycost: [999.99], ps_comment: [ ironic, special deposits. carefully final deposits haggle fluffily. furiously final foxes use furiously furiously ironic accounts. package]
-ps_partkey: [15717], ps_suppkey: [3221], ps_availqty: [9790], ps_supplycost: [999.99], ps_comment: [uriously regular requests haggle. slow foxes at the furiously final accounts hang slyly fluffily express instructions. permanent, final deposits are sometimes after the blithely unusual packages. fi]
-ps_partkey: [19079], ps_suppkey: [1581], ps_availqty: [4680], ps_supplycost: [999.99], ps_comment: [y final requests. final platelets cajole carefully. blithely ironic packages wake after the blithely bold requests. s]
-ps_partkey: [26924], ps_suppkey: [1929], ps_availqty: [9218], ps_supplycost: [1000], ps_comment: [furiously regular requests. requests alongside of the pending, even courts cajole silent platelets. slyly bold instructions after the furiously unusual a]
-ps_partkey: [30836], ps_suppkey: [5843], ps_availqty: [6993], ps_supplycost: [999.99], ps_comment: [ong the slyly regular deposits. even asymptotes haggle against the slyly final Tiresias. blithely regular instructions maintain up the furiously sly requests. furiously special theo]
-ps_partkey: [31554], ps_suppkey: [1555], ps_availqty: [2409], ps_supplycost: [1000], ps_comment: [ans kindle along the blithely even excuses. slyly careful foxes are blithely. theodolites dazzle ironically. ideas sleep among the asymptotes. packages above the instructions wa]
-ps_partkey: [52644], ps_suppkey: [5150], ps_availqty: [8224], ps_supplycost: [999.99], ps_comment: [ the slyly even deposits. furiously regular foxes along the regular asymptotes sleep slyly unusual deposits. carefully final dolphins abou]
-ps_partkey: [99907], ps_suppkey: [7435], ps_availqty: [7911], ps_supplycost: [1000], ps_comment: [ully about the furiously special deposits. slyly express asymptotes affix around the boldly express frays. car]
-ps_partkey: [103943], ps_suppkey: [3944], ps_availqty: [5065], ps_supplycost: [1000], ps_comment: [leep against the theodolites. quickly ironic ideas boost fluffily slyly bold dolphins. fluffil]
-ps_partkey: [105389], ps_suppkey: [410], ps_availqty: [8531], ps_supplycost: [999.99], ps_comment: [y unusual requests. quickly bold accounts use quickly quickly regular packages. ironic packages sleep carefully with the final theodolites. even, reg]
-ps_partkey: [130470], ps_suppkey: [2984], ps_availqty: [2592], ps_supplycost: [999.99], ps_comment: [ites against the ironic, unusual instructions use fluffily despite the quickly final theodolites. stealthy theodolites nag]
-ps_partkey: [142176], ps_suppkey: [7205], ps_availqty: [9737], ps_supplycost: [1000], ps_comment: [cies boost slyly special requests. ironic accounts are quickly. ]
-ps_partkey: [182623], ps_suppkey: [7660], ps_availqty: [4963], ps_supplycost: [999.99], ps_comment: [of the slyly even requests haggle fluffily furiously ruthless platelets; furiously final packages sleep until the final packages. blithely final theo]
-ps_partkey: [185850], ps_suppkey: [5851], ps_availqty: [9994], ps_supplycost: [1000], ps_comment: [ng the bold ideas. slyly ironic packages mold enticing, special accounts. req]
-Ran out of records to read
-Time taken: 0.479889
-Selected 14 recs 
-
-
-
-
-
-.........Q9...........
-
- 
-** 
- 	  Filter with CNF for : partsupp
- Enter CNF predicate (when done press ctrl-D):
-	ps_partkey: [7696], ps_suppkey: [197], ps_availqty: [6], ps_supplycost: [268.55], ps_comment: [pecial, regular theodolites haggle fluffily according t]
-ps_partkey: [10245], ps_suppkey: [246], ps_availqty: [7], ps_supplycost: [722.6], ps_comment: [ove the even requests. special deposits sleep. epitaphs boost slowly. final ac]
-ps_partkey: [25097], ps_suppkey: [102], ps_availqty: [1], ps_supplycost: [167.93], ps_comment: [s. carefully express frays sleep slyly. pending, regular deposits]
-ps_partkey: [27573], ps_suppkey: [76], ps_availqty: [2], ps_supplycost: [624.24], ps_comment: [ackages. slyly pending accounts are furiously blithe instructions. express, ]
-ps_partkey: [42762], ps_suppkey: [275], ps_availqty: [5], ps_supplycost: [275.99], ps_comment: [ use blithely after the furiously final depths. furiously slow pinto beans boost quickly along the furiously even pinto beans. slyly express requests wake. furiously ]
-ps_partkey: [50050], ps_suppkey: [51], ps_availqty: [5], ps_supplycost: [487.83], ps_comment: [cies integrate blithely regular deposits. slyly silent deposits are blithely silent, special theodolites. special, regular foxes after the carefully unusual instructions wake in place of the]
-ps_partkey: [50225], ps_suppkey: [226], ps_availqty: [7], ps_supplycost: [320.96], ps_comment: [ silent packages maintain. regular deposits use carefully according to the unusual foxes. packages are. blithely bold decoys detect furiously ironic dependencies. even, regular theo]
-ps_partkey: [77622], ps_suppkey: [130], ps_availqty: [6], ps_supplycost: [352.93], ps_comment: [st furiously: sometimes bold pinto beans around the busily pending instructions wake slyly furiously regular deposits. bold asym]
-ps_partkey: [85011], ps_suppkey: [28], ps_availqty: [4], ps_supplycost: [628.75], ps_comment: [uriously regular Tiresias. slyly ironic pinto beans impress blithely. fluffily regular Tiresias integrate furiously even foxes. ironic excuses around the furiously even waters are quickly]
-ps_partkey: [112746], ps_suppkey: [280], ps_availqty: [7], ps_supplycost: [460.99], ps_comment: [y bold foxes cajole of the furiously even ideas. quickly close theodolites along the express, fur]
-ps_partkey: [137572], ps_suppkey: [86], ps_availqty: [8], ps_supplycost: [180.55], ps_comment: [n ideas nag slyly after the blithely bold deposits. entic]
-ps_partkey: [172720], ps_suppkey: [272], ps_availqty: [5], ps_supplycost: [437.41], ps_comment: [ regular accounts boost. regular, express pinto beans sl]
-ps_partkey: [187487], ps_suppkey: [6], ps_availqty: [7], ps_supplycost: [447.8], ps_comment: [y doggedly regular excuses. slyly bold deposits according to the instructions sleep carefully even instructions. flu]
-ps_partkey: [192666], ps_suppkey: [224], ps_availqty: [1], ps_supplycost: [374.58], ps_comment: [esias integrate carefully. regular accounts alongside of the requests haggle slyly fluffily ironic deposits. slyly special packages doze carefully. slowly regu]
-Ran out of records to read
-Time taken: 0.468954
-Selected 14 recs 
-
-
-
-
-.........Q10...........
- 
-** 
- 	  DBFile will be created at /Volumes/Data/Padai/DBI/Assignment  1/P1/orders.bin
- tpch file will be loaded from /Volumes/Data/Padai/DBI/Assignment  1/P1/data/orders.tbl
- 
-** 
- 	  Filter with CNF for : orders
- Enter CNF predicate (when done press ctrl-D):
-	o_orderkey: [298468], o_custkey: [72782], o_orderstatus: [O], o_totalprice: [1035.34], o_orderdate: [1996-02-08], o_orderpriority: [1-URGENT], o_clerk: [Clerk#000000305], o_shippriority: [0], o_comment: [ites are slyly above the furiously regu]
-o_orderkey: [1636866], o_custkey: [123397], o_orderstatus: [O], o_totalprice: [1030.26], o_orderdate: [1997-01-09], o_orderpriority: [1-URGENT], o_clerk: [Clerk#000000268], o_shippriority: [0], o_comment: [thin deposits. requests print blithely fluffily unusual ]
-o_orderkey: [1866274], o_custkey: [43048], o_orderstatus: [O], o_totalprice: [1040.95], o_orderdate: [1998-05-29], o_orderpriority: [1-URGENT], o_clerk: [Clerk#000000353], o_shippriority: [0], o_comment: [. slyly special accounts doze blithely ironic]
-o_orderkey: [2270022], o_custkey: [34705], o_orderstatus: [O], o_totalprice: [1020.97], o_orderdate: [1995-07-19], o_orderpriority: [1-URGENT], o_clerk: [Clerk#000000592], o_shippriority: [0], o_comment: [furiously unusual excuses believe ]
-o_orderkey: [2364615], o_custkey: [101876], o_orderstatus: [O], o_totalprice: [1051.24], o_orderdate: [1996-06-03], o_orderpriority: [1-URGENT], o_clerk: [Clerk#000000450], o_shippriority: [0], o_comment: [he ironic, ironic requests sleep above the express ]
-o_orderkey: [2383909], o_custkey: [105200], o_orderstatus: [O], o_totalprice: [1044.37], o_orderdate: [1998-03-12], o_orderpriority: [1-URGENT], o_clerk: [Clerk#000000824], o_shippriority: [0], o_comment: [pecial, unusual requests integrate]
-o_orderkey: [2459431], o_custkey: [5533], o_orderstatus: [O], o_totalprice: [1019.65], o_orderdate: [1995-11-15], o_orderpriority: [1-URGENT], o_clerk: [Clerk#000000137], o_shippriority: [0], o_comment: [wake quickly regular foxes. carefully regular pinto beans cajole slyly. b]
-o_orderkey: [2685028], o_custkey: [109360], o_orderstatus: [O], o_totalprice: [1024.26], o_orderdate: [1997-09-23], o_orderpriority: [1-URGENT], o_clerk: [Clerk#000000273], o_shippriority: [0], o_comment: [ly pending accounts sleep]
-o_orderkey: [4442532], o_custkey: [62309], o_orderstatus: [O], o_totalprice: [1038.36], o_orderdate: [1998-02-02], o_orderpriority: [1-URGENT], o_clerk: [Clerk#000000811], o_shippriority: [0], o_comment: [ requests believe against the requests. fu]
-o_orderkey: [5859040], o_custkey: [76096], o_orderstatus: [O], o_totalprice: [1039.61], o_orderdate: [1996-01-02], o_orderpriority: [1-URGENT], o_clerk: [Clerk#000000737], o_shippriority: [0], o_comment: [arefully final foxes. express accounts play carefully. fluffily special reques]
-Ran out of records to read
-Time taken: 0.904799
-Selected 10 recs 
-
-
-
-
-.........Q11...........
- 
-** 
- 	  DBFile will be created at /Volumes/Data/Padai/DBI/Assignment  1/P1/lineitem.bin
- tpch file will be loaded from /Volumes/Data/Padai/DBI/Assignment  1/P1/data/lineitem.tbl
- 
-** 
- 	  Filter with CNF for : lineitem
- Enter CNF predicate (when done press ctrl-D):
-	l_orderkey: [629893], l_partkey: [191666], l_suppkey: [1667], l_linenumber: [4], l_quantity: [4], l_extendedprice: [7030.64], l_discount: [0.06], l_tax: [0.08], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1993-12-11], l_receiptdate: [1994-01-27], l_shipinstruct: [COLLECT COD], l_shipmode: [SHIP], l_comment: [yly above the fluffy foxes. deposit]
-l_orderkey: [987651], l_partkey: [191424], l_suppkey: [1425], l_linenumber: [5], l_quantity: [4], l_extendedprice: [6061.68], l_discount: [0.05], l_tax: [0], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1993-11-18], l_receiptdate: [1994-01-04], l_shipinstruct: [DELIVER IN PERSON], l_shipmode: [RAIL], l_comment: [sual dinos]
-l_orderkey: [1334916], l_partkey: [152761], l_suppkey: [307], l_linenumber: [1], l_quantity: [4], l_extendedprice: [7255.04], l_discount: [0.05], l_tax: [0.01], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-03], l_commitdate: [1993-12-27], l_receiptdate: [1994-01-04], l_shipinstruct: [NONE], l_shipmode: [TRUCK], l_comment: [fully fluffily even ]
-l_orderkey: [1775014], l_partkey: [9980], l_suppkey: [9981], l_linenumber: [2], l_quantity: [4], l_extendedprice: [7559.92], l_discount: [0.05], l_tax: [0.02], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1994-01-13], l_receiptdate: [1994-01-09], l_shipinstruct: [DELIVER IN PERSON], l_shipmode: [TRUCK], l_comment: [onic packag]
-l_orderkey: [1929446], l_partkey: [79239], l_suppkey: [9240], l_linenumber: [2], l_quantity: [4], l_extendedprice: [4872.92], l_discount: [0.05], l_tax: [0.07], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1994-01-15], l_receiptdate: [1994-01-21], l_shipinstruct: [COLLECT COD], l_shipmode: [TRUCK], l_comment: [accounts about the busily u]
-l_orderkey: [1978016], l_partkey: [7380], l_suppkey: [4881], l_linenumber: [7], l_quantity: [4], l_extendedprice: [5149.52], l_discount: [0.05], l_tax: [0.03], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1994-02-03], l_receiptdate: [1994-01-06], l_shipinstruct: [NONE], l_shipmode: [MAIL], l_comment: [g according to the quickly]
-l_orderkey: [2900837], l_partkey: [179153], l_suppkey: [9154], l_linenumber: [1], l_quantity: [4], l_extendedprice: [4928.6], l_discount: [0.06], l_tax: [0], l_returnflag: [R], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1993-12-03], l_receiptdate: [1994-01-29], l_shipinstruct: [NONE], l_shipmode: [TRUCK], l_comment: [ular requests according to t]
-l_orderkey: [3029670], l_partkey: [185316], l_suppkey: [353], l_linenumber: [1], l_quantity: [4], l_extendedprice: [5605.24], l_discount: [0.05], l_tax: [0], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-03], l_commitdate: [1994-02-11], l_receiptdate: [1994-01-20], l_shipinstruct: [TAKE BACK RETURN], l_shipmode: [SHIP], l_comment: [ar accounts haggle furiously above the]
-l_orderkey: [3081318], l_partkey: [71366], l_suppkey: [6381], l_linenumber: [4], l_quantity: [4], l_extendedprice: [5349.44], l_discount: [0.06], l_tax: [0.07], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1993-11-09], l_receiptdate: [1994-01-26], l_shipinstruct: [DELIVER IN PERSON], l_shipmode: [FOB], l_comment: [. slyly ironic accounts nag f]
-l_orderkey: [3331619], l_partkey: [187601], l_suppkey: [120], l_linenumber: [2], l_quantity: [4], l_extendedprice: [6754.4], l_discount: [0.06], l_tax: [0.06], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1993-12-31], l_receiptdate: [1994-01-09], l_shipinstruct: [DELIVER IN PERSON], l_shipmode: [FOB], l_comment: [arefully furiously ]
-l_orderkey: [3932192], l_partkey: [92903], l_suppkey: [7922], l_linenumber: [1], l_quantity: [4], l_extendedprice: [7583.6], l_discount: [0.06], l_tax: [0], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1994-01-17], l_receiptdate: [1994-01-29], l_shipinstruct: [TAKE BACK RETURN], l_shipmode: [TRUCK], l_comment: [l dolphins are fluffily regular, pe]
-l_orderkey: [4651430], l_partkey: [87233], l_suppkey: [2250], l_linenumber: [2], l_quantity: [4], l_extendedprice: [4880.92], l_discount: [0.06], l_tax: [0.07], l_returnflag: [R], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1994-03-13], l_receiptdate: [1994-01-28], l_shipinstruct: [DELIVER IN PERSON], l_shipmode: [AIR], l_comment: [latelets a]
-l_orderkey: [4830688], l_partkey: [178621], l_suppkey: [1139], l_linenumber: [4], l_quantity: [4], l_extendedprice: [6798.48], l_discount: [0.05], l_tax: [0.03], l_returnflag: [R], l_linestatus: [F], l_shipdate: [1994-01-03], l_commitdate: [1994-01-09], l_receiptdate: [1994-01-29], l_shipinstruct: [TAKE BACK RETURN], l_shipmode: [RAIL], l_comment: [ent deposits ab]
-l_orderkey: [4901252], l_partkey: [118389], l_suppkey: [3412], l_linenumber: [3], l_quantity: [4], l_extendedprice: [5629.52], l_discount: [0.06], l_tax: [0.06], l_returnflag: [A], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1993-12-22], l_receiptdate: [1994-01-17], l_shipinstruct: [TAKE BACK RETURN], l_shipmode: [MAIL], l_comment: [ays pending]
-l_orderkey: [5818855], l_partkey: [5032], l_suppkey: [2533], l_linenumber: [6], l_quantity: [4], l_extendedprice: [3748.12], l_discount: [0.06], l_tax: [0.07], l_returnflag: [R], l_linestatus: [F], l_shipdate: [1994-01-02], l_commitdate: [1993-10-25], l_receiptdate: [1994-01-31], l_shipinstruct: [TAKE BACK RETURN], l_shipmode: [MAIL], l_comment: [along the qui]
-Ran out of records to read
-Time taken: 3.80738
-Selected 15 recs 
-
-
-
-
-.........Q12...........
- 
-** 
- 	  Filter with CNF for : lineitem
- Enter CNF predicate (when done press ctrl-D):
-	l_orderkey: [130], l_partkey: [1739], l_suppkey: [4240], l_linenumber: [2], l_quantity: [48], l_extendedprice: [78755], l_discount: [0.03], l_tax: [0.02], l_returnflag: [R], l_linestatus: [F], l_shipdate: [1992-07-01], l_commitdate: [1992-07-12], l_receiptdate: [1992-07-24], l_shipinstruct: [NONE], l_shipmode: [AIR], l_comment: [lithely alongside of the regu]
-l_orderkey: [194], l_partkey: [2594], l_suppkey: [5095], l_linenumber: [1], l_quantity: [17], l_extendedprice: [25442], l_discount: [0.05], l_tax: [0.04], l_returnflag: [R], l_linestatus: [F], l_shipdate: [1992-05-24], l_commitdate: [1992-05-22], l_receiptdate: [1992-05-30], l_shipinstruct: [COLLECT COD], l_shipmode: [AIR], l_comment: [ regular deposi]
-Ran out of records to read
-Time taken: 3.57118
-Selected 2 recs 
+ producer: inserted 6001215 recs into the pipe
+ consumer: removed 6001215 recs from the pipe
+ consumer: 6001215 recs out of 6001215 recs in sorted order

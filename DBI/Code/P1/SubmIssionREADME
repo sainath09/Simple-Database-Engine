@@ -1,4 +1,4 @@
-Project 1 Submission
+Project 2 Submission Milestone 1
 COP6726
 
 -Group Members
@@ -6,7 +6,9 @@ Gaurav Singh 36398850
 Poorna Kanamathareddy 35915896
 
 -Where are results?
-Results of running our Revised CNF on 1GB tpch data are stored as Result.log in main directory.
+Results of running CNF from README on 1GB tpch data are stored as Result.log in main directory.
+PLEASE NOTE WE USED ONLY SORT NOT "SORT AND DISPLAY" FOR Result.log TO ENSURE A SENSABLE FILE SIZE.
+THERE ARE MANY MESSAGES NOT WRITTEN INTO FILE DUE TO THIS.
 
 -How to run Code
 Setup the three variables, dbfile_dir, tpch_dir, catalog_path in test.cc
@@ -18,8 +20,6 @@ Please note make file is configured for Linux, if running Mac please try the cod
 
 -Changes in test.cc
 The test.cc file had no way of reading the supplier.tbl, so we added a last option to do that.
+ 
 
--Changes in CNF commands in README
-The provided CNF commands in README were not working for us. 
-So we made sure the CNF used capital letters, correct datatype and had no typos.
 

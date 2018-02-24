@@ -45,6 +45,8 @@ and then press <control-D>
 (l_shipdate) AND (l_extendedprice) AND (l_quantity)
 
 
+./test.out | cat>>Result.log
+
 Git stuff::
 git init
 git pull https://github.com/gauravsingh90/DatabaseImplementation.git

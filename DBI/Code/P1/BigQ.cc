@@ -18,18 +18,6 @@
 //     return str;
 // }
 
-// class sortOrder{
-// 	OrderMaker * om;
-// public:
-// 	sortOrder(OrderMaker* omt){
-// 		om = omt;
-// 	}
-// 	bool operator()(Record* r1,Record* r2){
-// 	ComparisonEngine comp;
-// 	if(comp.Compare(r1,r2,om)<0) return true;
-// 	else return false;
-// }
-// };
 OrderMaker *orderMaker;
 
 static bool sortOrder(Record* r1,Record* r2){
@@ -65,22 +53,22 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	//map for the overflow values
 	map<int,Page *> overflow;
 
-	int totalPagesinRun=0; //TODO: count
-	int pageNumber=0; //TODO: page_count
+	int totalPagesinRun=0; 
+	int pageNumber=0; 
 
-	Record readRecord; //TODO: rec
+	Record readRecord; 
 	
 
-	Page* tempPage = new Page(); // TODO: p
-	vector<Record*> rVector; //TODO: rec_vector
-	vector<Page*> pVector;//TODO: page_vector
+	Page* tempPage = new Page(); 
+	vector<Record*> rVector; 
+	vector<Page*> pVector;
 
-	File oFile; //TODO: f
+	File oFile; 
 	// string metaFile(random_string(12)); 
 	// metaFile+="asdadasdads.dat";
-	char temp_file[100];
-	sprintf(temp_file,"%d.bin",rand());
-	oFile.Open(0,temp_file); //Tempfile for maintaining sorted run
+	char filename[100];
+	sprintf(filename,"%d.bin",rand());
+	oFile.Open(0,filename); 
 	while(1){
 		// read data from in pipe sort them into runlen pages
 		if(in.Remove(&readRecord) && totalPagesinRun<runlen) {
@@ -103,7 +91,7 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 			if(totalPagesinRun<runlen && tempPage->getNumRecs()) {
 				pVector.push_back(tempPage);
 			}
-			//TODO: Figure out if we are missing any source of information to push into vector
+			
 			Record * readPVec;//Create a temp Record to dump values from pVector
 
 			//Now read all the pages in pVector and sort and put them in rVector
@@ -121,8 +109,8 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 			std::sort(rVector.begin(),rVector.end(),sortOrder);
 
 			//Write the sorted record into pages
-			int pagesWritten=0; //TODO: page_count1
-			Page* wPage =new Page(); //TODO: file_page // temp page to write records to file 
+			int pagesWritten=0; 
+			Page* wPage =new Page(); 
 			for(int i=0;i<rVector.size();i++) {
 				//pageNotFull is also defined above in a different scope, just reusing that variable name here
 				bool pageNotFull = wPage->Append(rVector[i]);
@@ -176,22 +164,22 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	// construct priority queue over sorted runs and dump sorted data into the out pipe
 	priority_queue<Record*,vector<Record*>,sortMergeOrder> pQueue(&sortorder);
 
-	map<Record *,int> mapRecordtoRun; //TODO: m_record
-	off_t pagesInFile=oFile.GetLength(); //TODO: file_length
-	off_t totalRuns; //TODO: no_of_runs
+	map<Record *,int> mapRecordtoRun; 
+	off_t pagesInFile=oFile.GetLength(); 
+	off_t totalRuns; 
 		if(pagesInFile==0) totalRuns=0;
 		else
 			totalRuns=((ceil)((float)(pagesInFile-1)/runlen));
 
-	off_t pagesinLastRun=(pagesInFile-1)-(totalRuns-1)*runlen; //TODO: last_run_pages
+	off_t pagesinLastRun=(pagesInFile-1)-(totalRuns-1)*runlen; 
 	//Find out pages in each run
-	vector<int> pagesInRun(totalRuns); //TODO: page_index
+	vector<int> pagesInRun(totalRuns); 
 
 	//Buffer for Page inside a run
-	vector<Page*> tempPageInRun(totalRuns); //TODO: page_array
+	vector<Page*> tempPageInRun(totalRuns); 
 
 	//index value of current page in a run
-	int pIndex=0; //TODO: page_num
+	int pIndex=0; 
 
 	for(int i=0;i<totalRuns;i++) {
 		tempPageInRun[i]=new Page();
@@ -213,11 +201,11 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	
 	while(!pQueue.empty()) {
 		//push out the (hopefully) minimum record from the priority queue
-		Record* minRecFromQ=pQueue.top(); //TODO: r
+		Record* minRecFromQ=pQueue.top(); 
 		//delete it from the queue
 		pQueue.pop();
 
-		int recBelongsinRun=-10; // TODO: next_rec_run
+		int recBelongsinRun=-10; 
 		//Now try to find the popped record in the map, it should return which run does that record belong to
 		recBelongsinRun=mapRecordtoRun[minRecFromQ];
 		//Delete this record from map and delete the referenced  address too to remove any confusion
@@ -229,8 +217,8 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 			return;
 		}
 
-		Record* findNextRecordinRun = new Record(); //TODO: next
-		bool foundRec=true; //TODO: is_rec_found
+		Record* findNextRecordinRun = new Record(); 
+		bool foundRec=true; 
 		if(!tempPageInRun[recBelongsinRun]->GetFirst(findNextRecordinRun)) {
 			//Making sure we are not on last page
  			if((!(recBelongsinRun==(totalRuns-1)) && pagesInRun[recBelongsinRun]<runlen) || ((recBelongsinRun==(totalRuns-1) && pagesInRun[recBelongsinRun]<pagesinLastRun))){
@@ -260,15 +248,11 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 			pQueue.push(findNextRecordinRun);
 		}
 		mapRecordtoRun[findNextRecordinRun]=recBelongsinRun;
-		//rec_head[next_rec_run]=next;
-
-
-		out.Insert(minRecFromQ); //Put the min priority record onto the pipe
-		//cout<<temp_file<<endl;
+		out.Insert(minRecFromQ); 
 	}
 
 	oFile.Close(); 
-	remove(temp_file); 
+	remove(filename); 
 		
     // finally shut down the out pipe
 	out.ShutDown();
