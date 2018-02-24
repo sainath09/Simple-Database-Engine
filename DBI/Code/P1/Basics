@@ -28,6 +28,7 @@ Mac:
 -   brew install flex
 -   brew install bison
 -   brew link bison --force
+ brew install gdb
 
 How to Run
 Goto main.cc and change file location
@@ -36,7 +37,10 @@ make ./main
 (l_orderkey > 27) AND (l_orderkey < 45) 
 and then press <control-D>
 
+
+(r_regionkey)
 (r_name)
+(s_suppkey)
 (ps_suppkey) AND (ps_partkey)
 (l_shipdate) AND (l_extendedprice) AND (l_quantity)
 
