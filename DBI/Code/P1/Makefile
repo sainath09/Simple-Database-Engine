@@ -9,10 +9,6 @@ endif
 test.out: BigQ.o Pipe.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
 	$(CC) -pthread -o test.out Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o 
 
-main: BigQ.o Pipe.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o
-	$(CC) -o main BigQ.o Pipe.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o 
-	
-
 a1test.out:AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o
 	$(CC) -o a1test.out AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o 
 
@@ -63,6 +59,7 @@ clean:
 	rm -f *.o
 	rm -f *.out
 	rm -f y.tab.c
+	rm -f y.tab.c-e
 	rm -f lex.yy.c
 	rm -f y.tab.h
 	rm -f *.bin
