@@ -18,22 +18,29 @@
 //     return str;
 // }
 
-OrderMaker *orderMaker;
-
-static bool sortOrder(Record* r1,Record* r2){
+class sortOrder{
+	OrderMaker * om;
+public:
+	sortOrder(OrderMaker* omt){
+		om = omt;
+	}
+	bool operator()(Record* r1,Record* r2){
 	ComparisonEngine comp;
-	if(comp.Compare(r1,r2,orderMaker)<0) return true;
+	if(comp.Compare(r1,r2,om)<0) return true;
 	else return false;
 }
+};
 
 class sortMergeOrder{
-
+	OrderMaker* om;
 public:
-	sortMergeOrder(){}
+	sortMergeOrder(OrderMaker* omt){
+		om = omt;
+	}
 
 	bool operator()(Record* r1,Record* r2) {
 		ComparisonEngine comp;
-		if(comp.Compare(r1,r2,orderMaker)<0) return false;
+		if(comp.Compare(r1,r2,om)<0) return false;
 		else return true;
 	}
 };
@@ -47,7 +54,7 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 		return;
 	}
 	//initalizing global orderMaker
-	orderMaker = &sortorder;
+	//orderMaker = &sortorder;
 	//map for the overflow values
 	map<int,Page *> overflow;
 
@@ -64,9 +71,9 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	File oFile; //TODO: f
 	// string metaFile(random_string(12)); 
 	// metaFile+="asdadasdads.dat";
-	string metaFile="aDASsdadasd312SD3121ads.dat";
-	oFile.Open(0, (char *)metaFile.c_str()); //FIXME: Maybe a more elegant way exists to do this, random string maybe
-
+	char temp_file[100];
+	sprintf(temp_file,"temp%d.bin",rand());
+	oFile.Open(0,temp_file); //Tempfile for maintaining sorted run
 	while(1){
 		// read data from in pipe sort them into runlen pages
 		if(in.Remove(&readRecord) && totalPagesinRun<runlen) {
@@ -82,6 +89,7 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 				//Increment number of pages included in this 1 run
 				totalPagesinRun++;
 			}
+		}
 			else { 
 				//In case all reads are over and they didnt fill a single page, 
 				//still add that incomplete page to vector
@@ -103,7 +111,7 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 					delVar(pVector[i]);  
 				}
 				//Using standard sorting algo to sort all the records in the run
-				std::sort(rVector.begin(),rVector.end(),sortOrder);
+				std::sort(rVector.begin(),rVector.end(),sortOrder(&sortorder));
 
 				//Write the sorted record into pages
 				int pagesWritten=0; //TODO: page_count1
@@ -154,12 +162,12 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 				}
 
 			}
-		}
+		
 
 	} //End of while
 
 	// construct priority queue over sorted runs and dump sorted data into the out pipe
-	priority_queue<Record*,vector<Record*>,sortMergeOrder> pQueue;
+	priority_queue<Record*,vector<Record*>,sortMergeOrder> pQueue(&sortorder);
 
 	map<Record *,int> mapRecordtoRun; //TODO: m_record
 	off_t pagesInFile=oFile.GetLength(); //TODO: file_length
@@ -253,7 +261,7 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	}
 
 	oFile.Close(); 
-	remove((char *)metaFile.c_str()); 
+	remove(temp_file); 
 		
     // finally shut down the out pipe
 	out.ShutDown();
