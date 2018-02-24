@@ -36,6 +36,10 @@ make ./main
 (l_orderkey > 27) AND (l_orderkey < 45) 
 and then press <control-D>
 
+(r_name)
+(ps_suppkey) AND (ps_partkey)
+(l_shipdate) AND (l_extendedprice) AND (l_quantity)
+
 
 Git stuff::
 git init
