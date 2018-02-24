@@ -10,7 +10,7 @@ void *producer (void *arg) {
 	int counter = 0;
 
 	DBFile dbfile;
-	dbfile.Open (rel->path ());
+	dbfile.Open (rel->path());
 	cout << " producer: opened DBFile " << rel->path () << endl;
 	dbfile.MoveFirst ();
 

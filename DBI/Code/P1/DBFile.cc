@@ -14,7 +14,7 @@
 DBFile::DBFile () {
 }
 
-int DBFile::Create ( char *f_path, fType f_type, void *startup) {
+int DBFile::Create (const char *f_path, fType f_type, void *startup) {
     //Create a file object
     DBFile DBFile;
     string metaFile(f_path); 
@@ -37,10 +37,10 @@ int DBFile::Create ( char *f_path, fType f_type, void *startup) {
     return AbsDBFile->Create(f_path,f_type,startup);
 }
 
-void DBFile::Load(Schema &f_schema,  char *loadpath) {
+void DBFile::Load (Schema &f_schema, const char *loadpath) {
     AbsDBFile->Load(f_schema,loadpath);
 }
-int DBFile::Open( char *f_path) {
+int DBFile::Open (const char *f_path) {
     ifstream in;
     string metaFile(f_path);
     metaFile += ".METAINF";

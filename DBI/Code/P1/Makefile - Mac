@@ -7,10 +7,10 @@ tag = -n
 endif
 
 test.out: BigQ.o Pipe.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
-	$(CC) -pthread -o test.out Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
+	$(CC) -pthread -o test.out Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o 
 	
 main: BigQ.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o
-	$(CC) -o main BigQ.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o
+	$(CC) -o main BigQ.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o 
 	
 test.o: test.cc
 	$(CC) -g -c test.cc
@@ -56,7 +56,6 @@ clean:
 	rm -f *.o
 	rm -f *.out
 	rm -f y.tab.c
-	rm -f *.c-e
 	rm -f lex.yy.c
 	rm -f y.tab.h
 	rm -f *.bin
