@@ -8,7 +8,7 @@
 //  char *catalog_path = "/Volumes/Data/Padai/DBI/Assignment  1/P1/catalog"; // full path of the catalog file
 
 char *catalog_path = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/catalog"; 
-char *dbfile_dir = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/"; 
+char *dbfile_dir = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/bin/"; 
 char *tpch_dir ="/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/data/"; 
 
 
