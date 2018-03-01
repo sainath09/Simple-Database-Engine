@@ -8,7 +8,9 @@
 #include "DBFile.h"
 #include "AbstractDBFile.h"
 #include "Heap.h"
+#include "Sort.h"
 #include <string>
+#include <stdarg.h>
 #include <fstream>
 #include <iostream>
 DBFile::DBFile () {
@@ -29,8 +31,14 @@ int DBFile::Create (const char *f_path, fType f_type, void *startup) {
             //store type of DBFile .. heap, b+, or anything else in meta
      }
      else {
-         //work for sorted 
-         out<<"sorted";
+         //work for sorted
+         out<<"sorted"<<"\n";
+         SortInfo *sortInfo = (SortInfo *)startup;
+         out<<sortInfo->runLength<<"\n";
+         sortInfo->myOrder->PrintToFile(out);
+         AbsDBFile = new Sort();
+        
+        // out<<&startup->or<<"\n";
      }
      out.close();
      //CALL THE FUNCTION "CREATE" FOR THE HEAPDB OBJECT
@@ -55,7 +63,9 @@ int DBFile::Open (const char *f_path) {
             AbsDBFile = new Heap();
         }
         else if(type == "sorted"){
+             
             cout<<"implemented in sorted DS";
+            AbsDBFile = new Sort();
 
         }
         else {

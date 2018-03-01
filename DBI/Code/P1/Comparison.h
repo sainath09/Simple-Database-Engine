@@ -6,6 +6,7 @@
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
+#include <fstream>
 
 
 // This stores an individual comparison that is part of a CNF
@@ -59,6 +60,9 @@ public:
 
 	// print to the screen
 	void Print ();
+
+	void PrintToFile (ofstream& out);
+	void GetFromFile (ifstream &in);
 };
 
 class Record;
@@ -86,6 +90,7 @@ public:
 
 	// print the comparison structure to the screen
 	void Print ();
+	
 
         // this takes a parse tree for a CNF and converts it into a 2-D
         // matrix storing the same CNF expression.  This function is applicable

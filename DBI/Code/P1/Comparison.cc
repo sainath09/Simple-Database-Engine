@@ -5,7 +5,7 @@
 
 #include "Comparison.h"
 
-    
+
 Comparison::Comparison()
 {
 }
@@ -117,6 +117,36 @@ void OrderMaker :: Print () {
 	}
 }
 
+void OrderMaker :: PrintToFile (ofstream& out) { 
+	//out<< "NumAtts = "<< numAtts<<"\n";
+	out<<numAtts<<"\n";
+	for (int i = 0; i < numAtts; i++)
+	{
+		out<<whichAtts[i]<<"\n";
+		if (whichTypes[i] == Int)
+			out<<"Int\n";
+		else if (whichTypes[i] == Double)
+			out<<"Double\n";
+		else
+			out<<"String\n";
+	}
+}
+void OrderMaker :: GetFromFile(ifstream &in) {
+    string temp;
+	in >> numAtts;
+
+    for (int i =0; i<numAtts; i++) {
+    	 in>> whichAtts[i];
+         getline (in,temp); 
+         if (temp.compare("Int") == 0) {
+             whichTypes[i] = Int;
+         } else if (temp.compare("Double") == 0) {
+             whichTypes[i] = Double;
+         } else if (temp.compare("String") == 0) {
+             whichTypes[i] = String;
+         }
+     }
+}
 
 
 int CNF :: GetSortOrders (OrderMaker &left, OrderMaker &right) {
@@ -175,7 +205,6 @@ int CNF :: GetSortOrders (OrderMaker &left, OrderMaker &right) {
 	}
 	
 	return left.numAtts;
-
 }
 
 
