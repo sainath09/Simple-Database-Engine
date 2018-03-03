@@ -17,11 +17,7 @@ typedef struct SortInfo
 	int runLength;
 } SortInfoDef;
 
-enum Mode
-{
-	READ,
-	WRITE
-} mode;
+typedef enum { READ,WRITE} RWMode;
 
 // stub DBFile header..replace it with your own DBFile.h
 class Sort : virtual public AbstractDBFile
@@ -39,6 +35,7 @@ class Sort : virtual public AbstractDBFile
 	structBigQ *stBigQ;
 	pthread_t diffrentialThread;
 	Heap *heapDB;
+	RWMode rwmode;
 
 	bool buildNewQuery;
 	bool queryBuildable;

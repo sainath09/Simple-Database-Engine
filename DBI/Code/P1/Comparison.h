@@ -8,7 +8,7 @@
 #include "ComparisonEngine.h"
 #include <fstream>
 
-
+using namespace std;
 // This stores an individual comparison that is part of a CNF
 class Comparison {
 

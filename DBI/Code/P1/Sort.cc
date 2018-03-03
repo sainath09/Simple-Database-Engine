@@ -82,39 +82,39 @@ int Sort::Open (const char *f_path) {
         type=sorted;
     else 
         cerr<<"Weird data in .metainf file, file line should read sorted.";
+ 
 
-
-    mode = READ;
+    rwmode = READ;
     //now open the dumb file to the fpath location too.
-    heapDB->Open(f_path);
+    return heapDB->Open(f_path);
 
 }
 
 void Sort::MoveFirst () {
-  if (mode == WRITE) toggleRW();
+  if (rwmode == WRITE) toggleRW();
 
     heapDB->MoveFirst();
 }
 
 int Sort::Close () {
-    if(mode == WRITE) toggleRW();
+    if(rwmode == WRITE) toggleRW();
     return heapDB->Close();
 }
 
 void Sort::Add (Record &rec) {
-	if(mode == READ) toggleRW();
+	if(rwmode == READ) toggleRW();
 
 	iPipe->Insert(&rec);
 }
 
 int Sort::GetNext (Record &fetchme) {
-    if (mode == WRITE) toggleRW();
+    if (rwmode == WRITE) toggleRW();
 	
-    heapDB->GetNext(fetchme);  
+    return heapDB->GetNext(fetchme);  
 }
 
 int Sort::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
-    if (mode == WRITE) {
+    if (rwmode == WRITE) {
         toggleRW();
         buildNewQuery=false;
 		queryBuildable=true; 
@@ -217,8 +217,8 @@ int Sort :: GetNextQuery(Record &fetchme, CNF &cnf, Record &literal)
 }
 
 void Sort::toggleRW(){
-     if(mode == WRITE)  {
-		mode = READ;
+     if(rwmode == WRITE)  {
+		rwmode = READ;
 		iPipe->ShutDown();
 		mergeDB();
         delete stBigQ;
@@ -226,9 +226,9 @@ void Sort::toggleRW(){
         delVar(oPipe);
 		
 		
-	}else if(mode == READ) {
+	}else if(rwmode == READ) {
 
-		mode = WRITE; 
+		rwmode = WRITE; 
 		iPipe = new  (std::nothrow) Pipe(PIPE_BUFFER); 
 		oPipe = new (std::nothrow) Pipe(PIPE_BUFFER);
 		stBigQ = new structBigQ(); 

@@ -6,8 +6,14 @@ ifdef linux
 tag = -n
 endif
 
-test.out: BigQ.o Pipe.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
-	$(CC) -pthread -o test.out Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o 
+test.out: Sort.o BigQ.o Pipe.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
+	$(CC) -pthread -o test.out Sort.o Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o 
+
+a21test.out:AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a21test.o
+	$(CC) -pthread -o a21test.out AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o 
+
+a21test.o: a21test.cc
+	$(CC) -g -c a21test.cc	
 
 a1test.out:AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o
 	$(CC) -o a1test.out AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o 
@@ -17,8 +23,13 @@ a1test.o: a1test.cc
 
 test.o: test.cc
 	$(CC) -g -c test.cc
+
+Sort.o: Sort.cc
+	$(CC) -g -c Sort.cc
+
 Pipe.o : Pipe.cc
 	$(CC)  -g -c Pipe.cc
+	
 BigQ.o : BigQ.cc
 	$(CC) -g -c BigQ.cc
 
