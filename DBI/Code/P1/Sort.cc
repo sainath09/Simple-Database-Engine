@@ -16,6 +16,8 @@
 Sort::Sort () {
   heapDB = new Heap();
     order = new OrderMaker();
+     buildNewQuery=false;
+    queryBuildable = true;
 	
 }
 Sort::~Sort () {
@@ -91,6 +93,8 @@ int Sort::Open (const char *f_path) {
 }
 
 void Sort::MoveFirst () {
+    buildNewQuery=false;
+    queryBuildable = true;
   if (rwmode == WRITE) toggleRW();
 
     heapDB->MoveFirst();
@@ -152,8 +156,8 @@ int Sort::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
   return 0;  // no matching records
 }
 bool Sort::binarySearch(Record& fetchMe,CNF &cnf,Record& literal){
-    off_t start = heapDB->getPageIndex()-1;
-    off_t last = heapDB->getLength()-1;
+    off_t start = heapDB->getPageIndex();
+    off_t last = heapDB->getLength()-2;
     Page* midP = new Page();
     bool recFound = false;
     ComparisonEngine ce;
@@ -185,7 +189,7 @@ bool Sort::binarySearch(Record& fetchMe,CNF &cnf,Record& literal){
         }
     }
     //corner case of having just 2 pages and our record is first of second page
-    if(!recFound && mid < heapDB->getLength()-1){
+    if(!recFound && mid < heapDB->getLength()-2){
         heapDB->getPage(pageBuffer,mid+1);
         if(pageBuffer->GetFirst(&fetchMe) && ce.Compare (&literal, query, &fetchMe,order) == 0){
             recFound=true;
@@ -229,8 +233,8 @@ void Sort::toggleRW(){
 	}else if(rwmode == READ) {
 
 		rwmode = WRITE; 
-		iPipe = new  (std::nothrow) Pipe(PIPE_BUFFER); 
-		oPipe = new (std::nothrow) Pipe(PIPE_BUFFER);
+		iPipe = new Pipe(PIPE_BUFFER); 
+		oPipe = new Pipe(PIPE_BUFFER);
 		stBigQ = new structBigQ(); 
 		stBigQ->iPipe=iPipe;
 		stBigQ->oPipe=oPipe;

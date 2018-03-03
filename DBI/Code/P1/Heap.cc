@@ -115,7 +115,7 @@ int Heap::GetNext(Record &fetchme)
             }
             else{
                 //have nothing to read
-                cout<<"no record to read";
+                cout<<"no record to read"<<endl;
             }
         }
 
@@ -149,13 +149,13 @@ int Heap::GetNext(Record &fetchme)
             rBuffer->MoveToStart();
             returnVal = rBuffer->getRecord(&fetchme);
             if(returnVal == 0){
-                cout<<"should not ever come here. Return value should not be zero . some problem in getrecord"<<endl;
+                cout<<"should not ever come here line 152 : Heap.cc. Return value should not be zero . some problem in getrecord"<<endl;
             }
             currPageInd++;
 
         }
         else{
-            cout<<"should not ever come here";
+            cout<<"should not ever come here line 158 : Heap.cc";
         }
 
     }

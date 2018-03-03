@@ -7,29 +7,27 @@ tag = -n
 endif
 
 test.out: Sort.o BigQ.o Pipe.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
-	$(CC) -pthread -o test.out Sort.o Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o 
+	$(CC) -pthread -o test.out Sort.o Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o -lfl
 
-a21test.out:AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a21test.o
-	$(CC) -pthread -o a21test.out AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o 
+a21test.out:Sort.o Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a21test.o
+	$(CC) -pthread -o Sort.o Pipe.o BigQ.o a21test.out AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o -lfl
+	
+a1test.out:Sort.o BigQ.o Pipe.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o
+	$(CC) -pthread -o a1test.out Sort.o Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o -lfl
 
 a21test.o: a21test.cc
-	$(CC) -g -c a21test.cc	
-
-a1test.out:AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o
-	$(CC) -o a1test.out AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o 
+	$(CC) -g -c a21test.cc
 
 a1test.o: a1test.cc
 	$(CC) -g -c a1test.cc	
 
 test.o: test.cc
 	$(CC) -g -c test.cc
-
 Sort.o: Sort.cc
 	$(CC) -g -c Sort.cc
 
 Pipe.o : Pipe.cc
 	$(CC)  -g -c Pipe.cc
-	
 BigQ.o : BigQ.cc
 	$(CC) -g -c BigQ.cc
 
@@ -59,7 +57,7 @@ Schema.o: Schema.cc
 	
 y.tab.o: Parser.y
 	yacc -d Parser.y
-	sed -i -e "s/  __attribute__ ((__unused__))$\/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" y.tab.c
+	sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
 	g++ -c y.tab.c
 
 lex.yy.o: Lexer.l 
