@@ -207,6 +207,63 @@ int CNF :: GetSortOrders (OrderMaker &left, OrderMaker &right) {
 	return left.numAtts;
 }
 
+int CNF :: genQOrder (OrderMaker &qOrder, OrderMaker &srtInf) {
+
+	//Pay attention to this value at all times, initialize to zero
+	qOrder.numAtts = 0;
+	
+	for(int i=0;i<srtInf.numAtts;i++){
+		//Pick first sortInfo using a for loop.
+		bool attFound=false;
+		//Now pick the values from CNF and iterate over them to find common attrs
+		for (int j = 0; j < numAnds; j++) {
+			//if there are ORs, you cant use this method.
+			if (orLens[j] != 1) continue;
+
+			//If there arent equals you can do it too.
+			if (orList[j][0].op != Equals) 	continue;
+
+			//If there are no literals in the CNF, keep moving
+			if ((orList[j][0].operand1==Left && orList[j][0].operand2 == Right) ||
+				(orList[j][0].operand1==Right && orList[j][0].operand2 == Left)||
+				(orList[j][0].operand1 == Left && orList[j][0].operand2 == Left) ||
+				(orList[j][0].operand2 == Right && orList[j][0].operand1 == Right)) {
+				continue;
+			}
+
+			// Now finally try to match the attributes of CNF with those of the sortinfo ordermaker
+			//This means operand2 is literal
+			if (orList[j][0].operand1 == Left ) {
+				//see if the cnf and sortinfo has the same attr
+				if (orList[j][0].whichAtt1==srtInf.whichAtts[i] ){
+					attFound=true;
+					//include them in qOrder
+					qOrder.whichAtts[qOrder.numAtts]=orList[j][0].whichAtt2;
+					qOrder.whichTypes[qOrder.numAtts++]=orList[j][0].attType;
+					break;
+				}
+			}
+			//This means operand1 is literal
+			else if(orList[j][0].operand2==Left){
+				//see if the cnf and sortinfo has the same attr
+				if(orList[j][0].whichAtt2==srtInf.whichAtts[i]){
+					attFound=true;
+					//include them in qOrder
+					qOrder.whichAtts[qOrder.numAtts]=orList[j][0].whichAtt1;
+					qOrder.whichTypes[qOrder.numAtts++]=orList[j][0].attType;
+					break;
+				}
+			}
+		}
+		//stop making query order where there is a difference in attr for cnf and sortinfo 		
+		if(attFound==false) break;
+
+	} 
+	//Return the length of qOrder. 
+	//If 0 then nothing was found.
+	return qOrder.numAtts;
+
+}
 
 void CNF :: Print () {
 

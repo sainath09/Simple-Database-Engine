@@ -14,193 +14,281 @@
 #include <fstream>
 #include <iostream>
 Sort::Sort () {
-    
+  heapDB = new Heap();
+    order = new OrderMaker();
+	
 }
 Sort::~Sort () {
-    
+    delete heapDB;
+    delete order;
+}
+void* startDifferentialFile (void *arg) {	
+	structBigQ *temp = (structBigQ *) arg;
+	BigQ b_queue(*(temp->iPipe),*(temp->oPipe),*(temp->order),temp->runlen);
 }
 
 int Sort::Create (const char *f_path, fType f_type, void *startup) {
     //open the file with zero
-    refFile->Open(0, (char *)f_path);
+    heapDB->Create(f_path,heap,NULL);
     //typcast startup
     SortInfo *sortInfo = (SortInfo *)startup;
     //Setting up variables for Sort instance
     order = sortInfo->myOrder;
     runLength = sortInfo->runLength; 
     type = f_type;
+    //Needed for the last step of merge
+    fpath = (char *)f_path;
+    
     return 1;
 }
 
 void Sort::Load (Schema &f_schema, const char *loadpath) {
   //
-    FILE *table = fopen((char *)loadpath, "r");
+    FILE *readFile = fopen((char *)loadpath, "r");
     //Check if file is empty
-    if (table == NULL)
+    if (readFile == NULL)
     {
         //throw error
         std::cerr << "File has no records";
-        //exit(1);
     }
     else
     {
         //else read the record and add to page
         Record temp;
-        while (temp.SuckNextRecord(&f_schema, table) == 1)
+        while (temp.SuckNextRecord(&f_schema, readFile) == 1)
         {
-            //Add will automatically assign which page the record gets addedto
+            //Add the record to iPipe
             Add(temp);
         }
-
-        //Add would always leave the last page records in memory
-        //Write those records to another page.
-        //Dumping the memory contents
-        //TODO: fix this
-        off_t currLen = refFile->GetLength();
-        off_t findPage = (currLen == 0) ? 0 : currLen - 1;
-        refFile->AddPage(wBuffer, findPage);
     }
-    //FIXME: DEBUG
+    
 }
+
 int Sort::Open (const char *f_path) {
     //Open a metadata stream based on the path passed downw
-    ifstream in;
+    ifstream inFStream;
     string metaFile(f_path);
     metaFile += ".METAINF";
-    in.open(metaFile.c_str(),ifstream::in);
+    inFStream.open(metaFile.c_str(),ifstream::in);
 
     string line;
-    int tempType;
-	if (in.is_open()) {
-	    in >> tempType; //"sorted"
-	    in >> runLength;// runLength
-        order->GetFromFile(in); //setting up ordermaker
+    string tempType;
+	if (inFStream.is_open()) {
+	    getline(inFStream,tempType); //"sorted"
+	    inFStream >> runLength;// runLength
+        order->GetFromFile(inFStream); //setting up ordermaker
     }
-    type=static_cast<fType>(tempType);
-    mode = READ;
+    if(tempType=="sorted")
+        type=sorted;
+    else 
+        cerr<<"Weird data in .metainf file, file line should read sorted.";
 
+
+    mode = READ;
+    //now open the dumb file to the fpath location too.
+    heapDB->Open(f_path);
 
 }
 
 void Sort::MoveFirst () {
-  if (mode == WRITE) {
-		toggleRW();
-	} else if (mode == READ) {
-		currPageInd = 0;	
-		//return sortedheapfile->MoveFirst();
-	}
+  if (mode == WRITE) toggleRW();
+
+    heapDB->MoveFirst();
 }
 
 int Sort::Close () {
     if(mode == WRITE) toggleRW();
-    return (refFile->Close() < 0) ? 0 : 1;
+    return heapDB->Close();
 }
 
 void Sort::Add (Record &rec) {
-	if(mode == READ) {
-		toggleRW();
-	}
+	if(mode == READ) toggleRW();
+
 	iPipe->Insert(&rec);
 }
 
 int Sort::GetNext (Record &fetchme) {
-off_t heapLength = refFile->GetLength();
-    if(currPageInd == 0){
-        //did not start to read before
-        if(heapLength > 0){
-            currPageInd++;
-            rBuffer->EmptyItOut();
-            refFile->GetPage(rBuffer,currPageInd - 1);
-            rBuffer->MoveToStart();
-        }
-        else{
-            //have nothing in file and wBuffer may contain some data
-            if(wBuffer->getNumRecs() > 0 ){
-                //wBuffer has some records - write it to file and read from there
-                refFile->AddPage(wBuffer,currPageInd);
-                wBuffer->EmptyItOut();
-                rBuffer->EmptyItOut();
-                refFile->GetPage(rBuffer,currPageInd);
-                //make sure first record is boing pointed to
-                rBuffer->MoveToStart();
-                currPageInd++;
-            }
-            else{
-                //have nothing to read
-                cout<<"no record to read";
-            }
-        }
-
-    }
-    //current page is loaded to rBuffer
-    int returnVal = rBuffer->getRecord(&fetchme);
-
-    //if 1 end next here or else read next page to rBuffer
-    heapLength = refFile->GetLength();
-    if(!returnVal){
-        if(currPageInd == heapLength - 1 && wBuffer->getNumRecs() == 0 ){
-            //ran out of pages to read in memory 
-            cout<<"Ran out of records to read"<<endl;
-        }
-        else if(currPageInd == heapLength - 1 && wBuffer->getNumRecs() != 0){
-            //have some records in wBuffer
-            refFile->AddPage(wBuffer,currPageInd);
-            wBuffer->EmptyItOut();
-            rBuffer->EmptyItOut();
-            refFile->GetPage(rBuffer,currPageInd);
-            rBuffer->MoveToStart();
-            returnVal = rBuffer->getRecord(&fetchme);
-            if(returnVal == 0){
-                cout<<"should not ever come here . Return value should not be zero"<<endl;
-            }
-            currPageInd++;
-        }
-        else if(currPageInd < heapLength - 1){
-            rBuffer->EmptyItOut();
-            refFile->GetPage(rBuffer,currPageInd);
-            rBuffer->MoveToStart();
-            returnVal = rBuffer->getRecord(&fetchme);
-            if(returnVal == 0){
-                cout<<"should not ever come here. Return value should not be zero . some problem in getrecord"<<endl;
-            }
-            currPageInd++;
-
-        }
-        else{
-            cout<<"should not ever come here";
-        }
-
-    }
-    return returnVal;
+    if (mode == WRITE) toggleRW();
+	
+    heapDB->GetNext(fetchme);  
 }
 
 int Sort::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
+    if (mode == WRITE) {
+        toggleRW();
+        buildNewQuery=false;
+		queryBuildable=true; 
+    }
 
+    if (queryBuildable && buildNewQuery){
+        GetNextQuery(fetchme, cnf, literal);
+    }
+    else if (queryBuildable && !buildNewQuery){
+        buildNewQuery = true;
+        int search;
+        query=new OrderMaker;
+        if(cnf.genQOrder(*query,*order)>0)
+        {  
+            search=binarySearch(fetchme,cnf,literal);
+            ComparisonEngine engine;
+            if(search)
+            {
+                if (engine.Compare (&fetchme, &literal, &cnf))          
+                    return 1;
+                else
+                {
+                    GetNextQuery(fetchme, cnf, literal);
+                }
+            }
+            else
+                return 0;
+        }else{
+            queryBuildable=false;
+			return heapDB->GetNext(fetchme, cnf, literal);	
+        }
+    }
+    else if (!queryBuildable)
+        return heapDB->GetNext(fetchme, cnf, literal);	
+  return 0;  // no matching records
+}
+bool Sort::binarySearch(Record& fetchMe,CNF &cnf,Record& literal){
+    off_t start = heapDB->getPageIndex()-1;
+    off_t last = heapDB->getLength()-1;
+    Page* midP = new Page();
+    bool recFound = false;
+    ComparisonEngine ce;
+    off_t mid;
+    while(start<last){
+        mid = (start+last)/2;
+        heapDB->getPage(midP,mid);
+        if(midP->getRecord(&fetchMe)){ //FIXME: get record instead of get first
+            if(ce.Compare (&literal, query, &fetchMe,order) <= 0) last = mid;
+            else{
+                start = mid;
+                if(start == last -1){
+                    heapDB->getPage(midP,last);
+                    midP->getRecord(&fetchMe); //FIXME: get record instead of get first
+                    if (ce.Compare (&literal, query, &fetchMe,order) > 0) mid=last;
+					break;
+                }
+            }
+        }
+        else break;
+    }
+    //our record that is needed is in mid page 
+    heapDB->getPage(pageBuffer,mid);
+    while(pageBuffer->getRecord(&fetchMe)){//FIXME: get record instead of get first
+        if(ce.Compare (&literal, query, &fetchMe,order) == 0 ){
+            recFound=true;
+            heapDB->setPageIndex(mid);
+            break;
+        }
+    }
+    //corner case of having just 2 pages and our record is first of second page
+    if(!recFound && mid < heapDB->getLength()-1){
+        heapDB->getPage(pageBuffer,mid+1);
+        if(pageBuffer->GetFirst(&fetchMe) && ce.Compare (&literal, query, &fetchMe,order) == 0){
+            recFound=true;
+            heapDB->setPageIndex(mid+1);
+        }
+    }
+    return recFound;
+}
+int Sort :: GetNextQuery(Record &fetchme, CNF &cnf, Record &literal)
+{ 
+    ComparisonEngine engine;
+    while(true){
+        if(pageBuffer->getRecord(&fetchme)) //FIXME: changed from getFirst to getRecord
+        {         
+            if(engine.Compare (&literal, query, &fetchme,order) ==0){
+                if (engine.Compare (&fetchme, &literal, &cnf)) return 1;
+            }
+            else return 0;
+        }
+        else{
+            int nextPage =heapDB->getPageIndex()+1;
+            heapDB->setPageIndex(nextPage);
+            if(nextPage<heapDB->getLength()-1) 
+                heapDB->getPage(pageBuffer,nextPage);          
+            else              
+                return 0;
+        }
+    }
 }
 
 void Sort::toggleRW(){
-if(mode == READ) {
-		//cout<<"in reading"<<endl;
-		mode = WRITE;
-		iPipe = new  (std::nothrow) Pipe(PIPE_BUFFER); 
-		oPipe = new (std::nothrow) Pipe(PIPE_BUFFER);
-		util = new bigq_util(); 
-		util->in=iPipe;
-		util->out=oPipe;
-		util->sort_order=order;
-		util->run_len=runLength;
-		pthread_create (&thread1, NULL,run_q, (void*)util);
-	}
-	else if(mode == WRITE)  {
-		//cout<<"in writing"<<endl;
+     if(mode == WRITE)  {
 		mode = READ;
 		iPipe->ShutDown();
-		//Merge_with_q();
-		Merge();
-        delete util;
+		mergeDB();
+        delete stBigQ;
         delVar(iPipe);
         delVar(oPipe);
 		
 		
+	}else if(mode == READ) {
+
+		mode = WRITE; 
+		iPipe = new  (std::nothrow) Pipe(PIPE_BUFFER); 
+		oPipe = new (std::nothrow) Pipe(PIPE_BUFFER);
+		stBigQ = new structBigQ(); 
+		stBigQ->iPipe=iPipe;
+		stBigQ->oPipe=oPipe;
+		stBigQ->order=order;
+		stBigQ->runlen=runLength; 
+		pthread_create (&diffrentialThread, NULL, startDifferentialFile, (void*)stBigQ);
 	}
+	
+}
+void Sort::mergeDB(){
+    iPipe->ShutDown();
+    Record file,out;
+    ComparisonEngine cmp;
+    bool flagO = false;
+    flagO=oPipe->Remove(&out);
+    bool flagF=false;
+    Heap * resultHeap;
+    
+    //Create a dump file
+    string metaFile(fpath);
+    metaFile += ".DUMP";
+    char *rFileName = (char *)metaFile.c_str();
+
+    resultHeap->Create(rFileName, heap, NULL);
+
+    if(heapDB->isEmpty()&&flagO){
+        //Add that first record in there
+        heapDB->Add(out);
+		while(oPipe->Remove(&out)) {
+			  heapDB->Add(out);
+		}
+        //write the last records from wbuffer to the Heaptoo
+       heapDB->wBuffertoPage();
+		
+    }
+    else if(!flagO){
+        //helps cut down computation
+    }
+    else{
+        heapDB->MoveFirst();
+        flagF = heapDB->GetNext(file);
+        //already have value in out
+        //Implement simple 2 way merge.
+        while (flagF || flagO){
+            if (!flagF || (flagO && cmp.Compare(&file, &out, order) > 0)) {
+                resultHeap->Add(out);
+                flagO = oPipe->Remove(&out);
+            } else if (!flagO || (flagF && cmp.Compare(&file, &out, order) <= 0)) {
+                resultHeap->Add(file);
+                flagF = GetNext(file);
+            } 
+
+        }//end of while
+        delete heapDB;
+		//Rename tmp fill
+		rename(rFileName,fpath);
+		heapDB = resultHeap;
+
+    }//end of else
+
 }

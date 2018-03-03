@@ -178,6 +178,33 @@ int Heap::GetNext(Record &fetchme, CNF &cnf, Record &literal)
     }
     return (int)compFlag; //FIXME: try return compFlag;
 }
+
+bool Heap::isEmpty(){
+	return (wBuffer->getNumRecs() == 0 && rBuffer->getNumRecs() == 0 && refFile->GetLength() == 0 );
+}
+
+void Heap::wBuffertoPage(){
+	int curlen = refFile->GetLength();
+	int tempNo = curlen==0?0:curlen-1;
+	refFile->AddPage(wBuffer, tempNo);
+    wBuffer->EmptyItOut();
+}
+
+int Heap::getPageIndex(){
+    return currPageInd;
+}
+void Heap::setPageIndex(int newPageIdx){
+    currPageInd = newPageIdx;
+}
+
+void Heap::getPage(Page * temp,int pageIdx){
+    refFile->GetPage(temp,pageIdx);
+}
+
+off_t Heap::getLength(){
+    return refFile->GetLength(); 
+}
+
 Heap::~Heap()
 {
     //DESTROY THE OBJECT CREATE ABOVE

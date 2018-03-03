@@ -87,6 +87,7 @@ public:
 	// only if it is impossible to determine an acceptable ordering
 	// for the given comparison
 	int GetSortOrders (OrderMaker &left, OrderMaker &right);
+	int genQOrder (OrderMaker &left, OrderMaker &right);
 
 	// print the comparison structure to the screen
 	void Print ();

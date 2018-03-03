@@ -26,6 +26,12 @@ public:
 	void Add (Record &addme);
 	int GetNext (Record &fetchme);
 	int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+	bool isEmpty ();
+	void wBuffertoPage();
+	int getPageIndex();
+	off_t getLength();
+	void setPageIndex(int newPageIdx);
+	void getPage(Page * temp,int pageIdx);
 
 };
 #endif

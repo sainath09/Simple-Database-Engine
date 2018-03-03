@@ -15,6 +15,15 @@
 #define delVar(x) {delete x; x = NULL;}
 using namespace std;
 
+typedef struct {
+	
+	OrderMaker* order;
+	int runlen;
+	Pipe *iPipe;
+	Pipe *oPipe;
+} structBigQ;
+
+
 class BigQ {
 
 
