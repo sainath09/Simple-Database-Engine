@@ -1,11 +1,4 @@
 
-// #include "TwoWayList.h"
-//#include "Record.h"
-//#include "Schema.h"
-//#include "File.h"
-//#include "Comparison.h"
-//#include "ComparisonEngine.h"
-
 #include "AbstractDBFile.h"
 #include "Heap.h"
 #include "Sort.h"
@@ -247,19 +240,15 @@ void Sort::toggleRW(){
 }
 void Sort::mergeDB(){
     iPipe->ShutDown();
+    char *rFileName = "fbvjd.cadx";
+    Heap resultHeap;
+    resultHeap.Create(rFileName, heap, NULL);
     Record file,out;
     ComparisonEngine cmp;
     bool flagO = false;
     flagO=oPipe->Remove(&out);
     bool flagF=false;
-    Heap * resultHeap;
     
-    //Create a dump file
-    
-    char *rFileName = "fbvjd.cadx";
-
-    resultHeap->Create(rFileName, heap, NULL);
-
     if(heapDB->isEmpty()&&flagO){
         //Add that first record in there
         heapDB->Add(out);
@@ -280,18 +269,20 @@ void Sort::mergeDB(){
         //Implement simple 2 way merge.
         while (flagF || flagO){
             if (!flagF || (flagO && cmp.Compare(&file, &out, order) > 0)) {
-                resultHeap->Add(out);
+                resultHeap.Add(out);
                 flagO = oPipe->Remove(&out);
             } else if (!flagO || (flagF && cmp.Compare(&file, &out, order) <= 0)) {
-                resultHeap->Add(file);
+                resultHeap.Add(file);
                 flagF = GetNext(file);
             } 
 
         }//end of while
         delete heapDB;
 		//Rename tmp fill
+        //cout<<rFileName<<" "<<fpath<<endl;
 		rename(rFileName,fpath);
-		heapDB = resultHeap;
+        //cout<<rFileName<<
+		heapDB = &resultHeap;
 
     }//end of else
 
