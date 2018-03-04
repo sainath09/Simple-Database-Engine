@@ -199,6 +199,7 @@ void Heap::setPageIndex(int newPageIdx){
 
 void Heap::getPage(Page * temp,int pageIdx){
     refFile->GetPage(temp,pageIdx);
+    temp->MoveToStart();
 }
 
 off_t Heap::getLength(){

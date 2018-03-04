@@ -11,6 +11,7 @@ Sort::Sort () {
     order = new OrderMaker();
      buildNewQuery=false;
     queryBuildable = true;
+    pageBuffer= new Page();
 	
 }
 Sort::~Sort () {
@@ -151,11 +152,11 @@ int Sort::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 }
 bool Sort::binarySearch(Record& fetchMe,CNF &cnf,Record& literal){
     off_t start = heapDB->getPageIndex();
-    off_t last = heapDB->getLength()-2;
+    off_t last = (heapDB->getLength()==0)?0:heapDB->getLength()-2;
     Page* midP = new Page();
     bool recFound = false;
     ComparisonEngine ce;
-    off_t mid;
+    off_t mid = (start+last)/2;
     while(start<last){
         mid = (start+last)/2;
         heapDB->getPage(midP,mid);
@@ -181,11 +182,12 @@ bool Sort::binarySearch(Record& fetchMe,CNF &cnf,Record& literal){
             heapDB->setPageIndex(mid);
             break;
         }
-    }
+    } 
+    off_t temp = (heapDB->getLength()==0)?0:heapDB->getLength()-2;
     //corner case of having just 2 pages and our record is first of second page
-    if(!recFound && mid < heapDB->getLength()-2){
+    if(!recFound && mid < temp){
         heapDB->getPage(pageBuffer,mid+1);
-        if(pageBuffer->GetFirst(&fetchMe) && ce.Compare (&literal, query, &fetchMe,order) == 0){
+        if(pageBuffer->getRecord(&fetchMe) && ce.Compare (&literal, query, &fetchMe,order) == 0){
             recFound=true;
             heapDB->setPageIndex(mid+1);
         }
