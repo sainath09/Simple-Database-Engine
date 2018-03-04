@@ -39,7 +39,7 @@ int Sort::Create (const char *f_path, fType f_type, void *startup) {
     runLength = sortInfo->runLength; 
     type = f_type;
     //Needed for the last step of merge
-    fpath = (char *)f_path;
+    fpath = f_path;
     
     return 1;
 }
@@ -87,6 +87,7 @@ int Sort::Open (const char *f_path) {
  
 
     rwmode = READ;
+    fpath = f_path;
     //now open the dumb file to the fpath location too.
     return heapDB->Open(f_path);
 
@@ -254,9 +255,8 @@ void Sort::mergeDB(){
     Heap * resultHeap;
     
     //Create a dump file
-    string metaFile(fpath);
-    metaFile += ".DUMP";
-    char *rFileName = (char *)metaFile.c_str();
+    
+    char *rFileName = "fbvjd.cadx";
 
     resultHeap->Create(rFileName, heap, NULL);
 

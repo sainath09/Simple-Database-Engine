@@ -26,7 +26,7 @@ class Sort : virtual public AbstractDBFile
 	OrderMaker *order; // may come from startup or meta file; need to differentiate
 	int runLength;
 	fType type;
-	char *fpath;
+	const char *fpath;
 
 	Page *pageBuffer;
 	Pipe *iPipe;
