@@ -281,6 +281,7 @@ void Sort::mergeDB(){
 
         }//end of while
         delete heapDB;
+        resultHeap.wBuffertoPage();
 		//Rename tmp fill
         //cout<<rFileName<<" "<<fpath<<endl;
 		rename(rFileName,fpath);
