@@ -2,6 +2,7 @@
 #include "AbstractDBFile.h"
 #include "Heap.h"
 #include "Sort.h"
+#include "DBFile.h"
 #include <string>
 #include <stdarg.h>
 #include <fstream>
@@ -275,7 +276,7 @@ void Sort::mergeDB(){
                 flagO = oPipe->Remove(&out);
             } else if (!flagO || (flagF && cmp.Compare(&file, &out, order) <= 0)) {
                 resultHeap.Add(file);
-                flagF = GetNext(file);
+                flagF = heapDB->GetNext(file);
             } 
 
         }//end of while
