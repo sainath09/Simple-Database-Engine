@@ -97,8 +97,9 @@ void Sort::MoveFirst () {
 }
 
 int Sort::Close () {
-    if(rwmode == WRITE) toggleRW();
-    else return heapDB->Close();
+   if(rwmode == WRITE) toggleRW();
+   //pthread_join(diffrentialThread,NULL);
+   return heapDB->Close();
 }
 
 void Sort::Add (Record &rec) {
@@ -108,8 +109,12 @@ void Sort::Add (Record &rec) {
 }
 
 int Sort::GetNext (Record &fetchme) {
-    if (rwmode == WRITE) toggleRW();
-	
+    buildNewQuery=false;
+		queryBuildable=true;
+    if (rwmode == WRITE) {
+         
+        toggleRW();
+    }
     return heapDB->GetNext(fetchme);  
 }
 
@@ -161,13 +166,13 @@ bool Sort::binarySearch(Record& fetchMe,CNF &cnf,Record& literal){
     while(start<last){
         mid = (start+last)/2;
         heapDB->getPage(midP,mid);
-        if(midP->getRecord(&fetchMe)){ //FIXME: get record instead of get first
+        if(midP->getRecord(&fetchMe)){ 
             if(ce.Compare (&literal, query, &fetchMe,order) <= 0) last = mid;
             else{
                 start = mid;
                 if(start == last -1){
                     heapDB->getPage(midP,last);
-                    midP->getRecord(&fetchMe); //FIXME: get record instead of get first
+                    midP->getRecord(&fetchMe); 
                     if (ce.Compare (&literal, query, &fetchMe,order) > 0) mid=last;
 					break;
                 }
@@ -177,7 +182,8 @@ bool Sort::binarySearch(Record& fetchMe,CNF &cnf,Record& literal){
     }
     //our record that is needed is in mid page 
     heapDB->getPage(pageBuffer,mid);
-    while(pageBuffer->getRecord(&fetchMe)){//FIXME: get record instead of get first
+    
+    while(pageBuffer->getRecord(&fetchMe)){
         if(ce.Compare (&literal, query, &fetchMe,order) == 0 ){
             recFound=true;
             heapDB->setPageIndex(mid);
@@ -199,7 +205,7 @@ int Sort :: GetNextQuery(Record &fetchme, CNF &cnf, Record &literal)
 { 
     ComparisonEngine engine;
     while(true){
-        if(pageBuffer->getRecord(&fetchme)) //FIXME: changed from getFirst to getRecord
+        if(pageBuffer->getRecord(&fetchme)) 
         {         
             if(engine.Compare (&literal, query, &fetchme,order) ==0){
                 if (engine.Compare (&fetchme, &literal, &cnf)) return 1;
@@ -222,7 +228,9 @@ void Sort::toggleRW(){
 		rwmode = READ;
 		iPipe->ShutDown();
 		mergeDB();
+        pthread_join(diffrentialThread,NULL);
         delete stBigQ;
+        
         delVar(iPipe);
         delVar(oPipe);
 		
@@ -244,7 +252,7 @@ void Sort::toggleRW(){
 void Sort::mergeDB(){
     iPipe->ShutDown();
     char *rFileName = "fbvjd.cadx";
-    Heap resultHeap;
+    
     resultHeap.Create(rFileName, heap, NULL);
     Record file,out;
     ComparisonEngine cmp;
@@ -284,9 +292,9 @@ void Sort::mergeDB(){
         resultHeap.wBuffertoPage();
 		//Rename tmp fill
         //cout<<rFileName<<" "<<fpath<<endl;
-		rename(rFileName,fpath);
+		rFileName = (char *)fpath;
         //cout<<rFileName<<
-		heapDB = &resultHeap;
+		heapDB = &(resultHeap);
 
     }//end of else
 

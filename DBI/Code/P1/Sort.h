@@ -35,6 +35,7 @@ class Sort : virtual public AbstractDBFile
 	structBigQ *stBigQ;
 	pthread_t diffrentialThread;
 	Heap *heapDB;
+	Heap resultHeap;
 	RWMode rwmode;
 
 	bool buildNewQuery;

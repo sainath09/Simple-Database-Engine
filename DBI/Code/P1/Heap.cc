@@ -24,6 +24,7 @@ Heap::Heap()
 int Heap::Create(const char *f_path, fType file_type,void *startup)
 {
     //JUST RUN THE HEAP->OPEN WITH ZERO FLAG ON REFFILE
+    type = heap;
     refFile->Open(0, (char *)f_path);
     return 1;
 }
@@ -174,9 +175,9 @@ int Heap::GetNext(Record &fetchme, CNF &cnf, Record &literal)
             compFlag = (bool)engine.Compare(&fetchme, &literal, &cnf);
         }
         else
-            return 0; //FIXME: try return false;
+            return 0; 
     }
-    return (int)compFlag; //FIXME: try return compFlag;
+    return (int)compFlag; 
 }
 
 bool Heap::isEmpty(){
