@@ -16,13 +16,13 @@ using namespace std;
 // char *dbfile_dir = ""; 
 // char *tpch_dir ="/cise/tmp/dbi_sp11/DATA/1G/"; 
 
-char *catalog_path = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/catalog"; 
-char *dbfile_dir = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/"; 
-char *tpch_dir ="/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/data/"; 
+// char *catalog_path = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/catalog"; 
+// char *dbfile_dir = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/"; 
+// char *tpch_dir ="/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/data/"; 
 
-// char *catalog_path = "/home/kps/DBI/DatabaseImplementation/DBI/Code/P1/catalog"; 
-// char *dbfile_dir = "/home/kps/DBI/DatabaseImplementation/DBI/Code/P1/"; 
-// char *tpch_dir ="/home/kps/DBI/DatabaseImplementation/DBI/Code/P1/data/";
+char *catalog_path = "/home/kps/DBI/DatabaseImplementation/DBI/Code/P1/catalog"; 
+char *dbfile_dir = "/home/kps/DBI/DatabaseImplementation/DBI/Code/P1/"; 
+char *tpch_dir ="/home/kps/DBI/DatabaseImplementation/DBI/Code/P1/data/";
 
 
 

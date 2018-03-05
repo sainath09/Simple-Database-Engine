@@ -3,13 +3,15 @@
 #include "a1test.h"
 
 // make sure that the file path/dir information below is correct
-//  char *dbfile_dir = "/Volumes/Data/Padai/DBI/Assignment  1/P1/"; // dir where binary heap files should be stored
-//  char *tpch_dir ="/Volumes/Data/Padai/DBI/Assignment  1/P1/data/"; // dir where dbgen tpch files (extension *.tbl) can be found
-//  char *catalog_path = "/Volumes/Data/Padai/DBI/Assignment  1/P1/catalog"; // full path of the catalog file
 
-char *catalog_path = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/catalog"; 
-char *dbfile_dir = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/bin/"; 
-char *tpch_dir ="/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/data/"; 
+// char *catalog_path = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/catalog"; 
+// char *dbfile_dir = "/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/bin/"; 
+// char *tpch_dir ="/Volumes/Data/OneDrive/Padai/Semester/DBI/Code/P1/data/"; 
+
+char *catalog_path = "/home/kps/DBI/DatabaseImplementation/DBI/Code/P1/catalog"; 
+char *dbfile_dir = "/home/kps/DBI/DatabaseImplementation/DBI/Code/P1/"; 
+char *tpch_dir ="/home/kps/DBI/DatabaseImplementation/DBI/Code/P1/data/";
+
 
 
 using namespace std;
