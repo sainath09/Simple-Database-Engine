@@ -98,7 +98,7 @@ void Sort::MoveFirst () {
 
 int Sort::Close () {
     if(rwmode == WRITE) toggleRW();
-    return heapDB->Close();
+    else return heapDB->Close();
 }
 
 void Sort::Add (Record &rec) {
