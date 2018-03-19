@@ -6,14 +6,15 @@ ifdef linux
 tag = -n
 endif
 
-test.out: Sort.o BigQ.o Pipe.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
-	$(CC) -pthread -o test.out Sort.o Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o -lfl
+test.out: RelOp.o  Sort.o BigQ.o Pipe.o Function.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
+	$(CC) -pthread -o test.out RelOp.o  Sort.o Pipe.o BigQ.o Function.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o -lfl
 
-a21test.out:Sort.o Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a21test.o
+a21test.out:Sort.o  Pipe.o BigQ.o AbstractDBFile.o Function.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a21test.o
 	$(CC) -pthread -o Sort.o Pipe.o BigQ.o a21test.out AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o -lfl
 	
 a1test.out:Sort.o BigQ.o Pipe.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o
 	$(CC) -pthread -o a1test.out Sort.o Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o -lfl
+
 
 a21test.o: a21test.cc
 	$(CC) -g -c a21test.cc
@@ -23,14 +24,14 @@ a1test.o: a1test.cc
 
 test.o: test.cc
 	$(CC) -g -c test.cc
+RelOp.o: RelOp.cc
+	$(CC) -g -c RelOp.cc
 Sort.o: Sort.cc
 	$(CC) -g -c Sort.cc
-
 Pipe.o : Pipe.cc
 	$(CC)  -g -c Pipe.cc
 BigQ.o : BigQ.cc
 	$(CC) -g -c BigQ.cc
-
 Heap.o: Heap.cc
 	$(CC) -g -c Heap.cc
 
