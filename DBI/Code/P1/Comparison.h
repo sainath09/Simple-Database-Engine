@@ -63,6 +63,10 @@ public:
 
 	void PrintToFile (ofstream& out);
 	void GetFromFile (ifstream &in);
+	//added by kps:
+	void getAttrs(int arr[]);
+	int getNumAtts(); // getter for  number of atts
+	
 };
 
 class Record;

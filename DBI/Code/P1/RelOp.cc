@@ -166,8 +166,6 @@ void DuplicateRemoval::Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema){
 	stduprem->outPipe = &outPipe;
 	stduprem->mySchema = &mySchema;
 	pthread_create(&thread,NULL,dupRemFunc,(void *)stduprem);
-
-
 }
 
 void DuplicateRemoval::WaitUntilDone () {
@@ -177,30 +175,184 @@ void DuplicateRemoval::WaitUntilDone () {
 void DuplicateRemoval::Use_n_Pages (int runlen) {
 
 }
+void* sumFunc(void* args){
+	stSum* stsum = (stSum *)args;
+	Pipe* inPipe = stsum->inPipe;
+	Pipe* outPipe = stsum->outPipe;
+	Function* computeMe = stsum->computeMe;
+	int temp_int = 0;
+	int sumInt = 0;
+	double temp_double = 0.0;
+	double sumDouble = 0.0;
+	Record tempRec;
+	Attribute attr;
+	bool FLAG = true;
+	attr.name = (char *)"sum";
+	while(inPipe->Remove(&tempRec)){
+		Type t = computeMe->Apply(tempRec,temp_int,temp_double);
+		if(FLAG){
+			if(t == Int) attr.myType = Int;
+			else if(t == Double) attr.myType = Double;
+			FLAG  = false;
+		}
+		if(t == Double){
+			sumDouble += temp_double;
+		}
+		else if( t == Int){
+			sumInt += temp_int;			
+		}
+		else { 
+			cerr<<"Invalid type return from computeME->apply encountered in Sum thread func "<<endl;
+		}
+	}
+	char s[15];
+	if(attr.myType == Int){
+		sprintf(s,"%d|",sumInt);
+	}
+	else if(attr.myType == Double){
+		sprintf(s,"%f|",sumDouble);
+	}
+	else { 
+		cerr<<"Invalid type return from computeME->apply encountered in Sum thread func "<<endl;
+	}
+	Schema tempSch("schsum", 1, &attr);
+	tempRec.ComposeRecord(&tempSch,(const char *)&s[0]);
+	outPipe->Insert(&tempRec);
+	outPipe->ShutDown();
+	delVar(attr.name); //FIXME: check for error here.
 
-// void Sum::Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe){
-// }
+}
+void Sum::Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe){
+	stSum* stsum = new stSum();
+	stsum->inPipe = &inPipe;
+	stsum->outPipe = &outPipe;
+	stsum->computeMe = &computeMe;
+	pthread_create(&thread,NULL,sumFunc,(void *)stsum);
+}
 
-// void Sum::WaitUntilDone () {
-// 	 pthread_join (thread, NULL);
-// }
+void Sum::WaitUntilDone () {
+	 pthread_join (thread, NULL);
+}
 
-// void Sum::Use_n_Pages (int runlen) {
+void Sum::Use_n_Pages (int runlen) {
 
-// }
+}
+void * grpbyFunc(void * args){
+	stGroupBy* stgby = (stGroupBy*)args;
+	Pipe* inPipe = stgby->inPipe;
+	Pipe* outPipe = stgby->outPipe;
+	OrderMaker* groupAtts = stgby->groupAtts;
+	Function* computeMe = stgby->computeMe;
+	int attArray[MAX_ANDS];
+	groupAtts->getAttrs(attArray);
+	int gbyNumAtts = groupAtts->getNumAtts();
+	int* gbyAList = new int[MAX_ANDS + 1];
 
+	for(int i = 0;i<gbyNumAtts  +1;i++){
+		if(i == 0) gbyAList[i] = 0;
+		else gbyAList[i] = attArray[i-1];
+	}
+	
+	Record tempRec;
+	Record tempRec2;
+	Attribute attr;
+	int temp_int = 0;
+	int sumInt = 0;
+	double temp_double = 0.0;
+	double sumDouble = 0.0;
+	attr.name = "sum";
+	bool FLAG = true;
+	int currNumAtts = 0;
+	char s[100];
+	ComparisonEngine ce;
+	Schema tempsch("sum", 1, &attr);
+	while(inPipe->Remove(&tempRec)){
+		Type t = computeMe->Apply(tempRec,temp_int,temp_double);
+		if(FLAG){
+			if(t == Int) {
+				attr.myType = Int;
+				sumInt += temp_int;	
+			}
+			else if(t == Double) {
+				attr.myType = Double;
+				sumDouble += temp_double;
+			}
+			FLAG  = false;
+			currNumAtts = tempRec.getNumAtts();
+			//tempRec2.Consume(&tempRec);
+		}
+		else{
+			if(!ce.Compare(&tempRec2,&tempRec,groupAtts)){
+				if(t == Double){
+				sumDouble += temp_double;
+				}
+				else if( t == Int){
+					sumInt += temp_int;			
+				}
+				else { 
+					cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
+				}
 
-// void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe);{
+			}
+			else{
+				
+				if(attr.myType == Int){
+					sprintf(s,"%d|",sumInt);
+					sumInt = temp_int;
+				}
+				else if(attr.myType == Double){
+					sprintf(s,"%f|",sumDouble);
+					sumDouble = temp_double;
+				}
+				else { 
+					cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
+				}
+				//FIXME: s should be cleared before this.
+				Record sumRec;
+				Record resRec;
+				sumRec.ComposeRecord(&tempsch,(const char *) &s[0]);
+				tempRec2.Project (attArray, gbyNumAtts, currNumAtts);
+				resRec.MergeRecords (&sumRec, &tempRec2, 1, gbyNumAtts, gbyAList, gbyNumAtts+1, 1);
+				outPipe->Insert(&resRec);
 
-// }
+			}
+		}
+		tempRec2.Consume(&tempRec);
+	}
 
-// void GroupBy::WaitUntilDone () {
-// 	 pthread_join (thread, NULL);
-// }
+	if(attr.myType == Int) sprintf(s,"%d|",sumInt);
+	else if(attr.myType == Double) sprintf(s,"%f|",sumDouble);
+	else { 
+		cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
+	}
+	//FIXME: s should be cleared before this.
+	Record sumRec;
+	Record resRec;
+	sumRec.ComposeRecord(&tempsch,(const char *) &s[0]);
+	tempRec2.Project (attArray, gbyNumAtts, currNumAtts);
+	resRec.MergeRecords (&sumRec, &tempRec2, 1, gbyNumAtts, gbyAList, gbyNumAtts+1, 1);
+	outPipe->Insert(&resRec);
+	outPipe->ShutDown();
+	delVar(attr.name);
+	delete []gbyAList;
+}
 
-// void GroupBy::Use_n_Pages (int runlen) {
+void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe){
+	stGroupBy* stgby = new stGroupBy();
+	stgby->inPipe = &inPipe;
+	stgby->outPipe = &outPipe;
+	stgby->groupAtts = &groupAtts;
+	stgby->computeMe = &computeMe;
+	pthread_create(&thread,NULL,grpbyFunc,(void*)stgby);
+}
 
-// }
+void GroupBy::WaitUntilDone () {
+	 pthread_join (thread, NULL);
+}
+
+void GroupBy::Use_n_Pages (int runlen) {
+
+}
 
 
 

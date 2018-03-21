@@ -131,6 +131,18 @@ void OrderMaker :: PrintToFile (ofstream& out) {
 			out<<"String\n";
 	}
 }
+
+
+//added by KPS:
+void OrderMaker::getAttrs(int arr[]){ //FIXME: should be int &arr[]
+	for(int i = 0;i<numAtts;i++){
+		arr[i] = whichAtts[i];
+	}
+
+}
+int OrderMaker::getNumAtts() {
+	return numAtts;
+}
 void OrderMaker :: GetFromFile(ifstream &in) {
     string temp;
 	in >> numAtts;

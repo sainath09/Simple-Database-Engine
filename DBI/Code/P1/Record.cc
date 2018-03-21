@@ -521,6 +521,6 @@ void Record :: PrintToFile(FILE* outFile,Schema * mySchema){
 	// cout << "\n";
 
 }
-
-
-
+int Record::getNumAtts(){
+	return (((int *) bits)[1])/sizeof(int) - 1;
+}
