@@ -1,5 +1,10 @@
 #include "RelOp.h"
 
+void *runBigqFunc(void * args){
+	structBigQ *t = (structBigQ *) args;
+	BigQ queue(*(t->iPipe),*(t->oPipe),*(t->order),t->runlen);
+} 
+
 void* SelFileFunc(void* args){
 	Record tempRec;
 	ComparisonEngine ce;
@@ -111,36 +116,107 @@ void* joinFunc(void * args){
 	Pipe * outPipe=stj->outPipe ;
 	CNF *selOp=stj->selOp ;
 	Record *literal=stj->literal ;
-	
+	pthread_t threadLeft,threadRight;
 	OrderMaker omL,omR;
 	Pipe *bqL = new Pipe(PIPE_BUFFER);
 	Pipe *bqR = new Pipe(PIPE_BUFFER);
-	Record tempR,tempL;
+	Record tempR,tempL,resRec;
 	ComparisonEngine ce;
-
+	int FLAG_L = 0;
+	int FLAG_R = 0;
 	int commonAtts = selOp->GetSortOrders(omL,omR);
 
 	if(commonAtts<1){
 		//Block Nested as there are no common attributes
-
-
+		vector<Record *> rightRec;
+		FLAG_L = inPipeL->Remove(&tempL);
+		FLAG_R = inPipeR->Remove(&tempR);
+		int attrL = tempL.getNumAtts();
+		int attrR = tempR.getNumAtts();		
+		int* resultAttr = new int[attrL + attrR];
+		for(int i = 0;i<attrL;i++) resultAttr[i] = i;
+		for(int j = 0;j<attrR;j++) resultAttr[attrL + j] = j;
+		while(FLAG_R){
+			Record temp;
+			temp.Consume(&temp);
+			FLAG_R = inPipeR->Remove(&tempR);
+			rightRec.push_back(&temp);
+		}
+		while(FLAG_L){
+			for(int i = 0;i<rightRec.size();i++){
+				resRec.MergeRecords(&tempL,rightRec[i],attrL,attrR,resultAttr, attrL+attrR,attrL);
+				outPipe->Insert(&resRec);
+			}
+			FLAG_L = inPipeL->Remove(&tempL);
+		}
+		delete[] resultAttr;
 	}else{
 		//try to find using points of commonality
+		structBigQ* sbql = new structBigQ();
+		sbql->iPipe = inPipeL;
+		sbql->oPipe = bqL;
+		sbql->order = &omL;
+		sbql->runlen = 10; //Manually defined runlength as 10 here		
+		structBigQ* sbqr = new structBigQ();
+		sbql->iPipe = inPipeR;
+		sbql->oPipe = bqR;
+		sbql->order = &omR;
+		sbql->runlen = 10; //Manually defined runlength as 10 here		
+		pthread_create(&threadLeft,NULL,runBigqFunc,(void *) sbql);
+		pthread_create(&threadRight,NULL,runBigqFunc,(void *) sbqr);
+		FLAG_L = bqL->Remove(&tempL);
+		FLAG_R = bqR->Remove(&tempR);
+		int attrL = tempL.getNumAtts();
+		int attrR = tempR.getNumAtts();		
+		int* resultAttr = new int[attrL + attrR];
+		for(int i = 0;i<attrL;i++) resultAttr[i] = i;
+		for(int j = 0;j<attrR;j++) resultAttr[attrL + j] = j;
+		while(FLAG_L && FLAG_R){ // FLAGS should automatically end this loop in case one pipe shutsdown
+			int temp = ce.Compare(&tempL,&omL,&tempR,&omR);
+			// if(temp > 0 &&!bqL->Remove(&tempL)) continue; //FIXME: corner c
+			// else if(temp < 0 &&!bqR->Remove(&tempR)) continue; 
+			switch(temp){
+				case -1: 
+					FLAG_R = bqR->Remove(&tempR);
+					break;
+				case 1 : 
+					FLAG_L = bqL->Remove(&tempL);
+					break;
+				default : 
+					vector<Record*> rightRecords;
+					Record tempPrev;
+					tempPrev.Consume(&tempR); //copying first record to tempPrev
+					rightRecords.push_back(&tempPrev); //adding first record to vector list
+					FLAG_R = bqR->Remove(&tempR);   //checking if next record exists 
+					while( FLAG_R && ce.Compare(&tempPrev,&tempR,&omR) == 0){ //FIXME: did a b == c comparision may need to do a == b across tables
+						rightRecords.push_back(&tempR); //TODO: there may be address issues may have to use tempPrev everywhere
+						//tempPrev.Consume(&tempR); FIXME: not require?
+						FLAG_R = bqR->Remove(&tempR); 
+					}
+					tempPrev.Consume(&tempL);
+					FLAG_L = bqL->Remove(&tempL);
+					for(int i = 0;i<rightRecords.size() && FLAG_L;i++){
+						resRec.MergeRecords(&tempPrev,rightRecords[i],attrL,attrR,resultAttr,attrL + attrR,attrL);
+						outPipe->Insert(&resRec);
+					}
+					while(FLAG_L && ce.Compare(&tempPrev,&tempL,&omL) == 0){
+						for(int i = 0;i<rightRecords.size();i++){
+							resRec.MergeRecords(&tempL,rightRecords[i],attrL,attrR,resultAttr,attrL + attrR,attrL);
+							outPipe->Insert(&resRec);
+						}
+						FLAG_L = bqL->Remove(&tempL);
+					}
+				break;
+			}
 
-		//Manually defined runlength as 10 here
-		BigQ bigqleft(*inPipeL, *bqL, omL, 10);
-		BigQ bigqright(*inPipeR, *bqR, omR, 10);
-
-		bqL->Remove(&tempL);
-		bqR->Remove(&tempR);
-
-		bool FLAG_L, FLAG_R = false;
-		int int_l = (&tempL->bits)[1] / sizeof(int) -1; 
-		int int_r = (&tempR->bits)[1] / sizeof(int) -1;
-
-
-
+		}
+		delVar(bqL);
+		delVar(bqR);
+		delete[] resultAttr;
+		delVar(sbql);
+		delVar(sbqr);
 	}
+	outPipe->ShutDown();
 
 
 }
@@ -152,7 +228,7 @@ void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record 
 	stj->outPipe = &outPipe;
 	stj->selOp = &selOp;
 	stj->literal = &literal;
-	//stj->RunPages = RunPages>0?RunPages:1;
+	//stj->RunPages = RunPages>0?RunPages:1; TODO: FIXME: may or may not use runpages
 	pthread_create (&thread, NULL, joinFunc, (void *)stj);
 }
 
@@ -164,12 +240,6 @@ void Join::Use_n_Pages (int runlen) {
 
 }
 
-
-
-void *runBigqFunc(void * args){
-	structBigQ *t = (structBigQ *) args;
-	BigQ queue(*(t->iPipe),*(t->oPipe),*(t->order),t->runlen);
-} 
 void* dupRemFunc(void* args){
 	stDupRem* stduprem = (stDupRem*) args;
 	Pipe* inPipe = stduprem->inPipe;
