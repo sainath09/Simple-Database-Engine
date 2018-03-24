@@ -102,17 +102,70 @@ void Project::Use_n_Pages (int runlen) {
 
 }
 
-// void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal){
 
-// }
+void* joinFunc(void * args){
+	stProject* stprj = (stProject*) args;
+	stJoin *stj = (stJoin*) args;
+	Pipe * inPipeL=stj->inPipeL ;
+	Pipe * inPipeR=stj->inPipeR ;
+	Pipe * outPipe=stj->outPipe ;
+	CNF *selOp=stj->selOp ;
+	Record *literal=stj->literal ;
+	
+	OrderMaker omL,omR;
+	Pipe *bqL = new Pipe(PIPE_BUFFER);
+	Pipe *bqR = new Pipe(PIPE_BUFFER);
+	Record tempR,tempL;
+	ComparisonEngine ce;
 
-// void Join::WaitUntilDone () {
-// 	 pthread_join (thread, NULL);
-// }
+	int commonAtts = selOp->GetSortOrders(omL,omR);
 
-// void Join::Use_n_Pages (int runlen) {
+	if(commonAtts<1){
+		//Block Nested as there are no common attributes
 
-// }
+
+	}else{
+		//try to find using points of commonality
+
+		//Manually defined runlength as 10 here
+		BigQ bigqleft(*inPipeL, *bqL, omL, 10);
+		BigQ bigqright(*inPipeR, *bqR, omR, 10);
+
+		bqL->Remove(&tempL);
+		bqR->Remove(&tempR);
+
+		bool FLAG_L, FLAG_R = false;
+		int int_l = (&tempL->bits)[1] / sizeof(int) -1; 
+		int int_r = (&tempR->bits)[1] / sizeof(int) -1;
+
+
+
+	}
+
+
+}
+
+void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal){
+	stJoin *stj = new stJoin();
+	stj->inPipeL = &inPipeL;
+	stj->inPipeR = &inPipeR;
+	stj->outPipe = &outPipe;
+	stj->selOp = &selOp;
+	stj->literal = &literal;
+	//stj->RunPages = RunPages>0?RunPages:1;
+	pthread_create (&thread, NULL, joinFunc, (void *)stj);
+}
+
+void Join::WaitUntilDone () {
+	 pthread_join (thread, NULL);
+}
+
+void Join::Use_n_Pages (int runlen) {
+
+}
+
+
+
 void *runBigqFunc(void * args){
 	structBigQ *t = (structBigQ *) args;
 	BigQ queue(*(t->iPipe),*(t->oPipe),*(t->order),t->runlen);
