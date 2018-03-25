@@ -122,14 +122,15 @@ void q2 () {
 	P_p.Use_n_Pages (buffsz);
 
 	SF_p.Run (dbf_p, _p, cnf_p, lit_p);
+	SF_p.WaitUntilDone ();
 	P_p.Run (_p, _out, keepMe, numAttsIn, numAttsOut);
 
-	SF_p.WaitUntilDone ();
+	
 	P_p.WaitUntilDone ();
 
 	Attribute att3[] = {IA, SA, DA};
 	Schema out_sch ("out_sch", numAttsOut, att3);
-	int cnt = clear_pipe (_p, p->schema (), true);
+	int cnt = clear_pipe (_out, &out_sch, true);
 
 	cout << "\n\n query2 returned " << cnt << " records \n";
 
@@ -145,17 +146,17 @@ void q3 () {
 
 	Sum T;
 		// _s (input pipe)
-		Pipe _out (1);
-		Function func;
-			char *str_sum = "(s_acctbal + (s_acctbal * 1.05))";
-			get_cnf (str_sum, s->schema (), func);
-			func.Print ();
+	Pipe _out (1);
+	Function func;
+	char *str_sum = "(s_acctbal + (s_acctbal * 1.05))";
+	get_cnf (str_sum, s->schema (), func);
+	func.Print ();
 	T.Use_n_Pages (1);
 	SF_s.Run (dbf_s, _s, cnf_s, lit_s);
 	T.Run (_s, _out, func);
-
-	SF_s.WaitUntilDone ();
 	T.WaitUntilDone ();
+	SF_s.WaitUntilDone ();
+	
 
 	Schema out_sch ("out_sch", 1, &DA);
 	int cnt = clear_pipe (_out, &out_sch, true);
