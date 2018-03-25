@@ -160,10 +160,10 @@ void* joinFunc(void * args){
 		sbql->order = &omL;
 		sbql->runlen = 10; //Manually defined runlength as 10 here		
 		structBigQ* sbqr = new structBigQ();
-		sbql->iPipe = inPipeR;
-		sbql->oPipe = bqR;
-		sbql->order = &omR;
-		sbql->runlen = 10; //Manually defined runlength as 10 here		
+		sbqr->iPipe = inPipeR;
+		sbqr->oPipe = bqR;
+		sbqr->order = &omR;
+		sbqr->runlen = 10; //Manually defined runlength as 10 here		
 		pthread_create(&threadLeft,NULL,runBigqFunc,(void *) sbql);
 		pthread_create(&threadRight,NULL,runBigqFunc,(void *) sbqr);
 		FLAG_L = bqL->Remove(&tempL);
