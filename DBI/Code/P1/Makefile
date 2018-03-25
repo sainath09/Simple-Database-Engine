@@ -1,4 +1,5 @@
-CC = g++ -O2 -Wno-deprecated 
+
+CC = g++ -O2 -Wno-deprecated
 
 tag = -i
 
@@ -6,38 +7,35 @@ ifdef linux
 tag = -n
 endif
 
-test.out: RelOp.o  Sort.o BigQ.o Pipe.o Function.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
-	$(CC) -pthread -o test.out RelOp.o  Sort.o Pipe.o BigQ.o Function.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o -lfl
-
-a21test.out:Sort.o  Pipe.o BigQ.o AbstractDBFile.o Function.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a21test.o
-	$(CC) -pthread -o Sort.o Pipe.o BigQ.o a21test.out AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o -lfl
+test.out: Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o
+	$(CC) -o test.out  Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o -lfl -lpthread
 	
-a1test.out:Sort.o BigQ.o Pipe.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o
-	$(CC) -pthread -o a1test.out Sort.o Pipe.o BigQ.o AbstractDBFile.o Heap.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o a1test.o -lfl
-
-
-a21test.o: a21test.cc
-	$(CC) -g -c a21test.cc
-
-a1test.o: a1test.cc
-	$(CC) -g -c a1test.cc	
-
+a2-2test.out: Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o
+	$(CC) -o a2-2test.out Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o -lfl -lpthread
+	
+a2test.out: Heap.o Sort.o AbstractDBFile.o  Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-test.o
+	$(CC) -o a2test.out Heap.o Sort.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-test.o -lfl -lpthread
+	
+a1test.out: Heap.o Sort.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1-test.o
+	$(CC) -o a1test.out Heap.o Sort.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1-test.o -lfl
+	
 test.o: test.cc
 	$(CC) -g -c test.cc
-RelOp.o: RelOp.cc
-	$(CC) -g -c RelOp.cc
+	
+a2-2test.o: a2-2test.cc
+	$(CC) -g -c a2-2test.cc
+
+a2-test.o: a2-test.cc
+	$(CC) -g -c a2-test.cc
+
+a1-test.o: a1-test.cc
+	$(CC) -g -c a1-test.cc
+
 Sort.o: Sort.cc
 	$(CC) -g -c Sort.cc
-Pipe.o : Pipe.cc
-	$(CC)  -g -c Pipe.cc
-BigQ.o : BigQ.cc
-	$(CC) -g -c BigQ.cc
 Heap.o: Heap.cc
 	$(CC) -g -c Heap.cc
 
-main.o: main.cc
-	$(CC) -g -c main.cc
-	
 Comparison.o: Comparison.cc
 	$(CC) -g -c Comparison.cc
 	
@@ -46,6 +44,18 @@ ComparisonEngine.o: ComparisonEngine.cc
 	
 DBFile.o: DBFile.cc
 	$(CC) -g -c DBFile.cc
+
+Pipe.o: Pipe.cc
+	$(CC) -g -c Pipe.cc
+
+BigQ.o: BigQ.cc
+	$(CC) -g -c BigQ.cc
+
+RelOp.o: RelOp.cc
+	$(CC) -g -c RelOp.cc
+
+Function.o: Function.cc
+	$(CC) -g -c Function.cc
 
 File.o: File.cc
 	$(CC) -g -c File.cc
@@ -58,19 +68,27 @@ Schema.o: Schema.cc
 	
 y.tab.o: Parser.y
 	yacc -d Parser.y
-	sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
+	#sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
 	g++ -c y.tab.c
-
-lex.yy.o: Lexer.l 
-	lex  Lexer.l
+		
+yyfunc.tab.o: ParserFunc.y
+	yacc -p "yyfunc" -b "yyfunc" -d ParserFunc.y
+	#sed $(tag) yyfunc.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
+	g++ -c yyfunc.tab.c
+	
+lex.yy.o: Lexer.l
+	lex Lexer.l
 	gcc  -c lex.yy.c
+
+lex.yyfunc.o: LexerFunc.l
+	lex -Pyyfunc LexerFunc.l
+	gcc  -c lex.yyfunc.c
+
 
 clean: 
 	rm -f *.o
 	rm -f *.out
-	rm -f y.tab.c
-	rm -f y.tab.c-e
-	rm -f lex.yy.c
-	rm -f y.tab.h
-	rm -f *.bin
-	rm -f *.METAINF
+	rm -f y.tab.*
+	rm -f yyfunc.tab.*
+	rm -f lex.yy.*
+	rm -f lex.yyfunc*
