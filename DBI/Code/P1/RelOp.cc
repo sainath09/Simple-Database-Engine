@@ -70,6 +70,7 @@ void SelectPipe::WaitUntilDone () {
 }
 
 void SelectPipe::Use_n_Pages (int runlen) {
+	pages = runlen;
 
 }
 
@@ -104,6 +105,7 @@ void Project::WaitUntilDone () {
 }
 
 void Project::Use_n_Pages (int runlen) {
+	pages = runlen;
 
 }
 
@@ -237,6 +239,7 @@ void Join::WaitUntilDone () {
 }
 
 void Join::Use_n_Pages (int runlen) {
+	pages = runlen;
 
 }
 
@@ -296,6 +299,7 @@ void DuplicateRemoval::WaitUntilDone () {
 }
 
 void DuplicateRemoval::Use_n_Pages (int runlen) {
+	pages = runlen;
 
 }
 void* sumFunc(void* args){
@@ -358,6 +362,7 @@ void Sum::WaitUntilDone () {
 }
 
 void Sum::Use_n_Pages (int runlen) {
+	pages = runlen;
 
 }
 void * grpbyFunc(void * args){
@@ -474,6 +479,7 @@ void GroupBy::WaitUntilDone () {
 }
 
 void GroupBy::Use_n_Pages (int runlen) {
+	pages = runlen;
 
 }
 
@@ -504,6 +510,7 @@ void WriteOut::WaitUntilDone () {
 }
 
 void WriteOut::Use_n_Pages (int runlen) {
+	pages = runlen;
 
 }
 

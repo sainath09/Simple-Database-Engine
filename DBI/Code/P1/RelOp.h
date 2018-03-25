@@ -80,6 +80,7 @@ class SelectFile : public RelationalOp {
 	private:
 		pthread_t thread;
 	// Record *buffer;
+		int pages;
 
 	public:
 
@@ -92,14 +93,17 @@ class SelectFile : public RelationalOp {
 class SelectPipe : public RelationalOp {
 	private:
 		pthread_t thread;
+		int pages;
 	public:
 	void Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);
 	void WaitUntilDone () ;
 	void Use_n_Pages (int n) ;
+
 };
 class Project : public RelationalOp { 
 	private:
 		pthread_t thread;
+		int pages;
 	public:
 	void Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput);
 	void WaitUntilDone () ;
@@ -108,6 +112,7 @@ class Project : public RelationalOp {
 class Join : public RelationalOp { 
 	private:
 		pthread_t thread;
+		int pages;
 	public:
 	void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal);
 	void WaitUntilDone () ;
@@ -116,6 +121,7 @@ class Join : public RelationalOp {
 class DuplicateRemoval : public RelationalOp {
 	private:
 		pthread_t thread;
+		int pages;
 	public:
 	void Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema);
 	void WaitUntilDone () ;
@@ -124,6 +130,7 @@ class DuplicateRemoval : public RelationalOp {
 class Sum : public RelationalOp {
 	private:
 		pthread_t thread;
+		int pages;
 	public:
 	void Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe);
 	void WaitUntilDone () ;
@@ -132,6 +139,7 @@ class Sum : public RelationalOp {
 class GroupBy : public RelationalOp {
 	private:
 		pthread_t thread;
+		int pages;
 	public:
 	void Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe);
 	void WaitUntilDone () ;
@@ -140,6 +148,7 @@ class GroupBy : public RelationalOp {
 class WriteOut : public RelationalOp {
 	private:
 		pthread_t thread;
+		int pages;
 	public:
 	void Run (Pipe &inPipe, FILE *outFile, Schema &mySchema) ;
 	void WaitUntilDone () ;

@@ -84,12 +84,14 @@ lex.yyfunc.o: LexerFunc.l
 	lex -Pyyfunc LexerFunc.l
 	gcc  -c lex.yyfunc.c
 
-
 clean: 
 	rm -f *.o
 	rm -f *.out
-	rm -f y.tab.*
+	rm -f y.tab.c
+	rm -f y.tab.c-e
 	rm -f yyfunc.tab.*
-	rm -f lex.yy.*
 	rm -f lex.yyfunc*
-	
+	rm -f lex.yy.c
+	rm -f y.tab.h
+	rm -f *.bin
+	rm -f *.METAINF
