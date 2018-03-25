@@ -11,10 +11,10 @@ test.out: Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.
 	$(CC) -o test.out  Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o -lpthread
 	
 a2-2test.out: Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o
-	$(CC) -o a2-2test.out Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o-lpthread
+	$(CC) -o a2-2test.out Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o -lpthread
 	
 a21test.out: Heap.o Sort.o AbstractDBFile.o  Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a21test.o
-	$(CC) -o a21test.out Heap.o Sort.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a21test.o  -lpthread
+	$(CC) -o a21test.out Heap.o Sort.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a21test.o -lpthread
 	
 a1test.out: Heap.o Sort.o AbstractDBFile.o BigQ.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1test.o
 	$(CC) -o a1test.out Heap.o Sort.o AbstractDBFile.o BigQ.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1test.o -lpthread
@@ -84,12 +84,14 @@ lex.yyfunc.o: LexerFunc.l
 	lex -Pyyfunc LexerFunc.l
 	gcc  -c lex.yyfunc.c
 
-
 clean: 
 	rm -f *.o
 	rm -f *.out
-	rm -f y.tab.*
+	rm -f y.tab.c
+	rm -f y.tab.c-e
 	rm -f yyfunc.tab.*
-	rm -f lex.yy.*
 	rm -f lex.yyfunc*
-	
+	rm -f lex.yy.c
+	rm -f y.tab.h
+	rm -f *.bin
+	rm -f *.METAINF
