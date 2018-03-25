@@ -332,21 +332,28 @@ void* sumFunc(void* args){
 			cerr<<"Invalid type return from computeME->apply encountered in Sum thread func "<<endl;
 		}
 	}
-	char s[15];
+	char* s = new char[16];
 	if(attr.myType == Int){
-		sprintf(s,"%d|",sumInt);
+		std::ostringstream ss;
+		ss << sumInt;
+		string tempStr = ss.str() + "|";
+		s = (char * )tempStr.c_str(); 
 	}
 	else if(attr.myType == Double){
-		sprintf(s,"%f|",sumDouble);
+		std::ostringstream ss;
+  		ss << sumDouble;
+		string tempStr = ss.str() + "|";
+		s = (char * )tempStr.c_str();
 	}
 	else { 
 		cerr<<"Invalid type return from computeME->apply encountered in Sum thread func "<<endl;
-	}
+	}	
 	Schema tempSch("schsum", 1, &attr);
-	tempRec.ComposeRecord(&tempSch,(const char *)&s[0]);
-	outPipe->Insert(&tempRec);
+	Record testing;
+	testing.ComposeRecord(&tempSch,s);
+	outPipe->Insert(&testing);
 	outPipe->ShutDown();
-	delVar(attr.name); //FIXME: check for error here.
+	//delVar(attr.name); //FIXME: check for error here.
 
 }
 void Sum::Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe){

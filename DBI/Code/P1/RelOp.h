@@ -7,6 +7,7 @@
 #include "Function.h"
 #include "BigQ.h"
 #include "Sort.h"
+#include <sstream>
 
 
 //structure to start a selectpipe thread
