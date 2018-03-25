@@ -13,11 +13,11 @@ test.out: Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.
 a2-2test.out: Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o
 	$(CC) -o a2-2test.out Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o -lfl -lpthread
 	
-a2test.out: Heap.o Sort.o AbstractDBFile.o  Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-test.o
-	$(CC) -o a2test.out Heap.o Sort.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-test.o -lfl -lpthread
+a21test.out: Heap.o Sort.o AbstractDBFile.o  Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a21test.o
+	$(CC) -o a21test.out Heap.o Sort.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a21test.o -lfl -lpthread
 	
-a1test.out: Heap.o Sort.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1-test.o
-	$(CC) -o a1test.out Heap.o Sort.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1-test.o -lfl
+a1test.out: Heap.o Sort.o AbstractDBFile.o BigQ.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1test.o
+	$(CC) -o a1test.out Heap.o Sort.o AbstractDBFile.o BigQ.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1test.o -lfl -lpthread
 	
 test.o: test.cc
 	$(CC) -g -c test.cc
@@ -25,11 +25,11 @@ test.o: test.cc
 a2-2test.o: a2-2test.cc
 	$(CC) -g -c a2-2test.cc
 
-a2-test.o: a2-test.cc
-	$(CC) -g -c a2-test.cc
+a21test.o: a21test.cc
+	$(CC) -g -c a21test.cc
 
-a1-test.o: a1-test.cc
-	$(CC) -g -c a1-test.cc
+a1test.o: a1test.cc
+	$(CC) -g -c a1test.cc
 
 Sort.o: Sort.cc
 	$(CC) -g -c Sort.cc
@@ -92,3 +92,4 @@ clean:
 	rm -f yyfunc.tab.*
 	rm -f lex.yy.*
 	rm -f lex.yyfunc*
+	
