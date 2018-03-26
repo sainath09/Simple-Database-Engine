@@ -35,6 +35,7 @@ void SelectFile::WaitUntilDone () {
 }
 
 void SelectFile::Use_n_Pages (int runlen) {
+	pages = runlen;
 
 }
 
@@ -174,6 +175,7 @@ void* joinFunc(void * args){
 		for(int i = 0;i<attrL;i++) resultAttr[i] = i;
 		for(int j = 0;j<attrR;j++) resultAttr[attrL + j] = j;
 		while(FLAG_L && FLAG_R){ // FLAGS should automatically end this loop in case one pipe shutsdown
+			
 			int temp = ce.Compare(&tempL,&omL,&tempR,&omR);
 			// if(temp > 0 &&!bqL->Remove(&tempL)) continue; //FIXME: corner c
 			// else if(temp < 0 &&!bqR->Remove(&tempR)) continue; 
@@ -212,8 +214,10 @@ void* joinFunc(void * args){
 			}
 
 		}
-		delVar(bqL);
-		delVar(bqR);
+		bqL->ShutDown();
+		bqR->ShutDown();
+		//delVar(bqL);
+		//delVar(bqR);
 		delete[] resultAttr;
 		delVar(sbql);
 		delVar(sbqr);
@@ -398,9 +402,11 @@ void * grpbyFunc(void * args){
 	attr.name = "sum";
 	bool FLAG = true;
 	int currNumAtts = 0;
-	char s[100];
+	char* s;
 	ComparisonEngine ce;
 	Schema tempsch("sum", 1, &attr);
+	string intStr = "";
+	string doubleStr = "";
 	while(inPipe->Remove(&tempRec)){
 		Type t = computeMe->Apply(tempRec,temp_int,temp_double);
 		if(FLAG){
@@ -432,11 +438,18 @@ void * grpbyFunc(void * args){
 			else{
 				
 				if(attr.myType == Int){
-					sprintf(s,"%d|",sumInt);
+					std::ostringstream ss;
+					ss << sumInt;
+					intStr += ss.str() + "|";
+					s = (char *)intStr.c_str();
 					sumInt = temp_int;
 				}
 				else if(attr.myType == Double){
-					sprintf(s,"%f|",sumDouble);
+					std::ostringstream ss;
+					ss << sumDouble;
+					doubleStr += ss.str() + "|";
+					s = (char *)doubleStr.c_str();
+					//sprintf(s,"%f|",sumDouble); //TODO: remove this line
 					sumDouble = temp_double;
 				}
 				else { 
@@ -445,7 +458,7 @@ void * grpbyFunc(void * args){
 				//FIXME: s should be cleared before this.
 				Record sumRec;
 				Record resRec;
-				sumRec.ComposeRecord(&tempsch,(const char *) &s[0]);
+				sumRec.ComposeRecord(&tempsch,s);
 				tempRec2.Project (attArray, gbyNumAtts, currNumAtts);
 				resRec.MergeRecords (&sumRec, &tempRec2, 1, gbyNumAtts, gbyAList, gbyNumAtts+1, 1);
 				outPipe->Insert(&resRec);
@@ -455,20 +468,30 @@ void * grpbyFunc(void * args){
 		tempRec2.Consume(&tempRec);
 	}
 
-	if(attr.myType == Int) sprintf(s,"%d|",sumInt);
-	else if(attr.myType == Double) sprintf(s,"%f|",sumDouble);
+	if(attr.myType == Int) {
+		std::ostringstream ss;
+		ss << sumInt;
+		intStr += ss.str() + "|";
+		s = (char * )intStr.c_str(); 
+	}
+	else if(attr.myType == Double){
+		std::ostringstream ss;
+		ss << sumDouble;
+		doubleStr += ss.str() + "|";
+		s = (char * )doubleStr.c_str();
+	} 
 	else { 
 		cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
 	}
 	//FIXME: s should be cleared before this.
 	Record sumRec;
 	Record resRec;
-	sumRec.ComposeRecord(&tempsch,(const char *) &s[0]);
+	sumRec.ComposeRecord(&tempsch,s);
 	tempRec2.Project (attArray, gbyNumAtts, currNumAtts);
 	resRec.MergeRecords (&sumRec, &tempRec2, 1, gbyNumAtts, gbyAList, gbyNumAtts+1, 1);
 	outPipe->Insert(&resRec);
 	outPipe->ShutDown();
-	delVar(attr.name);
+	//delVar(attr.name);
 	delete []gbyAList;
 }
 
