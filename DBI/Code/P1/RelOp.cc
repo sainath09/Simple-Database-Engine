@@ -119,18 +119,18 @@ void* joinFunc(void * args){
 	Pipe * outPipe=stj->outPipe ;
 	CNF *selOp=stj->selOp ;
 	Record *literal=stj->literal ;
-	pthread_t threadLeft,threadRight;
+	
 	OrderMaker omL,omR;
 	Pipe *bqL = new Pipe(PIPE_BUFFER);
 	Pipe *bqR = new Pipe(PIPE_BUFFER);
 	Record tempR,tempL,resRec;
 	ComparisonEngine ce;
-	int FLAG_L = 0;
-	int FLAG_R = 0;
+	int FLAG_L = 1;
+	int FLAG_R = 1;
 	int commonAtts = selOp->GetSortOrders(omL,omR);
 
-	if(commonAtts<1){
-		//Block Nested as there are no common attributes
+	if(commonAtts < 1){
+		//Nested as there are no common attributes
 		vector<Record *> rightRec;
 		FLAG_L = inPipeL->Remove(&tempL);
 		FLAG_R = inPipeR->Remove(&tempR);
@@ -141,14 +141,16 @@ void* joinFunc(void * args){
 		for(int j = 0;j<attrR;j++) resultAttr[attrL + j] = j;
 		while(FLAG_R){
 			Record temp;
-			temp.Consume(&temp);
+			temp.Consume(&tempR);
 			FLAG_R = inPipeR->Remove(&tempR);
 			rightRec.push_back(&temp);
 		}
 		while(FLAG_L){
 			for(int i = 0;i<rightRec.size();i++){
-				resRec.MergeRecords(&tempL,rightRec[i],attrL,attrR,resultAttr, attrL+attrR,attrL);
-				outPipe->Insert(&resRec);
+				if(ce.Compare(&tempL,&omL,rightRec[i],&omR) == 0){
+					resRec.MergeRecords(&tempL,rightRec[i],attrL,attrR,resultAttr, attrL+attrR,attrL);
+					outPipe->Insert(&resRec);
+				}
 			}
 			FLAG_L = inPipeL->Remove(&tempL);
 		}
@@ -159,14 +161,18 @@ void* joinFunc(void * args){
 		sbql->iPipe = inPipeL;
 		sbql->oPipe = bqL;
 		sbql->order = &omL;
-		sbql->runlen = 10; //Manually defined runlength as 10 here		
+		sbql->runlen = 1; //Manually defined runlength as 10 here		
 		structBigQ* sbqr = new structBigQ();
 		sbqr->iPipe = inPipeR;
 		sbqr->oPipe = bqR;
 		sbqr->order = &omR;
-		sbqr->runlen = 10; //Manually defined runlength as 10 here		
+		sbqr->runlen = 1; //Manually defined runlength as 10 here
+		pthread_t threadLeft,threadRight;		
 		pthread_create(&threadLeft,NULL,runBigqFunc,(void *) sbql);
 		pthread_create(&threadRight,NULL,runBigqFunc,(void *) sbqr);
+		pthread_join(threadLeft,NULL);
+		pthread_join(threadRight,NULL);
+		int count = 0;
 		FLAG_L = bqL->Remove(&tempL);
 		FLAG_R = bqR->Remove(&tempR);
 		int attrL = tempL.getNumAtts();
@@ -174,51 +180,58 @@ void* joinFunc(void * args){
 		int* resultAttr = new int[attrL + attrR];
 		for(int i = 0;i<attrL;i++) resultAttr[i] = i;
 		for(int j = 0;j<attrR;j++) resultAttr[attrL + j] = j;
+		
 		while(FLAG_L && FLAG_R){ // FLAGS should automatically end this loop in case one pipe shutsdown
-			
 			int temp = ce.Compare(&tempL,&omL,&tempR,&omR);
 			// if(temp > 0 &&!bqL->Remove(&tempL)) continue; //FIXME: corner c
 			// else if(temp < 0 &&!bqR->Remove(&tempR)) continue; 
-			switch(temp){
-				case -1: 
-					FLAG_R = bqR->Remove(&tempR);
-					break;
-				case 1 : 
-					FLAG_L = bqL->Remove(&tempL);
-					break;
-				default : 
-					vector<Record*> rightRecords;
-					Record tempPrev;
-					tempPrev.Consume(&tempR); //copying first record to tempPrev
-					rightRecords.push_back(&tempPrev); //adding first record to vector list
-					FLAG_R = bqR->Remove(&tempR);   //checking if next record exists 
-					while( FLAG_R && ce.Compare(&tempPrev,&tempR,&omR) == 0){ //FIXME: did a b == c comparision may need to do a == b across tables
-						rightRecords.push_back(&tempR); //TODO: there may be address issues may have to use tempPrev everywhere
-						//tempPrev.Consume(&tempR); FIXME: not require?
-						FLAG_R = bqR->Remove(&tempR); 
-					}
-					tempPrev.Consume(&tempL);
-					FLAG_L = bqL->Remove(&tempL);
-					for(int i = 0;i<rightRecords.size() && FLAG_L;i++){
-						resRec.MergeRecords(&tempPrev,rightRecords[i],attrL,attrR,resultAttr,attrL + attrR,attrL);
-						outPipe->Insert(&resRec);
-					}
-					while(FLAG_L && ce.Compare(&tempPrev,&tempL,&omL) == 0){
-						for(int i = 0;i<rightRecords.size();i++){
-							resRec.MergeRecords(&tempL,rightRecords[i],attrL,attrR,resultAttr,attrL + attrR,attrL);
+			
+			if(temp < 0){ 
+				//cout<<"Right:"<<count++<<endl;
+				FLAG_R = bqR->Remove(&tempR);
+			}
+			else if(temp > 0){
+				//cout<<"left"<<count++<<endl;
+				FLAG_L = bqL->Remove(&tempL);
+			}
+			else if(temp == 0){
+				vector<Record *> rightRecords;
+				Record* t_r = new Record();
+				t_r->Copy(&tempR); 
+				while( FLAG_R && ce.Compare(t_r,&omR,&tempL,&omL) == 0){ //FIXME: did a b == c comparision may need to do a == b across tables
+					
+					rightRecords.push_back(t_r);
+					t_r = new Record(); //TODO: there may be address issues may have to use tempPrev everywhere
+					FLAG_R = bqR->Remove(t_r); 
+					
+					//tempPrev.Consume(&tempR); FIXME: not require?	
+				}
+				
+				Record tempPrev;
+				tempPrev.Copy(&tempL);
+				while(FLAG_L && ce.Compare(&tempPrev,&omL,&tempR,&omR) == 0){
+					for(int i = 0;i<rightRecords.size();i++){
+						if (ce.Compare(&tempPrev, rightRecords[i], literal,selOp)) {
+							resRec.MergeRecords(&tempPrev,rightRecords[i],attrL,attrR,resultAttr,attrL + attrR,attrL);
 							outPipe->Insert(&resRec);
 						}
-						FLAG_L = bqL->Remove(&tempL);
 					}
-				break;
+					FLAG_L = bqL->Remove(&tempPrev);
+				}
+				if(FLAG_R) tempR.Copy(t_r);
+				if(FLAG_L) tempL.Copy(&tempPrev);
+				for(int i = 0;i<rightRecords.size();i++) delete rightRecords[i];
+				rightRecords.clear();
+				
 			}
-
+		
 		}
+		delete[] resultAttr;
 		bqL->ShutDown();
 		bqR->ShutDown();
 		//delVar(bqL);
 		//delVar(bqR);
-		delete[] resultAttr;
+		
 		delVar(sbql);
 		delVar(sbqr);
 	}
@@ -234,7 +247,6 @@ void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record 
 	stj->outPipe = &outPipe;
 	stj->selOp = &selOp;
 	stj->literal = &literal;
-	//stj->RunPages = RunPages>0?RunPages:1; TODO: FIXME: may or may not use runpages
 	pthread_create (&thread, NULL, joinFunc, (void *)stj);
 }
 
@@ -543,6 +555,5 @@ void WriteOut::Use_n_Pages (int runlen) {
 	pages = runlen;
 
 }
-
 
 

@@ -35,7 +35,7 @@ int clear_pipe (Pipe &in_pipe, Schema *schema, Function &func, bool print) {
 	cout << " Sum: " << sum << endl;
 	return cnt;
 }
-int pipesz = 100; // buffer sz allowed for each pipe
+int pipesz = 1000000; // buffer sz allowed for each pipe
 int buffsz = 100; // pages of memory allowed for operations
 
 SelectFile SF_ps, SF_p, SF_s, SF_o, SF_li, SF_c;
@@ -205,17 +205,17 @@ void q4 () {
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps); // 161 recs qualified
 	
 	J.Run (_s, _ps, _s_ps, cnf_p_ps, lit_p_ps);
-	//T.Run (_s_ps, _out, func);
+	T.Run (_s_ps, _out, func);
 	
 	SF_ps.WaitUntilDone ();
 	J.WaitUntilDone ();
-	//T.WaitUntilDone ();
+	T.WaitUntilDone ();
 	Schema sum_sch ("sum_sch", 1, &DA);
 	
-	//int cnt = clear_pipe (_out, &sum_sch, true);
-	//cout << " query4 returned " << cnt << " recs \n";
-	int cnt = clear_pipe (_s_ps, &join_sch, true);
+	int cnt = clear_pipe (_out, &sum_sch, true);
 	cout << " query4 returned " << cnt << " recs \n";
+	// int cnt = clear_pipe (_s_ps, &join_sch, true);
+	// cout << " query4 returned " << cnt << " recs \n";
 	
 	
 	
@@ -308,7 +308,37 @@ void q6 () {
 
 }
 
-void q7 () { 
+void q7 () {
+
+	cout << " query7 for testing group by with out join \n";
+	
+	
+
+	char *pred_ps = "(ps_suppkey = ps_suppkey)";
+	init_SF_ps (pred_ps, 100);
+
+	GroupBy G;
+		// _s (input pipe)
+	Pipe _out (10000);
+	Function func;
+	char *str_sum = "(ps_supplycost)";
+	get_cnf (str_sum, ps->schema(), func);
+	func.Print ();
+	OrderMaker grp_order (ps->schema());
+	G.Use_n_Pages (1);
+
+	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps); // 161 recs qualified
+	G.Run (_ps, _out, grp_order, func);
+
+	Schema sum_sch ("sum_sch", 1, &DA);
+	SF_ps.WaitUntilDone ();
+	int cnt = clear_pipe (_out, &sum_sch, true);
+	cout << " query7 returned sum for " << cnt << " groups (expected 25 groups)\n"; 
+	G.WaitUntilDone ();
+
+}
+
+void q9 () { 
 /*
 select sum(ps_supplycost)
 from part, supplier, partsupp
