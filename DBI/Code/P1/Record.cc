@@ -522,5 +522,5 @@ void Record :: PrintToFile(FILE* outFile,Schema * mySchema){
 
 }
 int Record::getNumAtts(){
-	return (((int *) bits)[1])/sizeof(int) - 1;
+	return ((((int*) (bits))[1])/ sizeof(int)) - 1;;
 }

@@ -130,3 +130,7 @@ void Pipe :: ShutDown () {
 	pthread_mutex_unlock (&pipeMutex);
 	
 }
+
+int Pipe::totalrecords(){
+	return lastSlot;
+}

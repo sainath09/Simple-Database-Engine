@@ -1,10 +1,5 @@
 #include "RelOp.h"
 
-void *runBigqFunc(void * args){
-	structBigQ *t = (structBigQ *) args;
-	BigQ queue(*(t->iPipe),*(t->oPipe),*(t->order),t->runlen);
-} 
-
 void* SelFileFunc(void* args){
 	Record tempRec;
 	ComparisonEngine ce;
@@ -114,11 +109,13 @@ void Project::Use_n_Pages (int runlen) {
 void* joinFunc(void * args){
 	stProject* stprj = (stProject*) args;
 	stJoin *stj = (stJoin*) args;
-	Pipe * inPipeL=stj->inPipeL ;
-	Pipe * inPipeR=stj->inPipeR ;
+	Pipe* inPipeL=stj->inPipeL ;
+	Pipe* inPipeR=stj->inPipeR ;
 	Pipe * outPipe=stj->outPipe ;
 	CNF *selOp=stj->selOp ;
 	Record *literal=stj->literal ;
+	Schema* left = stj->left;
+	Schema* right = stj->right;
 	
 	OrderMaker omL,omR;
 	Pipe *bqL = new Pipe(PIPE_BUFFER);
@@ -129,7 +126,7 @@ void* joinFunc(void * args){
 	int FLAG_R = 1;
 	int commonAtts = selOp->GetSortOrders(omL,omR);
 
-	if(commonAtts < 1){
+	if(commonAtts <  1){
 		//Nested as there are no common attributes
 		vector<Record *> rightRec;
 		FLAG_L = inPipeL->Remove(&tempL);
@@ -140,14 +137,22 @@ void* joinFunc(void * args){
 		for(int i = 0;i<attrL;i++) resultAttr[i] = i;
 		for(int j = 0;j<attrR;j++) resultAttr[attrL + j] = j;
 		while(FLAG_R){
-			Record temp;
-			temp.Consume(&tempR);
+			Record* temp = new Record();
+			//tempR.Print(right);
+			temp->Consume(&tempR);
 			FLAG_R = inPipeR->Remove(&tempR);
-			rightRec.push_back(&temp);
+			rightRec.push_back(temp);
 		}
+		int count  = 0 ;
 		while(FLAG_L){
+			cout<<count++<<endl;
 			for(int i = 0;i<rightRec.size();i++){
 				if(ce.Compare(&tempL,&omL,rightRec[i],&omR) == 0){
+					// cout<<"...left record..."<<endl;
+					// tempL.Print(left);
+					// cout<<"....right record...."<<endl;
+					// rightRec[i]->Print(right);
+					// cout<<"......"<<endl;
 					resRec.MergeRecords(&tempL,rightRec[i],attrL,attrR,resultAttr, attrL+attrR,attrL);
 					outPipe->Insert(&resRec);
 				}
@@ -157,21 +162,24 @@ void* joinFunc(void * args){
 		delete[] resultAttr;
 	}else{
 		//try to find using points of commonality
-		structBigQ* sbql = new structBigQ();
-		sbql->iPipe = inPipeL;
-		sbql->oPipe = bqL;
-		sbql->order = &omL;
-		sbql->runlen = 1; //Manually defined runlength as 10 here		
-		structBigQ* sbqr = new structBigQ();
-		sbqr->iPipe = inPipeR;
-		sbqr->oPipe = bqR;
-		sbqr->order = &omR;
-		sbqr->runlen = 1; //Manually defined runlength as 10 here
-		pthread_t threadLeft,threadRight;		
-		pthread_create(&threadLeft,NULL,runBigqFunc,(void *) sbql);
-		pthread_create(&threadRight,NULL,runBigqFunc,(void *) sbqr);
-		pthread_join(threadLeft,NULL);
-		pthread_join(threadRight,NULL);
+		// structBigQ* sbql = new structBigQ();
+		// sbql->iPipe = inPipeL;
+		// sbql->oPipe = bqL;
+		// sbql->order = &omL;
+		// sbql->runlen = 1; //Manually defined runlength as 10 here		
+		// structBigQ* sbqr = new structBigQ();
+		// sbqr->iPipe = inPipeR;
+		// sbqr->oPipe = bqR;
+		// sbqr->order = &omR;
+		// sbqr->runlen = 1; //Manually defined runlength as 10 here
+		// pthread_t threadLeft,threadRight;		
+		// pthread_create(&threadLeft,NULL,runBigqFunc,(void *) sbql);
+		// pthread_create(&threadRight,NULL,runBigqFunc,(void *) sbqr);
+		// pthread_join(threadLeft,NULL);
+		// pthread_join(threadRight,NULL);
+		BigQ srbql(*inPipeL,*bqL,omL,1);
+		BigQ srbqr(*inPipeR,*bqR,omR,1);
+
 		int count = 0;
 		FLAG_L = bqL->Remove(&tempL);
 		FLAG_R = bqR->Remove(&tempR);
@@ -182,71 +190,110 @@ void* joinFunc(void * args){
 		for(int j = 0;j<attrR;j++) resultAttr[attrL + j] = j;
 		
 		while(FLAG_L && FLAG_R){ // FLAGS should automatically end this loop in case one pipe shutsdown
-			int temp = ce.Compare(&tempL,&omL,&tempR,&omR);
-			// if(temp > 0 &&!bqL->Remove(&tempL)) continue; //FIXME: corner c
-			// else if(temp < 0 &&!bqR->Remove(&tempR)) continue; 
-			
-			if(temp < 0){ 
-				//cout<<"Right:"<<count++<<endl;
-				FLAG_R = bqR->Remove(&tempR);
-			}
-			else if(temp > 0){
-				//cout<<"left"<<count++<<endl;
+			int temp = ce.Compare(&tempL,&omL,&tempR,&omR);	
+			//int temp = 12;
+			//cout<<"......first records......"<<endl;
+			//tempL.Print(left);
+			// cout<<" left records"<<endl;
+			// while(FLAG_L){
+			// 	tempL.Print(left);
+			// 	FLAG_L = bqL->Remove(&tempL);
+			// }
+			// cout<<"right records"<<endl;
+			// while(FLAG_R){
+			// 	tempR.Print(right);
+			// 	FLAG_R = bqR->Remove(&tempR);
+			// }
+
+
+			// cout<<"...second record.."<<endl;
+			// tempR.Print(right);
+			// cout<<"TEMP :"<<temp<<endl;
+			if(temp == -1 ){ 
+				//cout<<"left is less:"<<count++<<endl;
 				FLAG_L = bqL->Remove(&tempL);
 			}
+			else if(temp  == 1){
+				//cout<<"right is less"<<count++<<endl;
+				FLAG_R = bqR->Remove(&tempR);
+			}
 			else if(temp == 0){
+				//get equal records from right pipe
 				vector<Record *> rightRecords;
 				Record* t_r = new Record();
 				t_r->Copy(&tempR); 
 				while( FLAG_R && ce.Compare(t_r,&omR,&tempL,&omL) == 0){ //FIXME: did a b == c comparision may need to do a == b across tables
-					
+					// cout<<"...right Records.."<<endl;
+					// t_r->Print(right);
 					rightRecords.push_back(t_r);
 					t_r = new Record(); //TODO: there may be address issues may have to use tempPrev everywhere
 					FLAG_R = bqR->Remove(t_r); 
-					
-					//tempPrev.Consume(&tempR); FIXME: not require?	
 				}
-				
-				Record tempPrev;
-				tempPrev.Copy(&tempL);
-				while(FLAG_L && ce.Compare(&tempPrev,&omL,&tempR,&omR) == 0){
-					for(int i = 0;i<rightRecords.size();i++){
-						if (ce.Compare(&tempPrev, rightRecords[i], literal,selOp)) {
-							resRec.MergeRecords(&tempPrev,rightRecords[i],attrL,attrR,resultAttr,attrL + attrR,attrL);
-							outPipe->Insert(&resRec);
-						}
+				//get equal records from left pipe
+				vector<Record*> leftRecords;
+				Record* t_l = new Record();
+				t_l->Copy(&tempL);
+				while( FLAG_L && ce.Compare(t_l,&omL,rightRecords[0],&omR) == 0){ //FIXME: did a b == c comparision may need to do a == b across tables
+					// cout<<"...left Records.."<<endl;
+					// t_l->Print(left);
+					leftRecords.push_back(t_l);
+					t_l = new Record(); //TODO: there may be address issues may have to use tempPrev everywhere
+					FLAG_L = bqL->Remove(t_l); 
+				}
+
+				for(int i = 0;i<leftRecords.size();i++){
+					for(int j = 0;j<rightRecords.size();j++){
+						// cout<<"......first records......"<<endl;
+						// leftRecords[i]->Print(left);
+						// cout<<"...second record.."<<endl;
+						// rightRecords[j]->Print(right);
+						// cout<<endl;
+						
+						resRec.MergeRecords(leftRecords[i],rightRecords[j],attrL,attrR,resultAttr,attrL + attrR,attrL);
+						outPipe->Insert(&resRec);
+
 					}
-					FLAG_L = bqL->Remove(&tempPrev);
 				}
+				//FIRST APPOACH. DONT KNOW WHY IT IS NOT WORKING
+
+				// while(FLAG_L && ce.Compare(&t_l,&omL,&tempR,&omR) == 0){
+				// 	for(int i = 0;i<rightRecords.size();i++){
+				// 		if (ce.Compare(&t_l, rightRecords[i], literal,selOp)) {
+				// 			resRec.MergeRecords(&t_l,rightRecords[i],attrL,attrR,resultAttr,attrL + attrR,attrL);
+				// 			outPipe->Insert(&resRec);
+				// 		}
+				// 	}
+				// 	FLAG_L = bqL->Remove(&t_l);
+				// }
 				if(FLAG_R) tempR.Copy(t_r);
-				if(FLAG_L) tempL.Copy(&tempPrev);
+				if(FLAG_L) tempL.Copy(t_l);
 				for(int i = 0;i<rightRecords.size();i++) delete rightRecords[i];
+				for(int i = 0;i<leftRecords.size();i++) delete leftRecords[i];
 				rightRecords.clear();
 				
 			}
 		
 		}
 		delete[] resultAttr;
-		bqL->ShutDown();
-		bqR->ShutDown();
-		//delVar(bqL);
-		//delVar(bqR);
-		
-		delVar(sbql);
-		delVar(sbqr);
 	}
 	outPipe->ShutDown();
+	bqL->ShutDown();
+	bqR->ShutDown();
+	delete bqL;
+	delete bqR;
 
 
 }
 
-void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal){
+void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal, Schema* left,Schema* right){
 	stJoin *stj = new stJoin();
 	stj->inPipeL = &inPipeL;
 	stj->inPipeR = &inPipeR;
 	stj->outPipe = &outPipe;
 	stj->selOp = &selOp;
 	stj->literal = &literal;
+	stj->left = left;
+	stj->right = right;
 	pthread_create (&thread, NULL, joinFunc, (void *)stj);
 }
 
@@ -268,19 +315,10 @@ void* dupRemFunc(void* args){
 	Record tempRec;
 	Record nextRec;
 	OrderMaker om(mySchema);
-	Pipe* tempIpPipe = new Pipe(PIPE_BUFFER);
 	Pipe* tempOpPipe = new Pipe(PIPE_BUFFER);
-	structBigQ* sbq = new structBigQ();
-	sbq->iPipe = tempIpPipe;
-	sbq->oPipe = tempOpPipe;
-	sbq->order = &om;
-	sbq->runlen = 2;
-	pthread_t tempThread;
-	pthread_create(&tempThread,NULL,runBigqFunc,(void *) sbq);
-	while(inPipe->Remove(&tempRec)){
-		tempIpPipe->Insert(&tempRec);
-	}
-	tempIpPipe->ShutDown();
+	
+	BigQ sbq(*inPipe,*tempOpPipe,om,1);
+
 	bool FLAG_FIRST = true;
 	while(tempOpPipe->Remove(&nextRec)){
 		if(FLAG_FIRST){
@@ -288,18 +326,17 @@ void* dupRemFunc(void* args){
 			FLAG_FIRST = false;
 		}
 		else{
-			if(!ce.Compare(&nextRec,&tempRec,&om)){
-
-			}
-			else {
+			if(ce.Compare(&nextRec,&tempRec,&om) != 0){
+				//do not insert if both are equal
 				outPipe->Insert(&tempRec);
 				tempRec.Copy(&nextRec);
 			}
 		}
 
 	}
+	//insert last record
+	outPipe->Insert(&tempRec);
 	outPipe->ShutDown();
-	pthread_join(tempThread,NULL);
 	tempOpPipe->ShutDown();
 }
 void DuplicateRemoval::Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema){
