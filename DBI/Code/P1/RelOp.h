@@ -39,8 +39,6 @@ typedef struct{
 	Pipe* outPipe;
 	CNF* selOp;
 	Record* literal;
-	Schema* left;
-	Schema* right;
 }stJoin;
 //structure to start a duplicate removal thread
 typedef struct{
@@ -117,7 +115,7 @@ class Join : public RelationalOp {
 		pthread_t thread;
 		int pages;
 	public:
-	void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal,Schema* left,Schema* right);
+	void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal);
 	void WaitUntilDone () ;
 	void Use_n_Pages (int n) ;
 };

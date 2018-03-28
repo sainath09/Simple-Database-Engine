@@ -114,8 +114,8 @@ void* joinFunc(void * args){
 	Pipe * outPipe=stj->outPipe ;
 	CNF *selOp=stj->selOp ;
 	Record *literal=stj->literal ;
-	Schema* left = stj->left;
-	Schema* right = stj->right;
+	// Schema* left = stj->left;
+	// Schema* right = stj->right; //FOR PRINTING RECORDS
 	
 	OrderMaker omL,omR;
 	Pipe *bqL = new Pipe(PIPE_BUFFER);
@@ -222,22 +222,22 @@ void* joinFunc(void * args){
 				vector<Record *> rightRecords;
 				Record* t_r = new Record();
 				t_r->Copy(&tempR); 
-				while( FLAG_R && ce.Compare(t_r,&omR,&tempL,&omL) == 0){ //FIXME: did a b == c comparision may need to do a == b across tables
+				while( FLAG_R && ce.Compare(t_r,&omR,&tempL,&omL) == 0){ 
 					// cout<<"...right Records.."<<endl;
 					// t_r->Print(right);
 					rightRecords.push_back(t_r);
-					t_r = new Record(); //TODO: there may be address issues may have to use tempPrev everywhere
+					t_r = new Record();
 					FLAG_R = bqR->Remove(t_r); 
 				}
 				//get equal records from left pipe
 				vector<Record*> leftRecords;
 				Record* t_l = new Record();
 				t_l->Copy(&tempL);
-				while( FLAG_L && ce.Compare(t_l,&omL,rightRecords[0],&omR) == 0){ //FIXME: did a b == c comparision may need to do a == b across tables
+				while( FLAG_L && ce.Compare(t_l,&omL,rightRecords[0],&omR) == 0){ 
 					// cout<<"...left Records.."<<endl;
 					// t_l->Print(left);
 					leftRecords.push_back(t_l);
-					t_l = new Record(); //TODO: there may be address issues may have to use tempPrev everywhere
+					t_l = new Record(); 
 					FLAG_L = bqL->Remove(t_l); 
 				}
 
@@ -285,15 +285,15 @@ void* joinFunc(void * args){
 
 }
 
-void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal, Schema* left,Schema* right){
+void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal){
 	stJoin *stj = new stJoin();
 	stj->inPipeL = &inPipeL;
 	stj->inPipeR = &inPipeR;
 	stj->outPipe = &outPipe;
 	stj->selOp = &selOp;
 	stj->literal = &literal;
-	stj->left = left;
-	stj->right = right;
+	// stj->left = left;
+	// stj->right = right;
 	pthread_create (&thread, NULL, joinFunc, (void *)stj);
 }
 
@@ -406,7 +406,7 @@ void* sumFunc(void* args){
 	testing.ComposeRecord(&tempSch,s);
 	outPipe->Insert(&testing);
 	outPipe->ShutDown();
-	//delVar(attr.name); //FIXME: check for error here.
+	
 
 }
 void Sum::Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe){
