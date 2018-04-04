@@ -7,8 +7,8 @@ ifdef linux
 tag = -n
 endif
 
-test.out: Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o
-	$(CC) -o test.out  Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o -lfl -lpthread
+test.out:  Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o Statistics.o y.tab.o lex.yy.o test.o
+	$(CC) -o test.out   Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o Statistics.o y.tab.o lex.yy.o test.o -lfl -lpthread
 	
 a2-2test.out: Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o
 	$(CC) -o a2-2test.out Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o -lfl -lpthread
@@ -21,6 +21,9 @@ a1test.out: Heap.o Sort.o AbstractDBFile.o BigQ.o Record.o Comparison.o Comparis
 	
 test.o: test.cc
 	$(CC) -g -c test.cc
+
+Statistics.o: Statistics.cc
+	$(CC) -g -c Statistics.cc
 	
 a2-2test.o: a2-2test.cc
 	$(CC) -g -c a2-2test.cc
@@ -71,27 +74,15 @@ y.tab.o: Parser.y
 	#sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
 	g++ -c y.tab.c
 		
-yyfunc.tab.o: ParserFunc.y
-	yacc -p "yyfunc" -b "yyfunc" -d ParserFunc.y
-	#sed $(tag) yyfunc.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
-	g++ -c yyfunc.tab.c
+
 	
 lex.yy.o: Lexer.l
 	lex Lexer.l
 	gcc  -c lex.yy.c
 
-lex.yyfunc.o: LexerFunc.l
-	lex -Pyyfunc LexerFunc.l
-	gcc  -c lex.yyfunc.c
-
 clean: 
 	rm -f *.o
 	rm -f *.out
 	rm -f y.tab.c
-	rm -f y.tab.c-e
-	rm -f yyfunc.tab.*
-	rm -f lex.yyfunc.*
 	rm -f lex.yy.c
 	rm -f y.tab.h
-	rm -f *.bin
-	rm -f *.METAINF
