@@ -3,6 +3,9 @@
 #include "ParseTree.h"
 #include <unordered_map>
 #include <string>
+#include <fstream>
+#include <iostream>
+using namespace std;
 
 typedef struct {
 	unordered_map <string, int> mapAttr;
@@ -14,6 +17,7 @@ class Statistics
 {
 private:
 	unordered_map <string, structRel> mapRel;
+
 public:
 	Statistics();
 	Statistics(Statistics &copyMe);	 // Performs deep copy
