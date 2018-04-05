@@ -1,10 +1,19 @@
 #ifndef STATISTICS_
 #define STATISTICS_
 #include "ParseTree.h"
+#include <unordered_map>
+#include <string>
 
+typedef struct {
+	unordered_map <string, int> mapAttr;
+	int numTuples;
+	int numRel;
+}structRel;
 
 class Statistics
 {
+private:
+	unordered_map <string, structRel> mapRel;
 public:
 	Statistics();
 	Statistics(Statistics &copyMe);	 // Performs deep copy
