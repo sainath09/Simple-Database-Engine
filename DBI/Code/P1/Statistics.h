@@ -1,5 +1,5 @@
-#ifndef STATISTICS_
-#define STATISTICS_
+#ifndef STATISTICS_H
+#define STATISTICS_H
 #include "ParseTree.h"
 #include <unordered_map>
 #include <string>
@@ -17,6 +17,7 @@ class Statistics
 {
 private:
 	unordered_map <string, structRel> mapRel;
+	double resFromEstimate;
 
 public:
 	Statistics();

@@ -87,8 +87,60 @@ void Statistics::Write(char *fromWhere){
     out.close();
 }
 
-void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin)
-{
+void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin){
+    
+    struct OrList *innerOrList;
+    struct AndList *tempParser = parseTree;
+    while(tempParser){
+        if(parseTree->left){
+            innerOrList = tempParser->left;
+            while(innerOrList){
+                if(innerOrList->left->left->code == 4 && innerOrList->left->right->code == 4){ //FIXME: 4 is for string and 3 is for name
+                    unordered_map<string,int>::iterator attIt[2];
+                    unordered_map<string,structRel>::iterator relIt[2];
+                    structRel tempjoinRelation;
+                    for(auto it = mapRel.begin();it!= mapRel.end();it++ ){
+                        attIt[0] = it->second.mapAttr.find(innerOrList->left->left->value);
+                        if(attIt[0] != it->second.mapAttr.end()){
+                            relIt[0] = it;
+                            break;
+                        }
+                    }
+                    for(auto it = mapRel.begin();it!= mapRel.end();it++ ){
+                        attIt[1] = it->second.mapAttr.find(innerOrList->left->right->value);
+                        if(attIt[1] != it->second.mapAttr.end()){
+                            relIt[1] = it;
+                            break;
+                        }
+                    }
+                    string RelationName = relIt[0]->first + "|" + relIt[1]->second;
+                    tempjoinRelation.numTuples = resFromEstimate;
+                    tempjoinRelation.numRel = numToJoin;
+                    for(int i = 0;i<2;i++){
+                        for(auto it = relIt[i]->second.mapAttr.begin();it!= relIt[i]->second.mapAttr.end();it++){
+                            tempjoinRelation.mapAttr.insert(*it);
+                        }
+                        mapRel.erase(relIt[i]);
+                    }
+                    mapRel.insert({RelationName,tempjoinRelation});
+                }
+                else{
+                    unordered_map<string,int>::iterator attIt;
+                    unordered_map<string,structRel>::iterator relIt;
+                    for(auto it = mapRel.begin();it!=mapRel.end();it++){
+                        attIt = it->second.mapAttr.find(innerOrList->left->left->value);
+                        if(attIt != it->second.mapAttr.end()){
+                            relIt = it;
+                            break;
+                        }
+                    }
+                    relIt->second.numTuples = resFromEstimate;
+                }
+                innerOrList = innerOrList->rightOr;
+            }
+        }
+         tempParser = tempParser->rightAnd;
+    }
 }
 double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numToJoin)
 {
