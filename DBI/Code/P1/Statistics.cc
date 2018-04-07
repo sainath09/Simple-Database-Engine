@@ -1,8 +1,9 @@
 #include "Statistics.h"
+using namespace std;
 
 Statistics::Statistics()
 {
-
+	
 }
 Statistics::Statistics(Statistics &copyMe)
 {
@@ -10,229 +11,309 @@ Statistics::Statistics(Statistics &copyMe)
 Statistics::~Statistics()
 {
 }
-
 void Statistics::AddRel(char *relName, int numTuples)
-{
-    structRel tempRel;
-    tempRel.numTuples = numTuples;
-    tempRel.numRel = 1;
-    string relname(relName);
-    mapRel[relname]=tempRel;
+{	
+	subSet s;
+	s.subSetNum = subSetsMap.size() + 1;
+	s.numTuples = numTuples;
+	s.relations.push_back(relName);
+	subSetsMap[s.subSetNum] =  s;
+	allsubSetMap[relName] = s.subSetNum;
+	
 }
-void Statistics::AddAtt(char *relName, char *attName, int numDistincts)
-{
-    string tempRel(relName);
+
+void Statistics::AddAtt(char *relName, char *attName, long numDistincts)
+{	
+	auto tempIt = allsubSetMap.find(relName);
+	string tempRel (relName);
     string tempAttr(attName);
-    if(numDistincts == -1) numDistincts = mapRel[relName].numTuples;
-    mapRel[relName].mapAttr[tempAttr] = numDistincts;
+    int subSetNum = 0;
+	tempRel += '.' + tempAttr;
+	if (tempIt != allsubSetMap.end()){
+        subSetNum = tempIt->second;
+		auto itSub = subSetsMap.find(subSetNum);
+		if (itSub != subSetsMap.end()){
+            subSet &tempS = itSub->second;						
+			tempS.AttMap[tempRel]  = numDistincts;
+        } 
+        else cout << "ERROR!!!! in Retiriving subSet from map in AddAtt"<<endl;
+						
+	}
+    else cout<<"ERROR!!!! in Retiriving relation from map in AddAtt" << endl;
 }
+
 void Statistics::CopyRel(char *oldName, char *newName)
 {
-    string oldname(oldName);
-    string newname(newName);
-    
-    structRel toCopy;
-    toCopy.numTuples = mapRel[oldname].numTuples;
-    toCopy.numRel = mapRel[oldname].numRel;
-    for(auto it_attr = mapRel[oldname].mapAttr.begin();it_attr != mapRel[oldname].mapAttr.end();it_attr++ ){
+	auto tempIt = allsubSetMap.find (oldName);
+	if (tempIt != allsubSetMap.end()) {
+        int newsubSetNum = subSetsMap.size()+1;
+		allsubSetMap[newName]=  newsubSetNum;
+		int oldsubSetNum = tempIt->second;
+		auto itSub = subSetsMap.find(oldsubSetNum);
+		if(itSub != subSetsMap.end()){
+            subSet &s = itSub->second;
+			subSet tempsubSet;
+			tempsubSet.subSetNum = newsubSetNum;
+			tempsubSet.numTuples = s.numTuples;
+			for (auto it =  s.AttMap.begin();it!= s.AttMap.end();it++) {
+				 int position = it->first.find('.');
+				 string tempAtt(newName);
+				 tempAtt += '.' + it->first.substr(position+1);
+				 tempsubSet.AttMap[tempAtt] = it->second;
+			}
+			tempsubSet.relations.push_back(newName);
 
-        toCopy.mapAttr[it_attr->first] = it_attr->second;
-    }
-    mapRel[newname] = toCopy;
-
-    // cout<<"BEGIN PRINT"<<endl;
-    // for(auto it = mapRel[newname].mapAttr.begin();it!= mapRel[newname].mapAttr.end();it++){
-    //     cout<<it->first<<endl;
-    //     cout<<it->second<<endl;
-    // }
-    // cout<<"end PRINT"<<endl;
+			subSetsMap[newsubSetNum] = tempsubSet;
+			
+		}
+        else cout << "ERROR!!!! in Retiriving subSet from map in copyRel"<<endl;
+		
+	}
+    else cout << "ERROR!!!! in Retiriving Relation from map in copyRel"<<endl;
 }
 	
-void Statistics::Read(char *fromWhere){
-    mapRel.clear();
-    resFromEstimate = 0.0;
-    ifstream in(fromWhere);
-    if(!in.is_open()){
-        cerr<<"No file to read Please check the file path or that file exists!";
-        exit(1);
-    }
-    string line;
-    getline(in,line); //Dumping out startOfRelation here
-    
-    while(getline(in,line)){
-       // cout<<"Relation name"<<line<<endl;
-        if(line == "RelationName:"){
-            string relname;
-            in>>relname;
-            in>>line; //Dumping numberOfRelations to line
-            structRel tempRel;
-            in>>tempRel.numRel;
-            in>>line; // Dumping Attrs to line
-            in>>tempRel.numTuples;
-            getline(in,line);
-            
-            while(getline(in,line) && line != "startOfRelation" && line !="EOF"){
-               // cout<<"line:"<<line<<endl;
-                string attrName;
-                 attrName = line;
-                in>>tempRel.mapAttr[attrName];
-                getline(in,line);
-            }
-            mapRel[relname] = tempRel;
+void Statistics::Read(const char *fromWhere)
+{	string line;
+	ifstream in(fromWhere);
+	getline(in,line); // number of subsets in first line
+	int numsubSets = stoi(line);
+	getline(in,line);
+	istringstream iss(line);
+	vector<string> temp;
+	//Elegant way of doing .split found on stackoverflow. C++ should really be able to do string split.
+	copy(istream_iterator<string>(iss),istream_iterator<string>(),back_inserter(temp));
+	for (int i=0;i<temp.size(); i+=2) allsubSetMap[temp[i]] = stoi(temp[i+1], NULL);
 
-        }
-    }
-    // cout<<"BEGIN PRINT"<<endl;
-    // for(auto it = mapRel.begin();it!= mapRel.end();it++){
-    //     cout<<it->first<<endl;
-    //     cout<<it->second.numTuples<<endl;
-    //     cout<<it->second.numRel<<endl;
-    //     for(auto itt = it->second.mapAttr.begin();itt!= it->second.mapAttr.end();itt++ ){
-    //         cout<<itt->first<<":"<<itt->second<<endl;
-    //     }
-    // }
-    // cout<<"end PRINT"<<endl;
-
+	while (getline(in,line)){
+		istringstream iss(line);
+		vector<string> temp;
+		copy(istream_iterator<string>(iss),istream_iterator<string>(),back_inserter(temp));
+		int subSetNumber = stoi(temp[0], NULL);
+		long numTuples = stoi(temp[1], NULL);
+		unordered_map<string,long> attr;
+		for (int i=2;i<temp.size(); i+=2) {
+			attr[temp[i]] = stoi(temp[i+1], NULL);
+		}
+		subSet tempS;
+		tempS.subSetNum = subSetNumber;
+		tempS.numTuples = numTuples;
+		tempS.AttMap = attr;
+		subSetsMap[subSetNumber] =  tempS; 
+	}
+	
 }
-void Statistics::Write(char *fromWhere){
-    ofstream out(fromWhere);
-    for(auto it = mapRel.begin();it!= mapRel.end();it++){
-        out<<"startOfRelation\n";
-        out<<"RelationName:\n"<<it->first<<"\n";
-        out<<"numberOfRelations:\n"<<it->second.numRel<<"\n";
-        out<<"Attrs:\n"<<it->second.numTuples<<"\n";
-        for(auto it_attr = it->second.mapAttr.begin();it_attr != it->second.mapAttr.end();it_attr++){
-            out<<it_attr->first<<"\n";
-            out<<it_attr->second<<"\n";
-        }
-    }
-    out<<"EOF";
-    out.close();
+void Statistics::Write(const char *fromWhere)
+{
+	ofstream out(fromWhere);
+	out << subSetsMap.size() << endl;
+	for (auto it = allsubSetMap.begin();it!=allsubSetMap.end();it++) {
+		out << it->first <<" ";
+		auto tempIt = allsubSetMap.find(it->first);
+		out << tempIt->second <<" ";
+	}
+	out << endl;
+	for (auto it = subSetsMap.begin();it != subSetsMap.end();it++){
+		out << it->first << " ";
+		auto itSub = subSetsMap.find(it->first);
+		out << itSub->second.numTuples << " ";
+		for (auto ott =  itSub->second.AttMap.begin();ott !=  itSub->second.AttMap.end();ott++){
+			out << ott->first << " " << ott->second << " ";
+		}
+		out << endl;
+	}
 }
 
-void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin){
-    
-    struct OrList *innerOrList;
-    struct AndList *tempParser = parseTree;
-    while(tempParser){
-        if(parseTree->left){
-            innerOrList = tempParser->left;
-            while(innerOrList){
-                if(innerOrList->left->left->code == 4 && innerOrList->left->right->code == 4){ //FIXME: 4 is for string and 3 is for name
-                    unordered_map<string,int>::iterator attIt[2];
-                    unordered_map<string,structRel>::iterator relIt[2];
-                    structRel tempjoinRelation;
-                    for(auto it = mapRel.begin();it!= mapRel.end();it++ ){
-                        attIt[0] = it->second.mapAttr.find(innerOrList->left->left->value);
-                        if(attIt[0] != it->second.mapAttr.end()){
-                            relIt[0] = it;
-                            break;
-                        }
-                    }
-                    for(auto it = mapRel.begin();it!= mapRel.end();it++ ){
-                        attIt[1] = it->second.mapAttr.find(innerOrList->left->right->value);
-                        if(attIt[1] != it->second.mapAttr.end()){
-                            relIt[1] = it;
-                            break;
-                        }
-                    }
-                    string RelationName = relIt[0]->first +"|"+ relIt[1]->first;
-                    tempjoinRelation.numTuples = resFromEstimate;
-                    tempjoinRelation.numRel = numToJoin;
-                    for(int i = 0;i<2;i++){
-                        for(auto it = relIt[i]->second.mapAttr.begin();it!= relIt[i]->second.mapAttr.end();it++){
-                            tempjoinRelation.mapAttr.insert(*it);
-                        }
-                        mapRel.erase(relIt[i]);
-                    }
-                    mapRel.insert({RelationName,tempjoinRelation});
-                }
-                else{
-                    unordered_map<string,int>::iterator attIt;
-                    unordered_map<string,structRel>::iterator relIt;
-                    for(auto it = mapRel.begin();it!=mapRel.end();it++){
-                        attIt = it->second.mapAttr.find(innerOrList->left->left->value);
-                        if(attIt != it->second.mapAttr.end()){
-                            relIt = it;
-                            break;
-                        }
-                    }
-                    relIt->second.numTuples = resFromEstimate;
-                }
-                innerOrList = innerOrList->rightOr;
-            }
-        }
-         tempParser = tempParser->rightAnd;
-    }
+void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin)
+{
+	auto estimate = calcEstimate(parseTree, relNames,  numToJoin);
+	if (estimate.first.first == -1){
+		cout << "ERROR!!!! Input is not correct. got emtpy estimate from calcEstimate in apply!" << endl;		
+		return;
+	}
+	
+	int op1 = estimate.second[0];
+	int op2 = estimate.second[1];
+	if (op1 != -1 && op2 == -1) {
+		auto itSub = subSetsMap.find(op1);
+		if (itSub != subSetsMap.end()) {
+			itSub->second.numTuples = estimate.first.first*estimate.first.second;
+		} 
+		else cout<<"ERROR!!! cannot find subset in apply"<<endl;
+		return;
+	} 
+	else if (op1 == -1 && op2 == -1) {
+		cout << "ERROR!!! calcestimate did not return correctly in apply" << endl;
+		return;
+	}
+
+	auto itSub1 = subSetsMap.find(op1);
+	if (itSub1 == subSetsMap.end()){
+		cout << "Error!!!! cannot get subset 1 in apply" << endl;
+		return;
+	}	
+	auto itSub2 = subSetsMap.find(op2);
+	if (itSub2 == subSetsMap.end()){
+		cout << "Error!!!! cannot get subset 2 in apply" << endl;
+		return;
+	}	
+	
+	subSet &s1 = itSub1->second;
+	subSet &s2 = itSub2->second;
+	
+	if (s1.subSetNum == s2.subSetNum) { cout<<"Should never happen" << endl; return;}
+
+	s1.numTuples = estimate.first.first*estimate.first.second;
+
+
+	for(int i=0;i<s2.relations.size();i++){
+
+		allsubSetMap.erase(s2.relations[i]);
+		allsubSetMap[s2.relations[i]]= s1.subSetNum;
+	}
+
+	for (auto it = s1.AttMap.begin(); it!=s1.AttMap.end(); it++) {
+		s1.AttMap[it->first] = it->second*estimate.first.second;
+
+	}
+
+	for (auto it = s2.AttMap.begin(); it!=s2.AttMap.end(); it++) {
+		s1.AttMap[it->first] = it->second*estimate.first.second;
+	}
+	
+	
+	for(int i=0;i<s2.relations.size();i++){
+		s1.relations.push_back(s2.relations[i]);
+	}
+	
+
+	subSetsMap.erase(s2.subSetNum);
+	
+	
 }
 double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numToJoin){
-    struct AndList* tempParser = parseTree;
-    struct OrList* innerOrList;
-    double res = 0.0,frac = 1.0;
-    int FLAG = 0;
-    if(!tempParser){
-        if(numToJoin>1) return -1;
-        return mapRel[relNames[0]].numTuples;
-    }
-    while(tempParser){
-        if(tempParser->left){
-            innerOrList = tempParser->left;
-            double orFrac = 0.0;
-            unordered_map<string,int>::iterator attItEnd;
-            while(innerOrList){
-                if(innerOrList->left->left->code == 4 && innerOrList->left->right->code == 4){ //FIXME: 4 is for string and 3 is for name
-                    unordered_map<string,int>::iterator attIt[2];
-                    unordered_map<string,structRel>::iterator relIt[2];
-                    structRel tempjoinRelation;
-                    for(auto it = mapRel.begin();it!= mapRel.end();it++ ){
-                        attIt[0] = it->second.mapAttr.find(innerOrList->left->left->value);
-                        if(attIt[0] != it->second.mapAttr.end()){
-                            relIt[0] = it;
-                            break;
-                        }
-                    }
-                    for(auto it = mapRel.begin();it!= mapRel.end();it++ ){
-                        attIt[1] = it->second.mapAttr.find(innerOrList->left->right->value);
-                        if(attIt[1] != it->second.mapAttr.end()){
-                            relIt[1] = it;
-                            break;
-                        }
-                    }
-                    double maxi = (double)max(attIt[0]->second,attIt[1]->second);
-                    if(FLAG == 0)
-                        res =  (double)relIt[0]->second.numTuples*(double)relIt[1]->second.numTuples/maxi;
-                    else
-                        res *= (double)relIt[1]->second.numTuples/maxi;
-                    FLAG = 1;
-                }
-                else{
-                    unordered_map<string,int>::iterator attIt;
-                    unordered_map<string,structRel>::iterator relIt;
-                    for(auto it = mapRel.begin();it!=mapRel.end();it++){
-                        attIt = it->second.mapAttr.find(innerOrList->left->left->value);
-                        if(attIt != it->second.mapAttr.end()){
-                            relIt = it;
-                            break;
-                        }
-                    }
-                    if(res == 0.0) res = ((double)relIt->second.numTuples);
-                    double tempf;
-                    if(innerOrList->left->code == 3) tempf = 1.0/attIt->second; //FIXME: value of equals
-                    else tempf = 1.0/3.0;
-                    if(attIt != attItEnd)
-                        orFrac = tempf + orFrac - (tempf*orFrac);
-                    else  
-                        orFrac += tempf;
-                    attItEnd = attIt;
-                }
-                innerOrList = innerOrList->rightOr;
-            }
-            if(orFrac != 0.0) frac *= orFrac;
-        }
-        tempParser = tempParser->rightAnd;       
-    }
-    res *= frac;
-    resFromEstimate = res;
-    return res;
+	auto estimate = calcEstimate(parseTree, relNames, numToJoin );
+	return estimate.first.first*estimate.first.second;
 }
 
+attStats Statistics::getattStats(string attr, char **relNames, int numToJoin){
+	attStats stats;
+	for (auto itSub =  subSetsMap.begin();itSub != subSetsMap.end();itSub++){
+		for (auto it = itSub->second.AttMap.begin();it!=itSub->second.AttMap.end();it++){
+			if (it->first.compare(attr)==0){
+				stats.subSetNum = itSub->first;
+				stats.numTuples = itSub->second.numTuples;
+				stats.numDistinct = it->second;
+				return stats;	
+			}
+		}
+	}	
+	stats.subSetNum = -1;
+	stats.numTuples = -1;
+	stats.numDistinct = -1;
+	return stats;
+}
+
+void Statistics::adjustSelectivityFactor(string attName, vector<string> &eachAtts, double& eachSelFactor, int code, char **relNames, int numToJoin){
+	
+	auto attstats = getattStats(attName, relNames, numToJoin);
+	double  sel = 1.0;
+	if(code == EQUALS){
+		sel = 1.0/attstats.numDistinct;
+	}
+	else sel = 1.0/3.0;
+	if (eachAtts.empty()) {
+		eachSelFactor = sel;
+		eachAtts.push_back(attName);
+	} 
+	else if (find(eachAtts.begin(), eachAtts.end(), attName) == eachAtts.end()) {
+		eachSelFactor = 1 - (1 - eachSelFactor) * (1 - sel);
+		eachAtts.push_back(attName);
+	} 
+	else eachSelFactor += sel;
+	return ;
+}
+
+
+pair<pair<long , double>, vector<int> > Statistics::calcEstimate(const struct AndList *andList, char **relNames, int numToJoin) {
+	
+	long  numOfRows;
+	double totSelFactor = 1.0;
+
+	int subSetNum1 = -1;
+	int subSetNum2 = -1;
+	int selsubSetNum1 = -1;
+	int selsubSetNum2 = -1;
+	bool FLAG = false;
+	long double tuplesToSelect = 0;
+	while (andList) {
+		struct OrList *innerOrList = andList->left;
+		double eachSelFactor = 1.0;
+		vector<string> eachAtts;  
+		while (innerOrList) {
+			if (innerOrList->left->left->code == NAME && innerOrList->left->right->code == NAME) {
+				if(innerOrList->left->code == EQUALS){
+
+					
+					auto lStats = getattStats(innerOrList->left->left->value, relNames, numToJoin);
+					auto rStats = getattStats(innerOrList->left->right->value, relNames, numToJoin);
+					FLAG = true;
+					if (lStats.subSetNum == -1 || rStats.subSetNum==-1){
+						cout<<"Error: not able to find attribute name in any subSets" << endl;
+						subSetNum1 = -1;
+						subSetNum2 = -1;
+						vector<int> ret;
+						ret.push_back(subSetNum1);
+						ret.push_back(subSetNum2);
+
+						return make_pair(make_pair(numOfRows, totSelFactor), ret);
+					}
+					long lRows = lStats.numTuples;
+					long rRows = rStats.numTuples;
+					int maxRows =  max(lStats.numDistinct, rStats.numDistinct);
+					numOfRows = (double) (((double) (lRows * rRows)) / (double) maxRows);
+
+					subSetNum1 = lStats.subSetNum;
+					subSetNum2 = rStats.subSetNum;
+				}
+				else {
+					cout<<"ERROR!!!! can only be done with equals. Should never come here in calcEstimate" <<endl;
+					vector<int> ret;
+					ret.push_back(-1);
+					ret.push_back(-1);
+					return make_pair(make_pair(-1,-1), ret);
+
+				}
+
+			} 
+			else if (innerOrList->left->left->code == NAME ) {
+				adjustSelectivityFactor(innerOrList->left->left->value, eachAtts, eachSelFactor, innerOrList->left->code, relNames, numToJoin);
+				auto lStats = getattStats(innerOrList->left->left->value, relNames, numToJoin);
+				tuplesToSelect = lStats.numTuples;
+				selsubSetNum1 = lStats.subSetNum;
+
+			}
+			else if (innerOrList->left->right->code == NAME) {
+				adjustSelectivityFactor(innerOrList->left->right->value, eachAtts, eachSelFactor, innerOrList->left->code, relNames, numToJoin);
+				auto rStats = getattStats(innerOrList->left->right->value, relNames, numToJoin);
+				tuplesToSelect = rStats.numTuples;
+				selsubSetNum2 = rStats.subSetNum;
+			}
+		innerOrList = innerOrList->rightOr;
+		}
+		eachAtts.clear();
+		totSelFactor *= eachSelFactor;
+		andList = andList->rightAnd;
+		
+	}
+	
+	if(!FLAG){
+		numOfRows = tuplesToSelect;
+		subSetNum1 = selsubSetNum1;
+		subSetNum2 = selsubSetNum2;
+	}
+	vector<int> ret;
+	ret.push_back(subSetNum1);
+	ret.push_back(subSetNum2);
+	return make_pair(make_pair(numOfRows, totSelFactor), ret);
+	
+}
