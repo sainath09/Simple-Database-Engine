@@ -1,5 +1,5 @@
 
-CC = g++ -O2 -Wno-deprecated
+CC = g++ -std=c++11 -O2 -Wno-deprecated
 
 tag = -i
 
@@ -7,8 +7,8 @@ ifdef linux
 tag = -n
 endif
 
-test.out:  Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o Statistics.o y.tab.o lex.yy.o test.o
-	$(CC) -o test.out   Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o Statistics.o y.tab.o lex.yy.o test.o -lfl -lpthread
+test.out:  Statistics.o y.tab.o lex.yy.o test.o
+	$(CC) -o test.out   Statistics.o y.tab.o lex.yy.o test.o -lfl -lpthread
 	
 a2-2test.out: Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o
 	$(CC) -o a2-2test.out Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o -lfl -lpthread
