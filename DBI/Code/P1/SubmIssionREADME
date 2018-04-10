@@ -9,6 +9,8 @@ Poorna Kanamathareddy 35915896
 
 
 -How to run Code
+Method 1
+
 We made a small bash file to run the code
 Just simply type 
 
@@ -16,8 +18,12 @@ Just simply type
 
 and it should clean the code, compile and run all the test cases.
 
+Method 2
+All the files are precompiled so you can directly run the command
+./test.out [0-11]
 
 
+Method 3
 In case you want to run manually, please follow these instructions
 
 To compile the driver, type
@@ -31,6 +37,7 @@ To run the driver, type 'test.out' followed by the query # you wish to execute
 
 Please note makefile is configured for Linux, if running Mac please try the code from Makefile Mac
 This Milestone did not use many of the other files directly so we just compiled required files in test.cc make command
+Didnt include bin files of tpch.
 
 -Changes in test.cc
 This time test.cc has a few typos and we generalized the functionality so that all column names had a table name at start.
