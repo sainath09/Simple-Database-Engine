@@ -46,9 +46,9 @@ public:
 	void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
 	double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 
-	attStats getattStats(string attr, char **relNames, int numToJoin);
-	void adjustSelectivityFactor(string attName, vector<string> &eachAtts, double& eachSelFactor, int code, char **relNames, int numToJoin);
-	pair<pair<long, double>, vector<int> > calcEstimate(const struct AndList *andList, char **relNames, int numToJoin);
+	attStats getattStats(string attr);
+	void adjustSelectivityFactor(string attName, vector<string> &eachAtts, double& eachSelFactor, int code);
+	pair<pair<long, double>, vector<int> > calcEstimate(const struct AndList *andList);
 
 };
 
