@@ -6,6 +6,11 @@ tag = -i
 ifdef linux
 tag = -n
 endif
+main:   y.tab.o lex.yy.o main.o
+	$(CC) -o main y.tab.o lex.yy.o main.o -lfl
+	
+main.o : main.cc
+	$(CC) -g -c main.cc
 
 test.out:  Statistics.o y.tab.o lex.yy.o test.o
 	$(CC) -o test.out   Statistics.o y.tab.o lex.yy.o test.o -lfl -lpthread
@@ -71,7 +76,7 @@ Schema.o: Schema.cc
 	
 y.tab.o: Parser.y
 	yacc -d Parser.y
-	#sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
+	sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
 	g++ -c y.tab.c
 		
 
