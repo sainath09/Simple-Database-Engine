@@ -6,18 +6,23 @@ tag = -i
 ifdef linux
 tag = -n
 endif
+main:   y.tab.o lex.yy.o main.o
+	$(CC) -o main y.tab.o lex.yy.o main.o 
+	
+main.o : main.cc
+	$(CC) -g -c main.cc
 
 test.out:  Statistics.o y.tab.o lex.yy.o test.o
-	$(CC) -o test.out Statistics.o y.tab.o lex.yy.o test.o -lpthread
+	$(CC) -o test.out   Statistics.o y.tab.o lex.yy.o test.o  -lpthread
 	
 a2-2test.out: Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o
-	$(CC) -o a2-2test.out Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o -lpthread
+	$(CC) -o a2-2test.out Sort.o Heap.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a2-2test.o  -lpthread
 	
 a21test.out: Heap.o Sort.o AbstractDBFile.o  Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a21test.o
-	$(CC) -o a21test.out Heap.o Sort.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a21test.o -lpthread
+	$(CC) -o a21test.out Heap.o Sort.o AbstractDBFile.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o a21test.o  -lpthread
 	
 a1test.out: Heap.o Sort.o AbstractDBFile.o BigQ.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1test.o
-	$(CC) -o a1test.out Heap.o Sort.o AbstractDBFile.o BigQ.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1test.o -lpthread
+	$(CC) -o a1test.out Heap.o Sort.o AbstractDBFile.o BigQ.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o y.tab.o lex.yy.o a1test.o  -lpthread
 	
 test.o: test.cc
 	$(CC) -g -c test.cc
@@ -71,7 +76,7 @@ Schema.o: Schema.cc
 	
 y.tab.o: Parser.y
 	yacc -d Parser.y
-	#sed -i -e "s/  __attribute__ ((__unused__))$\/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" y.tab.c
+	sed -i -e "s/  __attribute__ ((__unused__))$\/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" y.tab.c
 	g++ -c y.tab.c
 		
 
