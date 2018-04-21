@@ -65,3 +65,23 @@ git commit -m "fixed untracked files"
 Extensions:
 TODO highlight 
 https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight
+
+
+
+test4_2/main 
+Catalog::getInstance()
+...
+Compiler->Compile()
+    Compiler->chkParse() /Compiler::Parse()
+        par->parseAndCheck()
+        par->chkErrors()  -- not doing this
+        opt->SetQueryOps(queryOperations,QOPSSIZE,&root)
+     Optimize()
+        findOrder() / DetermineJoinOrder()
+             Preprocess(); --wtf is this?
+                Split()
+                FindTable()
+
+
+
+
