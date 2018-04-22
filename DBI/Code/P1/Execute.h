@@ -2,6 +2,11 @@
 #define	EXECUTE_H
 
 #include "QueryPlanner.h"
+#include "Catalog.h"
+#include "Compiler.h"
+#include "Parser.h"
+#include "Optimizer.h"
+//#include "Execute.h"
 
 
 class Execute
@@ -15,11 +20,11 @@ public:
         //db = NULL;
     }
     //  void RunQuery();
-     void setroot(QPElement *_root)
+    void setroot(QPElement *_root)
     {
         root=_root;
     }
-    // void InorderPrint(QPElement *root);
+    void printTree(QPElement *root);
     // void performoperation(QPElement *node);    
     // void clearpipe(QPElement *r);
 };

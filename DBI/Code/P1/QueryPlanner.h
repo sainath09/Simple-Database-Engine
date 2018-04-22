@@ -11,13 +11,6 @@
 #include <string>
 #include <vector>
 #include "Statistics.h"
-#include "Catalog.h"
-#include "Parser.h"
-#include "Optimizer.h"
-#include "Execute.h"
-#include "Compiler.h"
-
-
 #include "Defs.h"
 #include "Schema.h"
 #include "Function.h"
@@ -25,6 +18,20 @@
 #include "Comparison.h"
 #include "Pipe.h"
 #include "RelOp.h"
+//#include "Catalog.h"
+// #include "Compiler.h"
+// #include "Parser.h"
+// #include "Optimizer.h"
+//#include "Execute.h"
+
+static Attribute DobA = {"double",Double};
+static Attribute StrA = {"string",String};
+static Attribute IntA = {"int",Int}; 
+static string enumvals[7]={"Project", "GroupBy", "Sum", "Join","Distinct","SelectFile","SelectPipe"};
+static string types[3]={"Int", "Double", "String"};
+
+
+
 
 using namespace std;
 
@@ -57,8 +64,7 @@ public:
  }
 };
 
-class EstResultNode
-{
+class EstResultNode{
 public:
     string exp;
     double numTuples;
@@ -131,30 +137,6 @@ public:
     
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif	
 

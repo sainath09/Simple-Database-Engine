@@ -6,9 +6,22 @@ tag = -i
 ifdef linux
 tag = -n
 endif
-main:   y.tab.o lex.yy.o main.o
-	$(CC) -o main y.tab.o lex.yy.o main.o -lfl
-	
+main:   Compiler.o Catalog.o Optimizer.o Execute.o Parser.o  Parser.o Statistics.o Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o Record.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o yyfunc.tab.o  lex.yyfunc.o main.o
+	$(CC) -o main Compiler.o Catalog.o Optimizer.o Execute.o Parser.o Statistics.o Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o Record.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o yyfunc.tab.o  lex.yyfunc.o main.o -lfl -lpthread
+Compiler.o : Compiler.cc
+	$(CC) -g -c Compiler.cc
+Catalog.o : Catalog.cc
+	$(CC) -g -c Catalog.cc
+
+Parser.o : Parser.cc
+	$(CC) -g -c Parser.cc
+
+Optimizer.o : Optimizer.cc
+	$(CC) -g -c Optimizer.cc
+Execute.o : Execute.cc
+	$(CC) -g -c Execute.cc
+
+
 main.o : main.cc
 	$(CC) -g -c main.cc
 
@@ -43,7 +56,6 @@ Sort.o: Sort.cc
 	$(CC) -g -c Sort.cc
 Heap.o: Heap.cc
 	$(CC) -g -c Heap.cc
-
 Comparison.o: Comparison.cc
 	$(CC) -g -c Comparison.cc
 	
@@ -78,7 +90,14 @@ y.tab.o: Parser.y
 	yacc -d Parser.y
 	sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
 	g++ -c y.tab.c
-		
+yyfunc.tab.o: ParserFunc.y
+	yacc -p "yyfunc" -b "yyfunc" -d ParserFunc.y
+	sed $(tag) yyfunc.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
+	g++ -w -c yyfunc.tab.c
+
+lex.yyfunc.o: LexerFunc.l
+	lex -Pyyfunc LexerFunc.l
+	gcc  -w -c lex.yyfunc.c -o lex.yyfunc.o
 
 	
 lex.yy.o: Lexer.l

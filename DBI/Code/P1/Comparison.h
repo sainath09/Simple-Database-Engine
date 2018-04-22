@@ -43,7 +43,7 @@ class OrderMaker {
 
 	friend class ComparisonEngine;
 	friend class CNF;
-
+public:
 	int numAtts;
 
 	int whichAtts[MAX_ANDS];

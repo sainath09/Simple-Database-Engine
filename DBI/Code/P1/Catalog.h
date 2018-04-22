@@ -1,12 +1,12 @@
 #ifndef CATALOG_H
 #define	CATALOG_H
 
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include "Statistics.h"
 
-#include "QueryPlanner.h"
-
-
-
-
+using namespace std;
 
 //class for attributes and corressponding types... will combine into it a linked list of tables where they occur
 class attrType
@@ -43,7 +43,13 @@ public:
 
 class Catalog
 {
+private:
+    
+    Catalog();
+    
+    //initializing catalog class
 public:
+    static Catalog *cat;
     unordered_map<string,vector<attrType*> > relToAttr;
     unordered_map<string,TblLnkList*> attrToTable;
     unordered_map<string,string> tableToFile;
@@ -52,15 +58,7 @@ public:
     void  init();
     static Catalog* instantiate();
 
-private:
-    static Catalog *cat;
-    //initializing catalog class
-    Catalog()
-        {
-            init();
-            stats = new Statistics();
-            stats->Read("Statistics.txt");
-        } 
+
       
 };
 

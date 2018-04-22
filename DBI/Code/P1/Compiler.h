@@ -2,6 +2,16 @@
 #ifndef COMPILER_H
 #define	COMPILER_H
 #include "QueryPlanner.h"
+#include "Catalog.h"
+#include "Compiler.h"
+#include "Parser.h"
+#include "Optimizer.h"
+#include "Execute.h"
+
+class Optimizer;
+class parser;
+class Execute;
+class Catalog;
 
 class Compiler
 {
@@ -25,7 +35,7 @@ public:
     }  
     bool chkParse();
     void Optimize();
-    void Execute();
+    void ExecuteQ();
     void Compile();
     void RunDDLquery();   
 };

@@ -1,7 +1,16 @@
 #include "Catalog.h"
+#include "Statistics.h"
+
+
+Catalog::Catalog(){
+    init();
+    stats = new Statistics();
+    stats->Read("Statistics.txt");
+} 
 
 
 //TODO: See if we can instance without this
+Catalog* Catalog::cat = NULL;
 Catalog* Catalog::instantiate(){
     if(cat==NULL)
     {

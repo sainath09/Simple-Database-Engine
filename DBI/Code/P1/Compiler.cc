@@ -3,14 +3,12 @@
 void Compiler::Compile()
 {
     
-    if(chkParse())
-    {
+    if(chkParse()){
         //TODO:implement in ass5
         // if(DDL)
             // return;
         Optimize();
-
-        Execute();
+        exec->printTree(root);
     }
     else
     {
@@ -19,12 +17,10 @@ void Compiler::Compile()
     }
 }
 
-void Compiler::Optimize()
-{    
-    if(qOps[Join])
-     opt->findOrder();
-     //TODO: Fix function name below
-    opt->GenerateQueryPlan();
+void Compiler::Optimize(){    
+    if(qOps[Join]) opt->findOrder();
+    opt->makePlan();
+    exec->setroot(root);
 }
 
 
