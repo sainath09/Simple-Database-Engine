@@ -32,3 +32,7 @@ DBI/Code/P1/lex.yyfunc.c
 DBI/Code/P1/yyfunc.tab.c
 DBI/Code/P1/yyfunc.tab.h
 DBI/Submissions/
+DBI/Code/P1/Statistics.txt
+DBI/Code/P1/main
+DBI/Code/P1/Makefile
+DBI/Code/P1/.vscode/settings.json
