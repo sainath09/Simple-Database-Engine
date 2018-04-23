@@ -13,8 +13,12 @@
 #include "ParseTree.h"
 #include "y.tab.h"
 
-int lineno = 1;
+//int yylineno = 1;
 void yyerror(char*s);
+
+static YY_BUFFER_STATE yy_buf_state;
+void init_lexical_parser_func (char *src) { yy_buf_state = yy_scan_string (src); }
+void close_lexical_parser_func () { yy_delete_buffer (yy_buf_state); }
 
 %}
 
@@ -32,8 +36,31 @@ void yyerror(char*s);
 /* This is the RULES section which defines how to "scan" and what action
  * to take for each token
  */
-
 %%
+
+"ON"			return(ON);
+
+"CREATE"		return(CREATE);
+
+"TABLE"			return(TABLE);
+
+"HEAP"			return(HEAP);
+
+"SORTED"		return(SORTED);
+
+"INSERT"		return(INSERT);
+
+"INTO"			return(INTO); 
+
+"DROP"			return(DROP);
+
+"SET"		 	return(SET);
+
+"OUTPUT"		return(OUTPUT);
+
+"STDOUT"		return(STDOUT);
+
+"NONE"			return(NONE);
 
 "SELECT"		return(SELECT);
 
@@ -73,7 +100,9 @@ void yyerror(char*s);
 
 "*"    	        	return('*');
 
-","    	        	return(',');
+","			return(',');
+
+"'"			return ('\'');
 
 -?[0-9]+ 	       {yylval.actualChars = strdup(yytext);
   			return(Int); 
@@ -101,7 +130,8 @@ void yyerror(char*s);
                         }
                         }
 
-\n                	lineno++;
+\n                	yylineno++;
+
 
 [ \t]             	;
 
@@ -110,11 +140,9 @@ void yyerror(char*s);
 %%
 
 void yyerror(char *s) {
-  printf("%d: %s at %s\n", lineno, s, yytext);
+  printf("%d: %s at %s\n", yylineno, s, yytext);
 }
 
 int yywrap(void){
   return 1;
 }
-
-

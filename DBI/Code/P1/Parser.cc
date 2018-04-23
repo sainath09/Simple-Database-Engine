@@ -4,7 +4,7 @@ bool Parser::parseAndCheck()
 {
     //TODO: check if yyfuncparse is needed ... 
     // replace as necessary 
-    int flag = yyfuncparse();
+    int flag = yyparse();
 	//tables is described in queryplanner
     struct TableList * tempA = tables;
     struct TableList * tempB ;

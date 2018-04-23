@@ -11,19 +11,27 @@
 	extern "C" int yyparse();
 	extern "C" void yyerror(char *s);
   
+	
 	// these data structures hold the result of the parsing
+	struct CreateTable *createTable;
 	struct FuncOperator *finalFunction; // the aggregate function (NULL if no agg)
 	struct TableList *tables; // the list of tables and aliases in the query
 	struct AndList *boolean; // the predicate in the WHERE clause
 	struct NameList *groupingAtts; // grouping atts (NULL if no grouping)
 	struct NameList *attsToSelect; // the set of attributes in the SELECT (NULL if no such atts)
+	struct Insert *insertinto;
 	int distinctAtts; // 1 if there is a DISTINCT in a non-aggregate query 
 	int distinctFunc;  // 1 if there is a DISTINCT in an aggregate query
-
+	char *droptablename;
+	int outputmode;
+	char *outputfile;
+        bool DDL;
 %}
 
 // this stores all of the types returned by production rules
+// this stores all of the types returned by production rules
 %union {
+	struct TableAtts *mytableatts;
  	struct FuncOperand *myOperand;
 	struct FuncOperator *myOperator; 
 	struct TableList *myTables;
@@ -32,6 +40,8 @@
 	struct OrList *myOrList;
 	struct AndList *myAndList;
 	struct NameList *myNames;
+	struct CrAttr *crattr;
+	struct CreateTable *mycreatetables;
 	char *actualChars;
 	char whichOne;
 }
@@ -50,6 +60,19 @@
 %token AS
 %token AND
 %token OR
+%token CREATE 
+%token TABLE
+%token HEAP
+%token SORTED
+%token INSERT
+%token INTO
+%token DROP
+%token SET
+%token OUTPUT
+%token STDOUT
+%token NONE
+%token ON
+
 
 %type <myOrList> OrList
 %type <myAndList> AndList
@@ -61,6 +84,10 @@
 %type <myTables> Tables
 %type <myBoolOperand> Literal
 %type <myNames> Atts
+%type <mytableatts> Createattributes
+%type <crattr> Newatt
+%type <myNames>sortattributes
+
 
 %start SQL
 
@@ -79,6 +106,12 @@ SQL: SELECT WhatIWant FROM Tables WHERE AndList
 	tables = $4;
 	boolean = $6;	
 	groupingAtts = NULL;
+	droptablename=NULL;
+	createTable=NULL;
+	groupingAtts=NULL;
+	insertinto=NULL;
+	outputmode=0;
+        DDL=false;
 }
 
 | SELECT WhatIWant FROM Tables WHERE AndList GROUP BY Atts
@@ -86,6 +119,124 @@ SQL: SELECT WhatIWant FROM Tables WHERE AndList
 	tables = $4;
 	boolean = $6;	
 	groupingAtts = $9;
+	droptablename=NULL;
+	createTable=NULL;
+	insertinto=NULL;
+	outputmode=0;
+        DDL=false;
+}
+|
+SELECT WhatIWant FROM Tables
+{
+	tables = $4;
+	//boolean = $6;	
+	groupingAtts = NULL;
+	droptablename=NULL;
+	createTable=NULL;
+	groupingAtts=NULL;
+	insertinto=NULL;
+	outputmode=0;
+        DDL=false;
+}
+| CREATE TABLE Name '(' Createattributes ')' AS HEAP
+{
+	createTable=(struct CreateTable *) malloc (sizeof (struct CreateTable));
+	createTable->tableName=$3;
+	createTable->sortkeys=NULL;
+	createTable->atts=$5;
+	droptablename=NULL;
+	insertinto=NULL;
+	outputmode=0;
+        DDL=true;
+}
+| CREATE TABLE Name '(' Createattributes ')' AS SORTED ON sortattributes
+{
+	createTable=(struct CreateTable *) malloc (sizeof (struct CreateTable));
+	createTable->tableName=$3;
+	createTable->sortkeys=$10;
+	createTable->atts=$5;
+	droptablename=NULL;
+	insertinto=NULL;
+	outputmode=0;
+        DDL=true;
+}
+| INSERT  Name  INTO Name
+{
+	insertinto=(struct Insert *)malloc(sizeof(struct Insert));
+	insertinto->filename=$2;
+	insertinto->dbfile=$4;
+	droptablename=NULL;
+	createTable=NULL;
+	tables = NULL;
+	boolean = NULL;	
+	groupingAtts = NULL;
+	createTable=NULL;
+	groupingAtts=NULL;
+	outputmode=0;
+        DDL=true;
+
+}
+| DROP TABLE Name
+{
+	insertinto=NULL;
+	createTable=NULL;
+	tables = NULL;
+	boolean = NULL;	
+	groupingAtts = NULL;
+	createTable=NULL;
+	groupingAtts=NULL;
+	droptablename=$3;
+	outputmode=0;
+        DDL=true;
+}
+| SET OUTPUT STDOUT
+{
+	outputmode=1;
+        DDL=true;
+}
+| SET OUTPUT Name
+{	
+	outputmode=2;
+	outputfile=$3;
+        DDL=true;
+}
+| SET OUTPUT NONE
+{
+	outputmode=3;
+        DDL=true;
+};
+
+sortattributes: Name ',' sortattributes
+{
+	$$=(struct NameList *) malloc (sizeof (struct NameList));
+	$$->name=$1;
+	$$->next=$3;
+}
+| Name
+{
+	$$=(struct NameList *) malloc (sizeof (struct NameList));
+	$$->name=$1;;
+	$$->next=NULL;
+};
+
+Createattributes: Newatt ',' Createattributes
+{
+	$$=(struct TableAtts *) malloc (sizeof (struct TableAtts));
+	$$->Op=$1;
+	$$->next=$3;
+}
+| Newatt
+{
+	$$=(struct TableAtts *) malloc (sizeof (struct TableAtts));
+	$$->Op=$1;
+	$$->next=NULL;
+};
+
+Newatt: Name Name
+{
+	$$=(struct CrAttr *) malloc (sizeof (struct CrAttr));
+	$$->value=$1;
+	$$->type=$2;
 };
 
 WhatIWant: Function ',' Atts 
@@ -361,4 +512,3 @@ Float
 ;
 
 %%
-

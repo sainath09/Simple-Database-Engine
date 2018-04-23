@@ -3,8 +3,13 @@
 
 
 #include "QueryPlanner.h"
+// extern "C" {
+// 	int yyparse(void);   // defined in y.tab.c
+// }
+
 extern "C" {
-	int yyfuncparse(void);   // defined in y.tab.c
+	
+	int yyparse(void);   // defined in y.tab.c
 }
 class Catalog;
 class Parser

@@ -9,10 +9,7 @@
 
 using namespace std;
 
-extern "C" {
-	
-	int yyparse(void);   // defined in y.tab.c
-}
+
 string gl_cat = "" ,gl_dbfile = "" ,gl_tpch = "";
 const char *settings = "test.cat";
 void setup () {
