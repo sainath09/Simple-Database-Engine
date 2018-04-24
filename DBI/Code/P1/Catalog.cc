@@ -8,8 +8,6 @@ Catalog::Catalog(){
     stats->Read("Statistics.txt");
 } 
 
-
-//TODO: See if we can instance without this
 Catalog* Catalog::cat = NULL;
 Catalog* Catalog::instantiate(){
     if(cat==NULL)
@@ -21,7 +19,7 @@ Catalog* Catalog::instantiate(){
 extern string gl_cat;
 void Catalog::init(){
  
-    ifstream in(gl_cat.c_str()); //FIXME: Use gl_cat here instead
+    ifstream in(gl_cat.c_str()); 
     string readRel;
     string readLine;
     string readType;

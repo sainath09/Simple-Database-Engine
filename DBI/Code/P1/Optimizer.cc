@@ -375,7 +375,7 @@ bool Optimizer::isBothSeqSame(string first,string second)
     return true;
 }
 
-//TODO: actually query plan starts here
+// Actual query plan starts here
 
 void Optimizer::orderMakerForGroupBy(OrderMaker *o,Schema *s){    
     int i = 0;    
@@ -550,7 +550,7 @@ void Optimizer::makePlan(){
 
         numRel++;
         /* Code for Joining relations
-            
+
 
         */
 

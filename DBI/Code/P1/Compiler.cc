@@ -8,7 +8,7 @@ void Compiler::Compile()
         exec->printTree(root);
     }
     else{
-        cout<<"Check the query and try again";
+        cout<<"Query is Wrong!!!";
     }
 }
 
