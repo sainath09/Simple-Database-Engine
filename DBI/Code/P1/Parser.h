@@ -3,33 +3,29 @@
 
 
 #include "QueryPlanner.h"
-// extern "C" {
-// 	int yyparse(void);   // defined in y.tab.c
-// }
+
+/* Parser parsess the query using yyparse 
+
+Parser has Catalog reference to use statistics
+and two maps of tablename to Alias reference and alias to table name reference 
+
+ASSUMPTION :  We are not checking for any parser language error. All querys are valid 
+*/
 
 extern "C" {
 	
 	int yyparse(void);   // defined in y.tab.c
 }
 class Catalog;
-class Parser
-{
+class Parser{
     Catalog *cat;
-    //FIXME: DELETE THESE IF NOT NEEDED
-    unordered_map<string,string> tableToAlias;
-    unordered_map<string,string> aliasToTable;    
-    // string alias;
-    // string attr;
+    map<string,string> tableToAlias;
+    map<string,string> aliasToTable;    
 public:
-    Parser(Catalog *a)
-    {
+    Parser(Catalog *a){
         cat=a;
     }
     bool parseAndCheck();
-    
-    bool chkErrors(); //TODO: Delete this function if not needed
-    // void Split(string str);
-    // bool isAttValid(string attr);
 };
 
 #endif

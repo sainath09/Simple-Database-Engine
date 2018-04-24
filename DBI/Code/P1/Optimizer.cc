@@ -7,9 +7,6 @@ void Optimizer::findOrder()
     Statistics *statsPtr = cat->stats;  
 
     findUniqueTableForAndList();
-
-
-    //put all single relations;
    
     for(auto it = andListToIds.begin();it!=andListToIds.end();it++){
         //if there are more than one tables ... dont bother  .. doing that afterwards
@@ -22,39 +19,43 @@ void Optimizer::findOrder()
     struct TableList *tHead=tables;
     struct TableList *tHeadNext = NULL;
 
-    while(tHead!=NULL)
+    while(tHead)
     {
         string first = tableToUniqueId[string(tHead->tableName)];
         tHeadNext = tHead->next;
-        while(tHeadNext!=NULL){
-                vector<struct AndList *> vec;
-                string second = tableToUniqueId[string(tHeadNext->tableName)];
-                //spread out andlist to all the tables and return in it back in vec vector of Andlist
-                returnVectorizedAndList(first,second,vec);
+        while(tHeadNext){
+            vector<struct AndList *> vec;
+            string second = tableToUniqueId[string(tHeadNext->tableName)];
+            //spread out andlist to all the tables and return in it back in vec vector of Andlist
+            returnVectorizedAndList(first,second,vec);
 
-                //make variables for stats compute
-                char **rnames = new char*[2];
-                rnames[0] = tHead->aliasAs;
-                rnames[1] = tHeadNext->aliasAs;
+            //make variables for stats compute
+            char **rnames = new char*[2];
+            rnames[0] = tHead->aliasAs;
+            rnames[1] = tHeadNext->aliasAs;
 
-                struct AndList *head = returnAndList(first+second);
-                double val = statsPtr->Estimate(head,rnames,2);                
-                EstResultNode *node = new EstResultNode(first+second,val,0);
-                idToEstRes[first+second]=node;
-                tHeadNext=tHeadNext->next;
-            }
-        tHead=tHead->next;
+            struct AndList *head = returnAndList(first+second);
+            double val = statsPtr->Estimate(head,rnames,2);                
+            EstResultNode *node = new EstResultNode(first+second,val,0);
+            idToEstRes[first+second]=node;
+            tHeadNext=tHeadNext->next;
         }
+        tHead=tHead->next;
+    }
     string idNames[totTables];
     auto it=uniqueIdToTable.begin();
     
-    for(int i=0;i<totTables;i++,it++) idNames[i]=it->first;
+    for(int i=0;i<totTables;i++,it++) {
+        //cout<<it->first<<it->second<<endl;
+        idNames[i]=it->first;
+        //cout<<idNames[i]<<endl;
+    }
     auto estItr=idToEstRes.begin();
     
     for(int i = 3;i <= totTables;i++){
         estItr = idToEstRes.begin();
         for(;estItr != idToEstRes.end();estItr++ ){
-            if(estItr->first.length() != (i-1) ){
+            if((int)estItr->first.length() != (i-1) ){
                 estItr++;
                 continue;
             }
@@ -63,8 +64,10 @@ void Optimizer::findOrder()
                 if(relationName.find(idNames[k]) == string::npos){
                     string newrelationName = relationName + idNames[k];
                     char **rnames = new char*[i];
-                    for(int j=0;j<i;j++){                   
-                        string table = uniqueIdToTable[""+newrelationName[j]];                        
+                    for(int j=0;j<i;j++){   
+                        char tempChar[2]={newrelationName[j],'\0'}; 
+
+                        string table = uniqueIdToTable[string(tempChar)];                        
                         rnames[j]=new char[tableToAlias[table].length()+1];
                         strcpy(rnames[j],tableToAlias[table].c_str());
                     }
@@ -73,15 +76,17 @@ void Optimizer::findOrder()
                     struct AndList *head = returnAndList(newrelationName);
                     double val = statsPtr->Estimate(head,rnames,i);
                     double cost = idToEstRes[estItr->first]->numTuples+idToEstRes[estItr->first]->calcCost;
-                    string angram=getSeq(newrelationName);
-                    if(angram.compare("")==0){
-                    EstResultNode *node = new EstResultNode(newrelationName,val,cost);
-                    idToEstRes[newrelationName]=node;
+                    string sequence = "";
+                    sequence = getSeq(newrelationName);
+                    cout<<"\n expression:"<<newrelationName<<" cost:"<<cost<<" estimate:"<<val;
+                    if(sequence.compare("")==0){
+                        EstResultNode *node = new EstResultNode(newrelationName,val,cost);
+                        idToEstRes[newrelationName]=node;
                     }
-                    else if(idToEstRes[angram]->calcCost>cost){
-                        idToEstRes[angram]->calcCost=cost;
-                        idToEstRes[angram]->exp=newrelationName;
-                        idToEstRes[angram]->numTuples=val;
+                    else if(idToEstRes[sequence]->calcCost>cost){
+                        idToEstRes[sequence]->calcCost=cost;
+                        idToEstRes[sequence]->exp=newrelationName;
+                        idToEstRes[sequence]->numTuples=val;
                     }
                 }
             }
@@ -91,7 +96,7 @@ void Optimizer::findOrder()
         int len = i - 1;
         estItr=idToEstRes.begin();
         for(;estItr!=idToEstRes.end();estItr++){
-            if(estItr->first.length()==len){
+            if((int)estItr->first.length()==len){
                 delete estItr->second;
                 string temp=estItr->first;
                 idToEstRes.erase(temp);
@@ -100,8 +105,12 @@ void Optimizer::findOrder()
     }
     estItr=idToEstRes.begin();
     //keep track of name 
+    cout<<"......Final Query....."<<endl;
     for(;estItr!=idToEstRes.end();estItr++ ){
+        if(estItr->first.length() < totTables) continue; //TODO: work around
+        cout<<"\n expression:"<<estItr->second->exp<<" cost:"<<estItr->second->calcCost<<" estimate:"<<estItr->second->numTuples;
         resFromJoin = estItr->second->exp;
+        // cout<<resFromJoin;
     }
 }
 
@@ -110,7 +119,8 @@ void Optimizer::returnVectorizedAndList(string a,string b,vector<struct AndList 
     int remaining;
     int length;    
     string tblList=a+b;
-
+    int tempSize=tblList.size();
+    string tempFinal = tblList;
     for(auto it=andListToIds.begin();it!=andListToIds.end();it++){
         // start processing on the andlist
         //find some basic info
@@ -120,7 +130,7 @@ void Optimizer::returnVectorizedAndList(string a,string b,vector<struct AndList 
             //if there is only one, no need for this function to be called
             for(int i=0;i<length;i++){
                 //now start another iterator for the checking all values in the vector of unique Ids
-                int tempSize=tblList.size();
+                
                 string temptabl=it->second[i];      
                 //the below iterator goes thro all values in tblList          
                 for(int j=0;j<tempSize;j++){
@@ -134,10 +144,10 @@ void Optimizer::returnVectorizedAndList(string a,string b,vector<struct AndList 
                 //now... sigh ... work on these andlists till its looks correct
                 bool flag=true;
                 vector<struct AndList *>::iterator tempIt;
-                while(a.length()!=0){
-                    if(idsToAndListGeneric.find(a)!=idsToAndListGeneric.end()){
-                        tempIt=idsToAndListGeneric[a].begin();
-                        while(tempIt!=idsToAndListGeneric[a].end()){
+                while(tempFinal.length()!=0){
+                    if(idsToAndListGeneric.find(tempFinal)!=idsToAndListGeneric.end()){
+                        tempIt=idsToAndListGeneric[tempFinal].begin();
+                        while(tempIt!=idsToAndListGeneric[tempFinal].end()){
                             if(*tempIt==it->first){
                                 flag=false;
                                 break;
@@ -146,10 +156,10 @@ void Optimizer::returnVectorizedAndList(string a,string b,vector<struct AndList 
                         }
                     }
                 if(!flag) break;
-                string temp=a.substr(0,a.length()-1);;
-                a=temp; 
+                string temp=tempFinal.substr(0,tempFinal.length()-1);
+                tempFinal=temp; 
                 }
-                if(flag==true) v.push_back(it->first);
+                if(flag) v.push_back(it->first);
             }
         }
         
@@ -168,7 +178,8 @@ struct AndList* Optimizer::returnAndList(string str)
     struct AndList *temp=&retVal; //temp variable to parse the tree.
     auto it = idsToAndListGeneric.begin();
     for(int i=0;i<size;i++){
-       it = idsToAndListGeneric.find(""+str[i]);
+        char tempChar[2]={str.at(i),'\0'};
+       it = idsToAndListGeneric.find(string(tempChar));
        if(it != idsToAndListGeneric.end()){
            for (int j=0;j<(int)it->second.size();j++) {
                //looking over all the string values in the hash
@@ -179,7 +190,7 @@ struct AndList* Optimizer::returnAndList(string str)
            }           
        }       
     }
-    for(int i=2;i<=size;i++){
+    for(int i=2; i <= size; i++){
         if(idsToAndListGeneric.find(str.substr(0,i))!=idsToAndListGeneric.end()){
             int veclength=idsToAndListGeneric[str.substr(0,i)].size();
             for(int j=0;j<veclength;j++){
@@ -214,13 +225,16 @@ void Optimizer::findUniqueTableForAndList()
 
         //copy the tablename relation to that of the alias too
         statsPtr->CopyRel(TempTable->tableName,TempTable->aliasAs);
+         char c = 'A'+i;
+        char cstr[2] = {c,'\0'};
+        string s(cstr);
         
-        string s = "A"+i;
         uniqueIdToTable[s] = table;
         tableToUniqueId[table]=s;
+        //s = "";
         cout<<"\n Table:"<<s<<" alias:"<<table;
         // increment iterator over temptable
-        TempTable = TempTable->next;
+         TempTable = TempTable->next;
         i++;
     }
     //count the number of overall tables operated upon the last action
@@ -259,7 +273,7 @@ void Optimizer::findUniqueTableForAndList()
             sort(uniqueIds.begin(),uniqueIds.end());
             uniqueIds.erase(unique(uniqueIds.begin(),uniqueIds.end()),uniqueIds.end());
             //if there is more than one tables 
-            if(uniqueIds.size()>1)
+            if((int)uniqueIds.size()>1)
             {
                 FLAGOR = true;
                 string temp = "";
@@ -275,7 +289,7 @@ void Optimizer::findUniqueTableForAndList()
         //if there is only one table push uniquetable ID to andlist directly
         if(!FLAGOR){
             orlist=tempAndList->left;
-            while(orlist!=NULL)
+            while(orlist)
             {
                 ComparisonOp *Op=orlist->left;
                 if(Op->left->code==3)
@@ -323,14 +337,14 @@ string Optimizer::retTableName()
     else{ 
         auto attIt = cat->attrToTable.find(attr);
         struct TableList *tableList=tables;
-        while(tableList!=NULL){
+        while(tableList){
             TblLnkList* ptr = attIt->second;
             string table = string(tableList->tableName);
-            while(ptr!=NULL){
+            while(ptr){
                 if(table.compare(ptr->tableName)==0) return table;                    
                 ptr = ptr->next;
             }
-        tableList=tableList->next;
+            tableList=tableList->next;
         }
     }   
 }
@@ -348,14 +362,16 @@ string Optimizer::getSeq(string a)
 bool Optimizer::isBothSeqSame(string first,string second)
 {
     bool flag;
-    if(first.length() == second.length()){
+    if((int)first.size() == (int)second.size()){
         sort(first.begin(),first.end());
         sort(second.begin(),second.end());
+        cout<<first <<" "<<second<<endl;
         for(int i = 0;i<(int)first.size();i++){
             if(first[i] != second[i]) return false;
         }
     }
     else return false;
+    cout<<first<< " "<<second<<" Returning true"<<endl;
     return true;
 }
 
@@ -456,24 +472,28 @@ void Optimizer::makePlan(){
 
     //----------FOR JOIN ...........
 
-    if(queryOps[Join]==true){        
-        string tableName1 = "" + resFromJoin[0];
+    if(queryOps[Join] == true){        
+        string str1;
+        str1.push_back(resFromJoin[0]);
+        string tableName1 = uniqueIdToTable[str1];
+        //char *tableName1 = new char[uniqueIdToTable[string(str1)].length()];
+        //strcpy(tableName1,uniqueIdToTable[string(str1)].c_str());
         CNF *cnf1=new CNF();
         Schema *s1=new Schema((char *)gl_cat.c_str(),(char *) tableName1.c_str());
         Record *literal1 = new Record();
         int numRel=0;
-        auto queryExecItr = idsToAndListGeneric.begin();
-        queryExecItr = idsToAndListGeneric.find(resFromJoin.substr(numRel,1));
-        if(queryExecItr != idsToAndListGeneric.end()){                        
+        auto listItr = idsToAndListGeneric.begin();
+        listItr = idsToAndListGeneric.find(resFromJoin.substr(numRel,1));
+        if(listItr != idsToAndListGeneric.end()){                        
             struct AndList dummy;
             dummy.rightAnd=NULL;
             struct AndList *temp=&dummy;
-            int size=queryExecItr->second.size();
+            int size=listItr->second.size();
             for(int i=0;i<size;i++){
                 temp->rightAnd = (struct AndList*)malloc(sizeof(struct AndList));
                 temp = temp->rightAnd;
                 temp->rightAnd = NULL;
-                temp->left = queryExecItr->second[i]->left;
+                temp->left = listItr->second[i]->left;
             }
             cnf1->GrowFromParseTree(dummy.rightAnd,s1,*literal1);           
         }
@@ -492,25 +512,26 @@ void Optimizer::makePlan(){
         numRel++; 
 
         //Select Node 2:
-        
-        string tableName2 = uniqueIdToTable[""+resFromJoin[1]];
+        string str2;
+        str2.push_back(resFromJoin[1]);
+        string tableName2 = uniqueIdToTable[str2];
         
         
         CNF *cnf2=new CNF();
         Schema *s2=new Schema((char *)gl_cat.c_str(),(char *)tableName2.c_str());
         Record *literal2 = new Record();      
-        queryExecItr = idsToAndListGeneric.find(resFromJoin.substr(numRel,1));
-        if(queryExecItr!=idsToAndListGeneric.end()){
+        listItr = idsToAndListGeneric.find(resFromJoin.substr(numRel,1));
+        if(listItr!=idsToAndListGeneric.end()){
             struct AndList dummy;
             dummy.rightAnd=NULL;
             struct AndList *temp=&dummy;
-            int vecs=queryExecItr->second.size();
+            int vecs=listItr->second.size();
             for(int i=0;i<vecs;i++)
             {
             temp->rightAnd=(struct AndList*)malloc(sizeof(struct AndList));
             temp=temp->rightAnd;
             temp->rightAnd=NULL;
-            temp->left=queryExecItr->second.at(i)->left;
+            temp->left=listItr->second.at(i)->left;
             }
             cnf2->GrowFromParseTree(dummy.rightAnd,s2,*literal2);           
         }
@@ -537,17 +558,17 @@ void Optimizer::makePlan(){
             Record *joinedLiteral = new Record();
             CNF *joinedCNF = new CNF();
             Schema *joinedScema = joinScema(lchild->outSchema,rchild->outSchema);        
-            queryExecItr = idsToAndListGeneric.find(resFromJoin.substr(0,numjoin+1));
-            if(queryExecItr!=idsToAndListGeneric.end()){
+            listItr = idsToAndListGeneric.find(resFromJoin.substr(0,numjoin+1));
+            if(listItr!=idsToAndListGeneric.end()){
                 struct AndList dummy;
                 dummy.rightAnd=NULL;
                 struct AndList *temp=&dummy;
-                int vecs=queryExecItr->second.size();
+                int vecs=listItr->second.size();
                 for(int i=0;i<vecs;i++){
                     temp->rightAnd=(struct AndList*)malloc(sizeof(struct AndList));
                     temp=temp->rightAnd;
                     temp->rightAnd=NULL;
-                    temp->left=queryExecItr->second.at(i)->left;
+                    temp->left=listItr->second.at(i)->left;
                 }
               joinedCNF->GrowFromParseTree(dummy.rightAnd,lchild->outSchema,rchild->outSchema,*joinedLiteral);              
             }   
@@ -614,21 +635,23 @@ void Optimizer::makePlan(){
 
             numjoin++;
             if(numjoin<totTables){
-                string tableName4 = uniqueIdToTable[""+resFromJoin[numjoin]];
+                string str4;
+                str4.push_back(resFromJoin[numjoin]);
+                string tableName4 = uniqueIdToTable[str4];
                 CNF *cnf4=new CNF();
                 Schema *s4=new Schema((char *)gl_cat.c_str(),(char*) tableName4.c_str());
                 Record *literal4 = new Record();              
-                queryExecItr = idsToAndListGeneric.find(resFromJoin.substr(numRel,1));              
-                if(queryExecItr!=idsToAndListGeneric.end()){
+                listItr = idsToAndListGeneric.find(resFromJoin.substr(numRel,1));              
+                if(listItr!=idsToAndListGeneric.end()){
                     struct AndList dummy;
                     dummy.rightAnd=NULL;
                     struct AndList *temp=&dummy;
-                    int size=queryExecItr->second.size();
+                    int size=listItr->second.size();
                     for(int i = 0;i < size;i++){
                         temp->rightAnd=(struct AndList*)malloc(sizeof(struct AndList));
                         temp=temp->rightAnd;
                         temp->rightAnd=NULL;
-                        temp->left=queryExecItr->second.at(i)->left;
+                        temp->left=listItr->second.at(i)->left;
                     }
                     cnf4->GrowFromParseTree(dummy.rightAnd,s4,*literal4);                   
                 }

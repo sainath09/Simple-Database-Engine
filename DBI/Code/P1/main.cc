@@ -60,14 +60,12 @@ int main () {
 		s.AddAtt(relName[4], "r_name",5);
 		
 		s.Write(fileName);
+	//1. set up project variables
 	setup();
-	//yyparse();
-
-	//TODO: 1. Create a stats file first
-
 	//2. initialize catalog
+	while(true){
 	Catalog * cat = Catalog::instantiate();
-	cout<< "Give an sql Query to find best planner press (cntrl + D) after you end:"<<endl;
+	cout<< "Give an sql Query to find best planner press (cntrl + D) after you end:"<<endl<<":";
 	//3. initialize parser
 	 Parser *par = new Parser(cat);
 
@@ -81,6 +79,7 @@ int main () {
 	Compiler *comp = new Compiler(par,opt,exec,cat);
 
 	comp->Compile();
+	}
 
 
 

@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -21,7 +21,7 @@ typedef struct attStats{
 }attStats;
 typedef struct subSet{
 	int subSetNum;
-	unordered_map<string,long> AttMap;
+	map<string,long> AttMap;
 	long numTuples;
 	vector<string> relations;
 }subSet;
@@ -29,8 +29,8 @@ typedef struct subSet{
 class Statistics
 {
 private:
-	unordered_map<int, subSet> subSetsMap;
-	unordered_map<string, int> allsubSetMap;
+	map<int, subSet> subSetsMap;
+	map<string, int> allsubSetMap;
 public:
 	Statistics();
 	Statistics(Statistics &copyMe);

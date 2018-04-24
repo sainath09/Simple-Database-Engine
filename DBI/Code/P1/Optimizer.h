@@ -19,15 +19,15 @@ class Optimizer
     int totTables;
      string resFromJoin;
     
-     unordered_map<string,string> tableToAlias;
-     unordered_map<string,string> aliasToTable;
-     unordered_map<string,string> uniqueIdToTable;
-     unordered_map<string,string> tableToUniqueId;
-    unordered_map<string,vector<struct AndList *> > idsToAndListGeneric;
-     unordered_map<string,vector<struct AndList *> > idsToAndListSelect;
-    unordered_map<struct AndList*,vector<string> > andListToIds;
+     map<string,string> tableToAlias;
+     map<string,string> aliasToTable;
+     map<string,string> uniqueIdToTable;
+     map<string,string> tableToUniqueId;
+    map<string,vector<struct AndList *> > idsToAndListGeneric;
+     map<string,vector<struct AndList *> > idsToAndListSelect;
+    map<struct AndList*,vector<string> > andListToIds;
     
-    unordered_map<string,EstResultNode *> idToEstRes;
+    map<string,EstResultNode *> idToEstRes;
     Catalog *cat;
     string aliasTableName;
     string attr;

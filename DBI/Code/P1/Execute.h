@@ -8,7 +8,9 @@
 #include "Optimizer.h"
 //#include "Execute.h"
 
-
+//Execute is a class that holds the root of tree structure to execute.
+// We printed the tre using execute's printTree function
+//Other functions are required for assignemnt five
 class Execute
 {
     QPElement *root;    
@@ -17,16 +19,14 @@ class Execute
 public:
     Execute()
     {
-        //db = NULL;
     }
-    //  void RunQuery();
+    
     void setroot(QPElement *_root)
     {
         root=_root;
     }
     void printTree(QPElement *root);
-    // void performoperation(QPElement *node);    
-    // void clearpipe(QPElement *r);
+    //TODO: assignment 5
 };
 
 #endif

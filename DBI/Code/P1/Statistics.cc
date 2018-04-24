@@ -129,7 +129,7 @@ void Statistics::Read(const char *fromWhere){
 		int subSetNumber = stoi(temp[0], NULL);
 		long numTuples = stoi(temp[1], NULL);
 		// rest are all the mappings in AttMap map
-		unordered_map<string,long> attr;
+		map<string,long> attr;
 		//so run a for loop from 3rd value and read odd elements of temp as key and even elements as the value till the end of line
 		for (int i=2;i<temp.size(); i+=2) {
 			attr[temp[i]] = stoi(temp[i+1], NULL);
@@ -341,7 +341,7 @@ pair<pair<long , double>, vector<int> > Statistics::calcEstimate(const struct An
 					FLAG = true;
 					if (lStats.subSetNum == -1 || rStats.subSetNum==-1){
 						//if they dont exist just exit
-						cout<<"Error: not able to find attribute name in any subSets" << endl;
+						//cout<<"Error: not able to find attribute name in any subSets" << endl;
 						subSetNum1 = -1;
 						subSetNum2 = -1;
 						vector<int> ret;

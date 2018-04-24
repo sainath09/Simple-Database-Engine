@@ -7,7 +7,8 @@
 #include <iostream>
 #include <stack>
 #include <stdio.h>
-#include <unordered_map>
+#include <map>
+#include <map>
 #include <string>
 #include <vector>
 #include "Statistics.h"
@@ -35,9 +36,13 @@ static string types[3]={"Int", "Double", "String"};
 
 using namespace std;
 
-// extern "C" {
-// 	int yyfuncparse(void);   
-// }
+/*
+    QueryPlanner.h holds all the structures taht were asked to create as mentioned in docs.
+    it has treeNode structure called QPElement which is the generic structure of the treeNode.
+
+
+*/
+
 extern	struct FuncOperator *finalFunction; 
 extern	struct TableList *tables; 
 extern	struct AndList *boolean; 
@@ -48,16 +53,14 @@ extern	int distinctFunc;
 
 
 //Class to deal with project op
-class ProjectAtts
-{
+class ProjectAtts{
 public:
     int *attsToKeep;
     int numAttsIn;
     int numAttsOut;
 
     //initialize the values
- ProjectAtts(int *a, int b, int c)
- {
+ ProjectAtts(int *a, int b, int c){
      attsToKeep = a;
      numAttsIn = b;
      numAttsOut = c;
@@ -95,9 +98,7 @@ enum TypesOfOps {
 
 
 //Just the tree element structure, not defining any functions specific to it here
-class QPElement
-{
-    
+class QPElement{
 public:
 //need these ones as part of project description
     int inPipe1;

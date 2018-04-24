@@ -2,7 +2,7 @@
 #define	CATALOG_H
 
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <vector>
 #include "Statistics.h"
 
@@ -50,9 +50,9 @@ private:
     //initializing catalog class
 public:
     static Catalog *cat;
-    unordered_map<string,vector<attrType*> > relToAttr;
-    unordered_map<string,TblLnkList*> attrToTable;
-    unordered_map<string,string> tableToFile;
+    map<string,vector<attrType*> > relToAttr;
+    map<string,TblLnkList*> attrToTable;
+    map<string,string> tableToFile;
     Statistics *stats;
     Catalog * get();
     void  init();

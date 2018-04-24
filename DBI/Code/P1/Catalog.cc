@@ -18,16 +18,17 @@ Catalog* Catalog::instantiate(){
     }
     return cat;
 }
-
+extern string gl_cat;
 void Catalog::init(){
  
-    ifstream in("catalog"); //FIXME: Use gl_cat here instead
+    ifstream in(gl_cat.c_str()); //FIXME: Use gl_cat here instead
     string readRel;
     string readLine;
     string readType;
 
     while(getline(in,readLine))
     {
+        if(readLine == "") continue;
         if(readLine=="BEGIN")
         {   
             //next line has relation name
@@ -39,9 +40,12 @@ void Catalog::init(){
             
         }else if(readLine!="END"){
             //define the variables as needed
+            stringstream ss(readLine);
             attrType *atType;
             //1st line that is attribute is alread in readline, fetch second one
-            getline(in,readType);
+            ss>>readLine;
+            ss>>readType;
+           // getline(in,readType);
             //create an entry in attribute type
             atType =new attrType(readLine,readType);
             relToAttr[readRel].push_back(atType);
