@@ -549,8 +549,10 @@ void Optimizer::makePlan(){
         rchild = elem;
 
         numRel++;
-        //Do a join of  Relations
-        //----------Here---------//
+        /* Code for Joining relations
+            
+
+        */
 
         //Loop and Do Join on the result with new Tables
         int numjoin=1;

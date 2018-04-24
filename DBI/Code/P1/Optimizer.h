@@ -10,10 +10,18 @@
 #include "Execute.h"
 
 #include <cstring>
+/*
+    Optimizer does all the work of query planning
+    there are various functions that are described in optimizer.h to perform required operations
+    - Optimizer object maintains maps of different key,value pairs as described in name of the map
+    - queryOps is a boolean array keeing track of different operations present in query 
+    - totTables,Size,catalog object and a global attr and aliasTableName are also tracked in optimizer object
+    
 
+
+    */
 class Optimizer
 {
-     //FIXME: DELETE THESE IF NOT NEEDED
     bool *queryOps;
     int size;
     int totTables;
