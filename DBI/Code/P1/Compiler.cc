@@ -6,6 +6,7 @@ void Compiler::Compile()
     if(chkParse()){
         Optimize();
         exec->printTree(root);
+        exec->executeQuery(root);
     }
     else{
         cout<<"Query is Wrong!!!";

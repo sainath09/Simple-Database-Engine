@@ -18,7 +18,6 @@
 #include "ParseFunc.h"
 #include "Comparison.h"
 #include "Pipe.h"
-#include "RelOp.h"
 //#include "Catalog.h"
 // #include "Compiler.h"
 // #include "Parser.h"

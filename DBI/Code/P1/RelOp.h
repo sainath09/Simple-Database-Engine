@@ -84,6 +84,9 @@ class SelectFile : public RelationalOp {
 		int pages;
 
 	public:
+	SelectFile(){
+		pages = 0;
+	}
 
 	void Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal);
 	void WaitUntilDone ();
