@@ -73,7 +73,7 @@ int main () {
 	Optimizer *opt = new Optimizer(cat);
 
 	//5. Execute???
-	Execute *exec = new Execute();
+	Execute *exec = new Execute(cat);
 
 	//6. initialize Compiler
 	Compiler *comp = new Compiler(par,opt,exec,cat);

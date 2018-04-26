@@ -22,10 +22,10 @@
 	struct Insert *insertinto;
 	int distinctAtts; // 1 if there is a DISTINCT in a non-aggregate query 
 	int distinctFunc;  // 1 if there is a DISTINCT in an aggregate query
-	char *droptablename;
+	char *deleteTable;
 	int outputmode;
 	char *outputfile;
-        bool DDL;
+        bool modifyData;
 %}
 
 // this stores all of the types returned by production rules
@@ -106,12 +106,12 @@ SQL: SELECT WhatIWant FROM Tables WHERE AndList
 	tables = $4;
 	boolean = $6;	
 	groupingAtts = NULL;
-	droptablename=NULL;
+	deleteTable=NULL;
 	createTable=NULL;
 	groupingAtts=NULL;
 	insertinto=NULL;
 	outputmode=0;
-        DDL=false;
+        modifyData=false;
 }
 
 | SELECT WhatIWant FROM Tables WHERE AndList GROUP BY Atts
@@ -119,11 +119,11 @@ SQL: SELECT WhatIWant FROM Tables WHERE AndList
 	tables = $4;
 	boolean = $6;	
 	groupingAtts = $9;
-	droptablename=NULL;
+	deleteTable=NULL;
 	createTable=NULL;
 	insertinto=NULL;
 	outputmode=0;
-        DDL=false;
+        modifyData=false;
 }
 |
 SELECT WhatIWant FROM Tables
@@ -131,12 +131,12 @@ SELECT WhatIWant FROM Tables
 	tables = $4;
 	//boolean = $6;	
 	groupingAtts = NULL;
-	droptablename=NULL;
+	deleteTable=NULL;
 	createTable=NULL;
 	groupingAtts=NULL;
 	insertinto=NULL;
 	outputmode=0;
-        DDL=false;
+        modifyData=false;
 }
 | CREATE TABLE Name '(' Createattributes ')' AS HEAP
 {
@@ -144,10 +144,10 @@ SELECT WhatIWant FROM Tables
 	createTable->tableName=$3;
 	createTable->sortkeys=NULL;
 	createTable->atts=$5;
-	droptablename=NULL;
+	deleteTable=NULL;
 	insertinto=NULL;
 	outputmode=0;
-        DDL=true;
+        modifyData=true;
 }
 | CREATE TABLE Name '(' Createattributes ')' AS SORTED ON sortattributes
 {
@@ -155,17 +155,17 @@ SELECT WhatIWant FROM Tables
 	createTable->tableName=$3;
 	createTable->sortkeys=$10;
 	createTable->atts=$5;
-	droptablename=NULL;
+	deleteTable=NULL;
 	insertinto=NULL;
 	outputmode=0;
-        DDL=true;
+        modifyData=true;
 }
 | INSERT  Name  INTO Name
 {
 	insertinto=(struct Insert *)malloc(sizeof(struct Insert));
 	insertinto->filename=$2;
 	insertinto->dbfile=$4;
-	droptablename=NULL;
+	deleteTable=NULL;
 	createTable=NULL;
 	tables = NULL;
 	boolean = NULL;	
@@ -173,7 +173,7 @@ SELECT WhatIWant FROM Tables
 	createTable=NULL;
 	groupingAtts=NULL;
 	outputmode=0;
-        DDL=true;
+        modifyData=true;
 
 }
 | DROP TABLE Name
@@ -185,25 +185,25 @@ SELECT WhatIWant FROM Tables
 	groupingAtts = NULL;
 	createTable=NULL;
 	groupingAtts=NULL;
-	droptablename=$3;
+	deleteTable=$3;
 	outputmode=0;
-        DDL=true;
+        modifyData=true;
 }
 | SET OUTPUT STDOUT
 {
 	outputmode=1;
-        DDL=true;
+        modifyData=true;
 }
 | SET OUTPUT Name
 {	
 	outputmode=2;
 	outputfile=$3;
-        DDL=true;
+        modifyData=true;
 }
 | SET OUTPUT NONE
 {
 	outputmode=3;
-        DDL=true;
+        modifyData=true;
 };
 
 sortattributes: Name ',' sortattributes

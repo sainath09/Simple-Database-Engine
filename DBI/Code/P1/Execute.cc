@@ -1,5 +1,63 @@
 #include "Execute.h"
 extern string gl_dbfile;
+extern string gl_cat;
+extern char* deleteTable;
+
+void Execute::executeDataQuery(){
+        if(deleteTable!=NULL){
+            Catalog *c = cat;
+            auto it = c->relToAttr.find(deleteTable);
+            if(it!=c->relToAttr.end()){
+                cat->relToAttr.erase(it);
+                it =  cat->relToAttr.begin();
+                ofstream out;
+                out.open(gl_cat);
+                while(it!=c->relToAttr.end())
+                {
+                    out<<"\n";
+                    out<<"BEGIN";
+                    out<<"\n";
+
+                    out<<it->first.c_str();
+                    out<<"\n";
+                    out<<c->tableToFile[it->first].c_str();
+                    out<<"\n";
+                    int temp = it->second.size();
+                    for(int i=0;i<temp;i++)
+                    {
+                        out<<it->second.at(i)->attr.c_str();
+                        out<<" ";
+                        out<<it->second.at(i)->type.c_str();
+                    }
+                    out<<"\n";
+                    out<<"END";
+                    it++;
+                }
+                out.close();
+
+                // string filepath=string(binfilespath)+string(droptablename)+".bin";
+                // char *tmp = new char[filepath.length()];
+                // strcpy(tmp,filepath.c_str());
+                // remove(tmp);
+                // delete tmp;
+                // filepath=string(binfilespath)+string(droptablename)+".bin"+".meta";
+                // tmp = new char[filepath.length()];
+                // strcpy(tmp,filepath.c_str());
+                // remove(tmp);
+                // delete tmp;
+                
+                // c->catalogAttribHash.clear();
+                // c->catalogTableHash.clear();
+                // c->relToAttr.clear();
+                // c->initializeCatalogDS();
+            }else{
+                 cout<<"error:Table Not Found! "<<deleteTable<<" In DataBase:";
+            return;
+            }
+        }
+        
+}
+
 void Execute::printTree(QPElement* root){
     //printing inorder traversal of the root execution path
     if(root==NULL) return;

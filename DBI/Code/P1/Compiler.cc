@@ -1,9 +1,15 @@
 #include "Compiler.h"
+char *Compiler::outFile=NULL;
+extern bool modifyData; 
 
 void Compiler::Compile()
 {
     
     if(chkParse()){
+        if(modifyData){
+            exec->executeDataQuery();
+            return;
+        }
         Optimize();
         exec->printTree(root);
         exec->executeQuery(root);

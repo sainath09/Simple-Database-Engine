@@ -3,8 +3,9 @@
 
 #include "QueryPlanner.h"
 #include "RelOp.h"
-// #include "Catalog.h"
+#include "Catalog.h"
  #include "Compiler.h"
+ #include <fstream>
 // #include "Parser.h"
 // #include "Optimizer.h"
 //#include "Execute.h"
@@ -18,6 +19,7 @@ class Execute
     int numPipes;   
     Pipe **pipes;
     DBFile **dbfiles;
+    Catalog *cat;
     class SelectFile **selectfile;
     class SelectPipe **selectpipe;
     int selectPipes;
@@ -31,7 +33,7 @@ class Execute
     int totTables;
 
 public:
-    Execute(){
+    Execute(Catalog *a){
         struct TableList *tempTable = tables;
         int totTables=0;
         while(tempTable){
@@ -63,6 +65,8 @@ public:
         sum = new class Sum();
         
         dupremove = new class DuplicateRemoval();
+
+        cat = a;
     }
     
     void setroot(QPElement *_root)
@@ -72,6 +76,8 @@ public:
     void printTree(QPElement *root);
     //TODO: assignment 5
     void executeQuery(QPElement *root);
+    
+    void executeDataQuery();
 };
 
 #endif
