@@ -19,9 +19,9 @@ void setup () {
 		getline(fp,line);
 		gl_cat = line;
         getline(fp,line);
-		gl_tpch = line;
+		gl_dbfile = line;
         getline(fp,line);
-        gl_dbfile = line;
+        gl_tpch = line;
 	}
 	else {
 		cerr << " Test settings files 'test.cat' missing \n";

@@ -33,6 +33,7 @@ bool Compiler::chkParse()
     TypesOfOps typeOp;
     //check if the code parses correctly
     if(par->parseAndCheck()){
+        if(modifyData) return true;
         for(int x=0;x<=QOPSSIZE;x++)  qOps[x]=false;
                             
         if(tables->next!=NULL){
