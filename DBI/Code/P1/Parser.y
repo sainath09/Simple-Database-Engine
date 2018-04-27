@@ -19,12 +19,12 @@
 	struct AndList *boolean; // the predicate in the WHERE clause
 	struct NameList *groupingAtts; // grouping atts (NULL if no grouping)
 	struct NameList *attsToSelect; // the set of attributes in the SELECT (NULL if no such atts)
-	struct Insert *insertinto;
+	struct Insert *insertToTab;
 	int distinctAtts; // 1 if there is a DISTINCT in a non-aggregate query 
 	int distinctFunc;  // 1 if there is a DISTINCT in an aggregate query
 	char *deleteTable;
-	int outputmode;
-	char *outputfile;
+	int mode;
+	char *outFile;
         bool modifyData;
 %}
 
@@ -109,8 +109,8 @@ SQL: SELECT WhatIWant FROM Tables WHERE AndList
 	deleteTable=NULL;
 	createTable=NULL;
 	groupingAtts=NULL;
-	insertinto=NULL;
-	outputmode=0;
+	insertToTab=NULL;
+	mode=0;
         modifyData=false;
 }
 
@@ -121,8 +121,8 @@ SQL: SELECT WhatIWant FROM Tables WHERE AndList
 	groupingAtts = $9;
 	deleteTable=NULL;
 	createTable=NULL;
-	insertinto=NULL;
-	outputmode=0;
+	insertToTab=NULL;
+	mode=0;
         modifyData=false;
 }
 |
@@ -134,8 +134,8 @@ SELECT WhatIWant FROM Tables
 	deleteTable=NULL;
 	createTable=NULL;
 	groupingAtts=NULL;
-	insertinto=NULL;
-	outputmode=0;
+	insertToTab=NULL;
+	mode=0;
         modifyData=false;
 }
 | CREATE TABLE Name '(' Createattributes ')' AS HEAP
@@ -145,8 +145,8 @@ SELECT WhatIWant FROM Tables
 	createTable->sortkeys=NULL;
 	createTable->atts=$5;
 	deleteTable=NULL;
-	insertinto=NULL;
-	outputmode=0;
+	insertToTab=NULL;
+	mode=0;
         modifyData=true;
 }
 | CREATE TABLE Name '(' Createattributes ')' AS SORTED ON sortattributes
@@ -156,15 +156,15 @@ SELECT WhatIWant FROM Tables
 	createTable->sortkeys=$10;
 	createTable->atts=$5;
 	deleteTable=NULL;
-	insertinto=NULL;
-	outputmode=0;
+	insertToTab=NULL;
+	mode=0;
         modifyData=true;
 }
 | INSERT  Name  INTO Name
 {
-	insertinto=(struct Insert *)malloc(sizeof(struct Insert));
-	insertinto->filename=$2;
-	insertinto->dbfile=$4;
+	insertToTab=(struct Insert *)malloc(sizeof(struct Insert));
+	insertToTab->filename=$2;
+	insertToTab->dbfile=$4;
 	deleteTable=NULL;
 	createTable=NULL;
 	tables = NULL;
@@ -172,13 +172,13 @@ SELECT WhatIWant FROM Tables
 	groupingAtts = NULL;
 	createTable=NULL;
 	groupingAtts=NULL;
-	outputmode=0;
+	mode=0;
         modifyData=true;
 
 }
 | DROP TABLE Name
 {
-	insertinto=NULL;
+	insertToTab=NULL;
 	createTable=NULL;
 	tables = NULL;
 	boolean = NULL;	
@@ -186,23 +186,23 @@ SELECT WhatIWant FROM Tables
 	createTable=NULL;
 	groupingAtts=NULL;
 	deleteTable=$3;
-	outputmode=0;
+	mode=0;
         modifyData=true;
 }
 | SET OUTPUT STDOUT
 {
-	outputmode=1;
+	mode=1;
         modifyData=true;
 }
 | SET OUTPUT Name
 {	
-	outputmode=2;
-	outputfile=$3;
+	mode=2;
+	outFile=$3;
         modifyData=true;
 }
 | SET OUTPUT NONE
 {
-	outputmode=3;
+	mode=3;
         modifyData=true;
 };
 

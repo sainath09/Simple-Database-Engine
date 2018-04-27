@@ -37,7 +37,7 @@ class Compiler
     QPElement *root;
     
 public:    
-    static bool runQueryFlag;
+    static bool runOrPrint;
     static char *outFile;
     
     Compiler(Parser *p, Optimizer *o,Execute *e, Catalog *c){

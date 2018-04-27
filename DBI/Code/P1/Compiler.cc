@@ -11,8 +11,9 @@ void Compiler::Compile()
             return;
         }
         Optimize();
-        exec->printTree(root);
-        exec->executeQuery(root);
+        exec->init();
+        if(!runOrPrint) exec->printTree(root);
+        else exec->executeQuery(root);
     }
     else{
         cout<<"Query is Wrong!!!";

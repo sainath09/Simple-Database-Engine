@@ -1,62 +1,226 @@
 #include "Execute.h"
 extern string gl_dbfile;
 extern string gl_cat;
+extern string gl_tpch;
 extern char* deleteTable;
+extern char* outFile;
+extern struct Insert *insertToTab;
+extern struct CreateTable *createTable;
 
-void Execute::executeDataQuery(){
-        if(deleteTable!=NULL){
-            Catalog *c = cat;
-            auto it = c->relToAttr.find(deleteTable);
-            if(it!=c->relToAttr.end()){
-                cat->relToAttr.erase(it);
-                it =  cat->relToAttr.begin();
-                ofstream out;
-                out.open(gl_cat);
-                while(it!=c->relToAttr.end())
-                {
-                    out<<"\n";
-                    out<<"BEGIN";
-                    out<<"\n";
-
-                    out<<it->first.c_str();
-                    out<<"\n";
-                    out<<c->tableToFile[it->first].c_str();
-                    out<<"\n";
-                    int temp = it->second.size();
-                    for(int i=0;i<temp;i++)
-                    {
-                        out<<it->second.at(i)->attr.c_str();
-                        out<<" ";
-                        out<<it->second.at(i)->type.c_str();
-                    }
-                    out<<"\n";
-                    out<<"END";
-                    it++;
-                }
-                out.close();
-
-                // string filepath=string(binfilespath)+string(droptablename)+".bin";
-                // char *tmp = new char[filepath.length()];
-                // strcpy(tmp,filepath.c_str());
-                // remove(tmp);
-                // delete tmp;
-                // filepath=string(binfilespath)+string(droptablename)+".bin"+".meta";
-                // tmp = new char[filepath.length()];
-                // strcpy(tmp,filepath.c_str());
-                // remove(tmp);
-                // delete tmp;
-                
-                // c->catalogAttribHash.clear();
-                // c->catalogTableHash.clear();
-                // c->relToAttr.clear();
-                // c->initializeCatalogDS();
-            }else{
-                 cout<<"error:Table Not Found! "<<deleteTable<<" In DataBase:";
-            return;
-            }
-        }
-        
+extern string gl_tpch;
+extern int mode;
+bool Compiler::runOrPrint = false; 
+void Execute::setroot(QPElement* _root){
+        root=_root;
 }
+
+void Execute::init(){
+    struct TableList *tempTable = tables;
+        int totTables=0;
+        while(tempTable){
+            tempTable=tempTable->next;
+            totTables++;
+        }
+
+        pipes = new Pipe*[numPipes+1];          
+        for(int i=0;i<=numPipes;i++) pipes[i] = new Pipe(100);
+
+        dbfiles = new DBFile*[totTables];
+        for(int i=0;i<totTables;i++) dbfiles[i]=new DBFile();
+
+        selectfile= new class SelectFile*[totTables];
+        for(int i=0;i<totTables;i++) selectfile[i]=new class SelectFile();
+        
+        selectpipe = new class SelectPipe*[totTables];
+        for(int i=0;i<totTables;i++) selectpipe[i]=new class SelectPipe();
+        selectPipes = 0;
+
+        join = new class Join*[totTables];
+        for(int i=0;i<totTables;i++) join[i]=new class Join();
+        numjoin = 0;
+        
+        groupby = new class GroupBy();
+
+        project = new class Project();
+        
+        sum = new class Sum();
+        
+        dupremove = new DuplicateRemoval();
+
+}
+void Execute::executeDataQuery(){
+    if(deleteTable != NULL){
+        Catalog *c = cat;
+        auto it = c->relToAttr.find(deleteTable);
+        if(it!=c->relToAttr.end()){
+            cat->relToAttr.erase(it);
+            it =  cat->relToAttr.begin();
+            ofstream out;
+            out.open(gl_cat);
+            while(it!=c->relToAttr.end()){
+                out<<"\n";
+                out<<"BEGIN";
+                out<<"\n";
+
+                out<<it->first.c_str();
+                out<<"\n";
+                out<<c->tableToFile[it->first].c_str();
+                out<<"\n";
+                int temp = it->second.size();
+                for(int i=0;i<temp;i++)
+                {
+                    out<<it->second[i]->attr.c_str();
+                    out<<" ";
+                    out<<it->second[i]->type.c_str();
+                }
+                out<<"\n";
+                out<<"END";
+                it++;
+            }
+            out.close();
+
+            string filepath=string(gl_dbfile)+string(deleteTable)+".bin";
+            char *temp = new char[filepath.length()];
+            strcpy(temp,filepath.c_str());
+            remove(temp);
+            delete temp;
+            filepath=string(gl_dbfile)+string(deleteTable)+".bin"+".METAINF";
+            temp = new char[filepath.length()];
+            strcpy(temp,filepath.c_str());
+            remove(temp);
+            delete temp;
+            cat->attrToTable.clear();
+            cat->attrToTable.clear();
+            c->relToAttr.clear();
+            c->init();
+        }else{
+                cout<<"error:Table Not Found! "<<deleteTable<<" In DataBase:";
+            return;
+        }
+    }
+    else if(insertToTab != NULL){
+        DBFile db;
+        string fpath = string(gl_dbfile)+string(insertToTab->dbfile)+".bin";
+        char *temp = new char[fpath.length()];
+        strcpy(temp,fpath.c_str());
+        db.Open(temp);
+        Schema s((char*)gl_cat.c_str(),insertToTab->dbfile);
+
+        fpath = string(gl_tpch)+string(insertToTab->filename);
+        temp = new char[fpath.length()];
+        strcpy(temp,fpath.c_str());
+        db.Load(s,temp);
+        db.Close();
+    }
+    else if(createTable != NULL){
+        Catalog* tempCat = cat->instantiate();
+        attrType* catatts;
+        char* tabToCreate = createTable->tableName;
+        struct NameList* sortAtts = createTable->sortkeys;
+        struct TableAtts* TabAtts = createTable->atts;
+        string tableName(createTable->tableName);
+        cat->tableToFile[tableName] = tableName + ".tbl";
+        auto it = cat->relToAttr.find(tableName);
+        if(it != cat->relToAttr.end()){
+            cout<<"Table already exists";
+            return;
+        }
+        while(TabAtts){
+            struct CrAttr *op = TabAtts->Op;
+            auto it = cat->attrToTable.find(string(op->value));
+            if(it == cat->attrToTable.end()){
+                TblLnkList *head=new TblLnkList(tableName);
+                cat->attrToTable[string(op->value)]=head;
+            }
+            else{
+                TblLnkList *node = new TblLnkList(tableName);
+                node->next = cat->attrToTable[string(op->value)];
+                cat->attrToTable[string(op->value)]=node;
+            }            
+
+            if(strcmp(op->type,"INTEGER") == 0){
+            catatts = new attrType(string(op->value),string("Int"));
+            cat->relToAttr[tableName].push_back(catatts);
+            }
+            else if(strcmp(op->type,"STRING")==0){
+            catatts = new attrType(string(op->value),string("String"));
+            cat->relToAttr[tableName].push_back(catatts);
+            }
+            else if(strcmp(op->type,"DOUBLE")==0){
+                catatts = new attrType(string(op->value),string("Double"));
+                cat->relToAttr[tableName].push_back(catatts);
+            }
+            //op->value; //FIXME: what does it do?
+            TabAtts=TabAtts->next;
+        }
+    
+        
+        it =  cat->relToAttr.begin();
+        ofstream out;
+        out.open(gl_cat);
+
+        while(it!=cat->relToAttr.end())
+        {
+            out<<"\n"<<"BEGIN";
+            out<<"\n"<<it->first;
+            out<<"\n"<<cat->tableToFile[it->first];
+            int len = it->second.size();
+            for(int i=0;i<len;i++){
+                out<<"\n"<<it->second[i]->attr<<" "<<it->second[i]->type;
+            }
+            cout<<"\n"<<"END";
+            it++;
+        }
+        DBFile db;
+        string filepath=string(gl_dbfile)+string(tableName)+".bin";
+        if(createTable->sortkeys==NULL){
+            // Heap Type
+            char *temp = new char[filepath.length()];
+            strcpy(temp,filepath.c_str());
+            db.Create(temp,heap,NULL);
+        }
+        else{
+            OrderMaker *om = new OrderMaker();
+            int i = 0;
+            struct NameList *sortatts = createTable->sortkeys;
+            Schema *s = new Schema((char *)gl_cat.c_str(),(char*)tableName.c_str());
+            while(sortatts!=NULL){
+                int res = s->Find(sortatts->name);
+                Type restype = s->FindType(sortatts->name);
+                if(res != -1){
+                    om->whichAtts[i] = res;
+                    om->whichTypes[i] = restype;
+                    i++;
+                }
+                sortatts = sortatts->next;
+            }
+            om->numAtts=i;
+            int runlen=10;
+            struct {
+                OrderMaker *o; 
+                int l;
+            } startup = {om, runlen};
+            char *temp = new char[filepath.length()];
+            strcpy(temp,filepath.c_str());
+            db.Create(temp,sorted,&startup);
+        }
+        db.Close(); 
+    }
+    else if(mode == 1){
+        cout<<"\n setting RunFlag to 1";
+        Compiler::runOrPrint = true;
+        Compiler::outFile = NULL;
+    }
+    else if(mode==2){
+        Compiler::runOrPrint=true;
+        Compiler::outFile = outFile;
+    }
+    else if(mode==3){
+        cout<<"\n setting RunFlag to 3";
+        Compiler::runOrPrint=false;
+    }
+}
+        
 
 void Execute::printTree(QPElement* root){
     //printing inorder traversal of the root execution path
