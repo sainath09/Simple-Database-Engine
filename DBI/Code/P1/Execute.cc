@@ -10,8 +10,9 @@ extern struct CreateTable *createTable;
 extern string gl_tpch;
 extern int mode;
 bool Compiler::runOrPrint = false; 
-void Execute::setroot(QPElement* _root){
+void Execute::setrootNPipe(QPElement* _root,int nP){
         root=_root;
+        numPipes = nP; 
 }
 
 void Execute::init(){
@@ -23,7 +24,7 @@ void Execute::init(){
         }
 
         pipes = new Pipe*[numPipes+1];          
-        for(int i=0;i<=numPipes;i++) pipes[i] = new Pipe(100);
+        for(int i=0;i<=numPipes;i++) pipes[i] = new Pipe(PIPE_BUFFER);
 
         dbfiles = new DBFile*[totTables];
         for(int i=0;i<totTables;i++) dbfiles[i]=new DBFile();
@@ -168,7 +169,7 @@ void Execute::executeDataQuery(){
             for(int i=0;i<len;i++){
                 out<<"\n"<<it->second[i]->attr<<" "<<it->second[i]->type;
             }
-            cout<<"\n"<<"END";
+            out<<"\n"<<"END";
             it++;
         }
         DBFile db;
@@ -221,12 +222,35 @@ void Execute::executeDataQuery(){
     }
 }
         
+void Execute::levelOrderPrint(QPElement* root){
+    queue<QPElement*> q;
+    q.push(root);
+    while(!q.empty()){
+        QPElement* temp = q.front();
+        q.pop();
+        if(temp == NULL) cout<<"\nNULL\n";
+        else{
+            cout<<"Operation:"<<enumvals[temp->typeOps]<<endl;
+            cout<<" In Pipe 1:"<<temp->inPipe1<<endl;
+            cout<<" In Pipe 2:"<<temp->inPipe2<<endl;
+            cout<<" OutPipe:"<<temp->outPipe<<endl;
+            q.push(temp->left);
+            q.push(temp->right);
 
+        }
+
+    }
+
+}
 void Execute::printTree(QPElement* root){
     //printing inorder traversal of the root execution path
-    if(root==NULL) return;
-    //traverse to left
+    if(root==NULL) {
+        cout<<"\nNULL\n";
+        return;
+    }
     printTree(root->left);
+    //traverse to left
+   
     //print current root atts   
     cout<<endl;
     //Type of operation <Join,Select File,Select Pipe Etc...
@@ -234,43 +258,48 @@ void Execute::printTree(QPElement* root){
     cout<<" In Pipe 1:"<<root->inPipe1<<endl;
     cout<<" In Pipe 2:"<<root->inPipe2<<endl;
     cout<<" OutPipe:"<<root->outPipe<<endl;
-    Attribute *atts=root->outSchema->GetAtts();
-    int numatts=root->outSchema->GetNumAtts();
-    for(int i=0;i<numatts;i++){
-        cout<<atts[i].name<<" "<<types[atts[i].myType]<<endl;
-    }
-    if(root->cnf!=NULL){
-        //print CNF if present
-        cout<<"\n CNF : ";
-        root->cnf->Print();
-        cout<<endl;
-    }   
-    if(root->om!=NULL)
-    {
-        // Print order Maker if Necessary
-        cout<<"\n OrderMaker : ";  
-        root->om->Print();
-        cout<<endl;
-    }
-    if(root->pAtts!=NULL){
-        //Print attributes
-        cout<<"\n Atts to keep : ";
-        struct NameList *attstokeep=attsToSelect;
-        while(attstokeep!=NULL)
-        {
-            cout<<" Att:"<<attstokeep->name<<endl;
-            attstokeep=attstokeep->next;
-        }
-    }
-    cout<<endl;
+    // Attribute *atts=root->outSchema->GetAtts();
+    // int numatts=root->outSchema->GetNumAtts();
+    // for(int i=0;i<numatts;i++){
+    //     cout<<atts[i].name<<" "<<types[atts[i].myType]<<endl;
+    // }
+    // if(root->cnf!=NULL){
+    //     //print CNF if present
+    //     cout<<"\n CNF : ";
+    //     root->cnf->Print();
+    //     cout<<endl;
+    // }   
+    // if(root->om!=NULL)
+    // {
+    //     // Print order Maker if Necessary
+    //     cout<<"\n OrderMaker : ";  
+    //     root->om->Print();
+    //     cout<<endl;
+    // }
+    // if(root->pAtts!=NULL){
+    //     //Print attributes
+    //     cout<<"\n Atts to keep : ";
+    //     struct NameList *attstokeep=attsToSelect;
+    //     while(attstokeep!=NULL)
+    //     {
+    //         cout<<" Att:"<<attstokeep->name<<endl;
+    //         attstokeep=attstokeep->next;
+    //     }
+    // }
+    // cout<<endl;
     //print right root atts
+    
     printTree(root->right);
 }
 
 void Execute::executeQuery(QPElement *treeroot){
-    if(!treeroot) return;
-    executeQuery(root->right);
-    executeQuery(root->left);
+    if(treeroot == NULL) return;
+    executeQuery(treeroot->right);
+    executeQuery(treeroot->left);
+    cout<<"Operation:"<<enumvals[treeroot->typeOps]<<endl;
+    cout<<" In Pipe 1:"<<treeroot->inPipe1<<endl;
+    cout<<" In Pipe 2:"<<treeroot->inPipe2<<endl;
+    cout<<" OutPipe:"<<treeroot->outPipe<<endl;
     int ops;
     ops=treeroot->typeOps;
     if(ops==Project){         
@@ -279,28 +308,34 @@ void Execute::executeQuery(QPElement *treeroot){
         int outputcnt=treeroot->pAtts->numAttsOut;
         int *ops=treeroot->pAtts->attsToKeep;
         project->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],ops,inputcnt,outputcnt);
+        project->WaitUntilDone();
     }
 
     else if(ops==GroupBy){                
         groupby->Use_n_Pages(10);
         groupby->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->om,*treeroot->func);
+        groupby->WaitUntilDone();
     }
     else if(ops==Sum){         
         sum->Use_n_Pages(10);
         sum->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->func);
+        sum->WaitUntilDone();
     }
     else if(ops==Join){         
         join[numjoin]->Use_n_Pages(10);
         join[numjoin]->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->inPipe2],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
+        join[numjoin]->WaitUntilDone();
         numjoin++;
     }
     else if(ops==Distinct){              
         dupremove->Use_n_Pages(10);
         dupremove->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->outSchema);
+        dupremove->WaitUntilDone();
     }
     else if (ops==SelectPipe){
-        selectpipe[numPipes]->Use_n_Pages(10);
+        selectpipe[selectPipes]->Use_n_Pages(10);
         selectpipe[selectPipes]->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
+        selectpipe[selectPipes]->WaitUntilDone();
         selectPipes++;
     }
     else if(ops==SelectFile){
@@ -311,12 +346,14 @@ void Execute::executeQuery(QPElement *treeroot){
         strcpy(f,filepath.c_str());                
         dbfiles[currentDBFile]->Open(f);
         selectfile[currentDBFile]->Run(*dbfiles[currentDBFile],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
-        currentDBFile++;                
+        selectfile[currentDBFile]->WaitUntilDone();
+        currentDBFile++;           
     }
     else{
         cout<<"\n Operation specified wrong";
     }
-
+}
+void Execute::printNDel(){
 
     if(Compiler::outFile==NULL){
         Record rec;

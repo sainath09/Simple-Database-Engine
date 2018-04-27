@@ -40,7 +40,9 @@ class Optimizer
     string aliasTableName;
     string attr;
     QPElement **qproot;
+    
 public:
+    int PipeNum;
     Optimizer(Catalog *a)
     {
         cat=a;

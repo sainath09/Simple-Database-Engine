@@ -12,8 +12,11 @@ void Compiler::Compile()
         }
         Optimize();
         exec->init();
-        if(!runOrPrint) exec->printTree(root);
-        else exec->executeQuery(root);
+       // if(!runOrPrint)
+        //exec->printTree(root);
+        //exec->levelOrderPrint(root);
+         exec->executeQuery(root);
+         exec->printNDel();
     }
     else{
         cout<<"Query is Wrong!!!";
@@ -24,7 +27,7 @@ void Compiler::Optimize(){
     if(qOps[Join]) 
         opt->findOrder();
     opt->makePlan();
-    exec->setroot(root);
+    exec->setrootNPipe(root,opt->PipeNum);
 }
 
 

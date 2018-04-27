@@ -468,7 +468,7 @@ void Optimizer::makePlan(){
     QPElement *lchild=NULL;
     QPElement *rchild=NULL;    
     
-    int pipeNum=0;
+    PipeNum=0;
 
     //----------FOR JOIN ...........
 
@@ -505,8 +505,8 @@ void Optimizer::makePlan(){
         QPElement *elem = new QPElement(SelectFile,cnf1,s1,NULL,NULL,tableName1,tableToAlias[tableName1],NULL,literal1);
         elem->left = NULL;
         elem->right = NULL;
-        elem->outPipe=pipeNum;
-        pipeNum++;
+        elem->outPipe=PipeNum;
+        PipeNum++;
         lchild = elem;
         
         numRel++; 
@@ -544,8 +544,8 @@ void Optimizer::makePlan(){
         elem = new QPElement(SelectFile,cnf2,s2,NULL,NULL,tableName2,tableToAlias[string(tableName2)],NULL,literal2);
         elem->left=NULL;
         elem->right=NULL;
-        elem->outPipe=pipeNum;
-        pipeNum++;
+        elem->outPipe=PipeNum;
+        PipeNum++;
         rchild = elem;
 
         numRel++;
@@ -584,8 +584,8 @@ void Optimizer::makePlan(){
             elem->right=rchild;
             elem->inPipe1 = lchild->outPipe;
             elem->inPipe2 = rchild->outPipe;
-            elem->outPipe = pipeNum;
-            pipeNum++;
+            elem->outPipe = PipeNum;
+            PipeNum++;
             lchild = elem;
             rchild = NULL;
             
@@ -629,8 +629,8 @@ void Optimizer::makePlan(){
                     elem->left=lchild;
                     elem->right=NULL;
                     elem->inPipe1 = lchild->outPipe;            
-                    elem->outPipe = pipeNum;
-                    pipeNum++;
+                    elem->outPipe = PipeNum;
+                    PipeNum++;
                     lchild = elem;
                 }
             }
@@ -665,8 +665,8 @@ void Optimizer::makePlan(){
                 elem = new QPElement(SelectFile,cnf4,s4,NULL,NULL,tableName4,tableToAlias[tableName4],NULL,literal4);
                 elem->left=NULL;
                 elem->right=NULL;
-                elem->outPipe=pipeNum;
-                pipeNum++;
+                elem->outPipe=PipeNum;
+                PipeNum++;
                 rchild = elem;
                 numRel++;
             }
@@ -680,8 +680,8 @@ void Optimizer::makePlan(){
         QPElement *newNode = new QPElement(SelectFile,cnf,s,NULL,NULL,string(tables->tableName),string(tables->aliasAs),NULL,literal);
         newNode->left=NULL;
         newNode->right=NULL;
-        newNode->outPipe=pipeNum;
-        pipeNum++;
+        newNode->outPipe=PipeNum;
+        PipeNum++;
         lchild = newNode;
         rchild = NULL;        
     }
@@ -700,8 +700,8 @@ void Optimizer::makePlan(){
             elem->left = lchild;
             elem->right = NULL;
             elem->inPipe1=lchild->outPipe;
-            elem->outPipe=pipeNum;
-            pipeNum++;
+            elem->outPipe=PipeNum;
+            PipeNum++;
             lchild = elem;
             rchild = NULL;            
      }
@@ -714,8 +714,8 @@ void Optimizer::makePlan(){
             newSumNode->left = lchild;
             newSumNode->right = NULL;
             newSumNode->inPipe1=lchild->outPipe;
-            newSumNode->outPipe=pipeNum;
-            pipeNum++;
+            newSumNode->outPipe=PipeNum;
+            PipeNum++;
             lchild = newSumNode;
             rchild = NULL;
      }
@@ -760,8 +760,8 @@ void Optimizer::makePlan(){
          newProjNode->left = lchild;
          newProjNode->right = NULL;
          newProjNode->inPipe1=lchild->outPipe;
-         newProjNode->outPipe=pipeNum;
-         pipeNum++;
+         newProjNode->outPipe=PipeNum;
+         PipeNum++;
          lchild = newProjNode;
          rchild=NULL;
         }
@@ -773,8 +773,8 @@ void Optimizer::makePlan(){
          newDistNode->left = lchild;
          newDistNode->right = NULL;
          newDistNode->inPipe1=lchild->outPipe;
-         newDistNode->outPipe=pipeNum;
-         pipeNum++;
+         newDistNode->outPipe=PipeNum;
+         PipeNum++;
          lchild = newDistNode;
          rchild=NULL;
     }

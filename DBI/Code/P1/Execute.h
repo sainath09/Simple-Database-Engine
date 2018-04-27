@@ -39,13 +39,16 @@ public:
 
     void init();
     
-    void setroot(QPElement *_root);
+    void setrootNPipe(QPElement *_root,int numPipe);
     
     void printTree(QPElement *root);
     //TODO: assignment 5
     void executeQuery(QPElement *root);
     
     void executeDataQuery();
+
+    void printNDel();
+    void levelOrderPrint(QPElement* root);
 };
 
 #endif
