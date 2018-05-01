@@ -15,7 +15,7 @@
 #include "Defs.h"
 #include "Schema.h"
 #include "Function.h"
-#include "ParseFunc.h"
+#include "ParseTree.h"
 #include "Comparison.h"
 #include "Pipe.h"
 //#include "Catalog.h"

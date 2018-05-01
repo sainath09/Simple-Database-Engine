@@ -92,16 +92,7 @@ y.tab.o: Parser.y
 	yacc -d Parser.y
 	sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
 	g++ -c y.tab.c
-yyfunc.tab.o: ParserFunc.y
-	yacc -p "yyfunc" -b "yyfunc" -d ParserFunc.y
-	sed $(tag) yyfunc.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
-	g++ -w -c yyfunc.tab.c
-
-lex.yyfunc.o: LexerFunc.l
-	lex -Pyyfunc LexerFunc.l
-	gcc  -w -c lex.yyfunc.c -o lex.yyfunc.o
-
-	
+		
 lex.yy.o: Lexer.l
 	lex Lexer.l
 	gcc  -c lex.yy.c

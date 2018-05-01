@@ -21,10 +21,6 @@ c_mktsegment STRING,
 c_comment STRING
 ) AS HEAP
 
-INSERT customer.tbl INTO customer
-INSERT tb.tbl INTO customer
-
-DROP TABLE customer
 
 ----------------
 
@@ -53,7 +49,6 @@ p_retailprice DOUBLE,
 p_comment STRING
 ) AS HEAP
 
-INSERT part.tbl INTO part
 
 ----------------
 
@@ -74,7 +69,6 @@ ps_supplycost DOUBLE,
 ps_comment STRING
 ) AS HEAP
 
-INSERT partsupp.tbl INTO partsupp
 
 ----------------
 
@@ -99,7 +93,6 @@ s_acctbal DOUBLE,
 s_comment STRING
 ) AS HEAP
 
-INSERT supplier.tbl INTO supplier
 
 ----------------
 
@@ -128,7 +121,6 @@ o_shippriority INTEGER,
 o_comment STRING
 ) AS HEAP
 
-INSERT orders.tbl INTO orders
 
 ----------------
 
@@ -171,7 +163,6 @@ l_shipmode STRING,
 l_comment STRING
 ) AS HEAP
 
-INSERT lineitem.tbl INTO lineitem
 ----------------------
 
 BEGIN
@@ -187,9 +178,6 @@ CREATE TABLE nation (n_nationkey INTEGER,
 n_name STRING,
 n_regionkey INTEGER,
 n_comment STRING) AS HEAP
-
-INSERT nation.tbl INTO nation
-
 -------------------
 
 BEGIN
@@ -204,4 +192,28 @@ CREATE TABLE region (r_regionkey INTEGER,
 r_name STRING,
 r_comment STRING) AS HEAP
 
+
 INSERT region.tbl INTO region
+INSERT customer.tbl INTO customer
+INSERT nation.tbl INTO nation
+INSERT part.tbl INTO part
+INSERT partsupp.tbl INTO partsupp
+INSERT supplier.tbl INTO supplier
+INSERT orders.tbl INTO orders
+INSERT lineitem.tbl INTO lineitem
+
+DROP TABLE region
+DROP TABLE customer
+DROP TABLE nation
+DROP TABLE part
+DROP TABLE partsupp
+DROP TABLE supplier
+DROP TABLE orders
+DROP TABLE lineitem
+
+
+
+
+
+
+

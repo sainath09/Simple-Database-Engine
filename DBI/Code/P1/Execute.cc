@@ -73,7 +73,7 @@ void Execute::executeDataQuery(){
                 {
                     out<<it->second[i]->attr.c_str();
                     out<<" ";
-                    out<<it->second[i]->type.c_str();
+                    out<<it->second[i]->type.c_str()<<endl;
                 }
                 out<<"\n";
                 out<<"END";
