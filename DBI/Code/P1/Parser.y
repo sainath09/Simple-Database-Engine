@@ -11,7 +11,7 @@
 	extern "C" int yyparse();
 	extern "C" void yyerror(char *s);
   
-	
+	struct AndList *final;	
 	// these data structures hold the result of the parsing
 	struct CreateTable *createTable;
 	struct FuncOperator *finalFunction; // the aggregate function (NULL if no agg)

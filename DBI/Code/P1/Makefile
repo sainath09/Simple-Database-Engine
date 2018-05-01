@@ -6,7 +6,7 @@ tag = -i
 ifdef linux
 tag = -n
 endif
-main:   Compiler.o Catalog.o Optimizer.o Execute.o Parser.o  Parser.o Statistics.o Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o Record.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o RelOp.o y.tab.o lex.yy.o  main.o
+main:             Compiler.o Catalog.o Optimizer.o Execute.o Parser.o Statistics.o Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o Record.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o RelOp.o y.tab.o lex.yy.o  main.o
 	$(CC) -o main Compiler.o Catalog.o Optimizer.o Execute.o Parser.o Statistics.o Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o Record.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o RelOp.o y.tab.o lex.yy.o  main.o -lfl -lpthread
 # main:   Compiler.o Catalog.o Optimizer.o Execute.o Parser.o  Parser.o Statistics.o Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o Record.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o yyfunc.tab.o  lex.yyfunc.o main.o
 # 	$(CC) -o main Compiler.o Catalog.o Optimizer.o Execute.o Parser.o Statistics.o Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o Record.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o y.tab.o lex.yy.o yyfunc.tab.o  lex.yyfunc.o main.o -lfl -lpthread

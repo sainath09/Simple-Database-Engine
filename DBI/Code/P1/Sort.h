@@ -9,7 +9,7 @@
 #include "BigQ.h"
 #include "AbstractDBFile.h"
 
-#define PIPE_BUFFER 1000000
+#define PIPE_BUFFER 10000000
 
 typedef struct SortInfo
 {

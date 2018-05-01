@@ -31,6 +31,7 @@ void Execute::init(){
 
         selectfile= new class SelectFile*[totTables];
         for(int i=0;i<totTables;i++) selectfile[i]=new class SelectFile();
+        currentDBFile = 0;
         
         selectpipe = new class SelectPipe*[totTables];
         for(int i=0;i<totTables;i++) selectpipe[i]=new class SelectPipe();
@@ -108,9 +109,22 @@ void Execute::executeDataQuery(){
         Schema s((char*)gl_cat.c_str(),insertToTab->dbfile);
 
         fpath = string(gl_tpch)+string(insertToTab->filename);
-        temp = new char[fpath.length()];
-        strcpy(temp,fpath.c_str());
-        db.Load(s,temp);
+        char* temptp = new char[fpath.length()];
+        strcpy(temptp,fpath.c_str());
+        db.Load(s,temptp);
+        db.Close();
+        db.Open(temp);
+        int counter = 0;
+        Record fetchme;
+        db.MoveFirst();
+        while (db.GetNext (fetchme) == 1) {
+            counter += 1;
+                //fetchme.Print (&s);
+                if (counter % 10000 == 0) {
+                cout << counter << "\n";
+            }
+	    }
+        cout<<counter<<endl;
         db.Close();
     }
     else if(createTable != NULL){
@@ -308,34 +322,34 @@ void Execute::executeQuery(QPElement *treeroot){
         int outputcnt=treeroot->pAtts->numAttsOut;
         int *ops=treeroot->pAtts->attsToKeep;
         project->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],ops,inputcnt,outputcnt);
-        project->WaitUntilDone();
+        // project->WaitUntilDone();
     }
 
     else if(ops==GroupBy){                
         groupby->Use_n_Pages(10);
         groupby->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->om,*treeroot->func);
-        groupby->WaitUntilDone();
+        // groupby->WaitUntilDone();
     }
     else if(ops==Sum){         
         sum->Use_n_Pages(10);
         sum->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->func);
-        sum->WaitUntilDone();
+        // sum->WaitUntilDone();
     }
     else if(ops==Join){         
         join[numjoin]->Use_n_Pages(10);
         join[numjoin]->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->inPipe2],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
-        join[numjoin]->WaitUntilDone();
+        // join[numjoin]->WaitUntilDone();
         numjoin++;
     }
     else if(ops==Distinct){              
         dupremove->Use_n_Pages(10);
         dupremove->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->outSchema);
-        dupremove->WaitUntilDone();
+        // dupremove->WaitUntilDone();
     }
     else if (ops==SelectPipe){
         selectpipe[selectPipes]->Use_n_Pages(10);
         selectpipe[selectPipes]->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
-        selectpipe[selectPipes]->WaitUntilDone();
+        // selectpipe[selectPipes]->WaitUntilDone();
         selectPipes++;
     }
     else if(ops==SelectFile){
@@ -346,7 +360,7 @@ void Execute::executeQuery(QPElement *treeroot){
         strcpy(f,filepath.c_str());                
         dbfiles[currentDBFile]->Open(f);
         selectfile[currentDBFile]->Run(*dbfiles[currentDBFile],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
-        selectfile[currentDBFile]->WaitUntilDone();
+        // selectfile[currentDBFile]->WaitUntilDone();
         currentDBFile++;           
     }
     else{
@@ -358,7 +372,7 @@ void Execute::printNDel(){
     if(Compiler::outFile==NULL){
         Record rec;
         int rowcnt=0;
-        while(pipes[numPipes]->Remove(&rec)) {
+        while(pipes[numPipes - 1]->Remove(&rec)) {
             rec.Print(root->outSchema);
             rowcnt++;
         }
