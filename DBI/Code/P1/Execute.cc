@@ -55,6 +55,7 @@ void Execute::executeDataQuery(){
         Catalog *c = cat;
         auto it = c->relToAttr.find(deleteTable);
         if(it!=c->relToAttr.end()){
+            cout<<"\n\nTable Found. Tablename:"<<deleteTable<<endl;
             cat->relToAttr.erase(it);
             it =  cat->relToAttr.begin();
             ofstream out;
@@ -75,42 +76,64 @@ void Execute::executeDataQuery(){
                     out<<" ";
                     out<<it->second[i]->type.c_str()<<endl;
                 }
-                out<<"\n";
+                
                 out<<"END";
+                out<<"\n";
                 it++;
             }
             out.close();
-
+            cout<<"Deleting bin file for "<<deleteTable<<" ..."<<endl;
             string filepath=string(gl_dbfile)+string(deleteTable)+".bin";
             char *temp = new char[filepath.length()];
             strcpy(temp,filepath.c_str());
             remove(temp);
             delete temp;
+            cout<<"Delete of bin file successful."<<endl;
+            cout<<"Deleting METAINF file for "<<deleteTable<<" ..."<<endl;
             filepath=string(gl_dbfile)+string(deleteTable)+".bin"+".METAINF";
             temp = new char[filepath.length()];
             strcpy(temp,filepath.c_str());
             remove(temp);
             delete temp;
+            cout<<"Delete of METAINF file successful."<<endl;
             cat->attrToTable.clear();
             cat->attrToTable.clear();
             c->relToAttr.clear();
+            cout<<"Start updating catalog file..."<<endl;
             c->init();
+            cout<<"Catalog file entry for table deleted successfully."<<endl;
+            cout<<"All Drop Ops Completed Successful!\n\n"<<endl;
         }else{
-                cout<<"error:Table Not Found! "<<deleteTable<<" In DataBase:";
+                cout<<"ERROR:\nTable Not Found! \n\tCannot find \""<<deleteTable<<"\" In DataBase\n\n"<<endl;
             return;
         }
     }
     else if(insertToTab != NULL){
+         Catalog *c = cat;
+        auto it = c->relToAttr.find(string(insertToTab->dbfile));
+        if(it==c->relToAttr.end()){
+            cout<<"\n\nERROR:\nTable Not Found! \n\tCannot find \""<<string(insertToTab->dbfile)<<"\" in DataBase\n\n"<<endl;
+            // cout<<"error:Table Not Found! "<<string(insertToTab->dbfile)<<" In DataBase"<<endl;
+            return;
+        }
+
+        cout<<"\n\nExisting Table found in DB."<<endl;
+        cout<<"Attempting to open bin file..."<<endl;
+
         DBFile db;
         string fpath = string(gl_dbfile)+string(insertToTab->dbfile)+".bin";
         char *temp = new char[fpath.length()];
         strcpy(temp,fpath.c_str());
         db.Open(temp);
+        cout<<"Opened bin file."<<endl;
         Schema s((char*)gl_cat.c_str(),insertToTab->dbfile);
-
+        
+        cout<<"Loading data from location: "<<string(gl_tpch)+string(insertToTab->filename)<<" ..."<<endl;
+       
         fpath = string(gl_tpch)+string(insertToTab->filename);
         char* temptp = new char[fpath.length()];
         strcpy(temptp,fpath.c_str());
+        cout<<"Inserting records now..."<<endl;
         db.Load(s,temptp);
         db.Close();
         db.Open(temp);
@@ -120,16 +143,19 @@ void Execute::executeDataQuery(){
         while (db.GetNext (fetchme) == 1) {
             counter += 1;
                 //fetchme.Print (&s);
-                if (counter % 10000 == 0) {
-                cout << counter << "\n";
-            }
+            //     if (counter % 10000 == 0) {
+            //     cout << "Processed "<<counter << " records \n";
+            // }
 	    }
-        cout<<counter<<endl;
+        cout<<"Processed "<<counter<<" records"<<endl;
+        cout<<"All Insert Ops Successful!\n\n"<<endl;
         db.Close();
     }
     else if(createTable != NULL){
+        cout<<"\n\nReading Catalog..."<<endl;
         Catalog* tempCat = cat->instantiate();
         attrType* catatts;
+        cout<<"Adding new table information to the Catalog..."<<endl;
         char* tabToCreate = createTable->tableName;
         struct NameList* sortAtts = createTable->sortkeys;
         struct TableAtts* TabAtts = createTable->atts;
@@ -137,9 +163,13 @@ void Execute::executeDataQuery(){
         cat->tableToFile[tableName] = tableName + ".tbl";
         auto it = cat->relToAttr.find(tableName);
         if(it != cat->relToAttr.end()){
-            cout<<"Table already exists";
+            // cout<<"Table already exists";
+            cout<<"\n\nERROR:\nTable already exists! \n\t The tablename: \""<<tableName<<"\" is already present in DataBase.\n\t Please use something else.\n\n"<<endl;
+
             return;
         }
+
+        cout<<"Adding the attributes information to the DB..."<<endl;
         while(TabAtts){
             struct CrAttr *op = TabAtts->Op;
             auto it = cat->attrToTable.find(string(op->value));
@@ -165,11 +195,10 @@ void Execute::executeDataQuery(){
                 catatts = new attrType(string(op->value),string("Double"));
                 cat->relToAttr[tableName].push_back(catatts);
             }
-            //op->value; //FIXME: what does it do?
             TabAtts=TabAtts->next;
         }
-    
-        
+        cout<<"All metainfo added successfully."<<endl;
+        cout<<"Saving new table details to catalog file..."<<endl;
         it =  cat->relToAttr.begin();
         ofstream out;
         out.open(gl_cat);
@@ -183,16 +212,21 @@ void Execute::executeDataQuery(){
             for(int i=0;i<len;i++){
                 out<<"\n"<<it->second[i]->attr<<" "<<it->second[i]->type;
             }
-            out<<"\n"<<"END";
+            out<<"\n"<<"END\n";
             it++;
         }
+        cout<<"Catalog file updated successfully."<<endl;
         DBFile db;
+
+         cout<<"Creating correct type of bin file..."<<endl;
         string filepath=string(gl_dbfile)+string(tableName)+".bin";
         if(createTable->sortkeys==NULL){
             // Heap Type
             char *temp = new char[filepath.length()];
             strcpy(temp,filepath.c_str());
             db.Create(temp,heap,NULL);
+            cout<<"Heap type bin file created"<<endl;
+
         }
         else{
             OrderMaker *om = new OrderMaker();
@@ -218,20 +252,23 @@ void Execute::executeDataQuery(){
             char *temp = new char[filepath.length()];
             strcpy(temp,filepath.c_str());
             db.Create(temp,sorted,&startup);
+            cout<<"Sort type bin file created"<<endl;
         }
         db.Close(); 
+        cout<<"All Create Ops Successful!\n\n"<<endl;
     }
     else if(mode == 1){
-        cout<<"\n setting RunFlag to 1";
+        cout<<"\n\n Setting RunFlag to 1. \n\n"<<endl;
         Compiler::runOrPrint = true;
         Compiler::outFile = NULL;
     }
     else if(mode==2){
+        cout<<"\n\n Setting RunFlag to 2\n\n"<<endl;
         Compiler::runOrPrint=true;
         Compiler::outFile = outFile;
     }
     else if(mode==3){
-        cout<<"\n setting RunFlag to 3";
+        cout<<"\n\n Setting RunFlag to 3\n\n"<<endl;
         Compiler::runOrPrint=false;
     }
 }
@@ -364,7 +401,7 @@ void Execute::executeQuery(QPElement *treeroot){
         currentDBFile++;           
     }
     else{
-        cout<<"\n Operation specified wrong";
+        cout<<"\n Operation specified wrong"<<endl;
     }
 }
 void Execute::printNDel(){
