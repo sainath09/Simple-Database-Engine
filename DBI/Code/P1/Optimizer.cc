@@ -7,6 +7,17 @@ void Optimizer::findOrder()
     Statistics *statsPtr = cat->stats;  
 
     findUniqueTableForAndList();
+
+    for(auto it = andListToIds.begin();it!=andListToIds.end();it++){
+
+        vector<struct AndList *> vec;
+        if(it->second.size()==1)
+        {
+            idsToAndListGeneric[it->second.at(0)] = vec;
+        }
+    
+    }
+    
    
     for(auto it = andListToIds.begin();it!=andListToIds.end();it++){
         //if there are more than one tables ... dont bother  .. doing that afterwards

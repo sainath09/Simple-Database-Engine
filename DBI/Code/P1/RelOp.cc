@@ -114,6 +114,7 @@ void* joinFunc(void * args){
 	Pipe * outPipe=stj->outPipe ;
 	CNF *selOp=stj->selOp ;
 	Record *literal=stj->literal ;
+	int npages = stj->pages;
 	// Schema* left = stj->left;
 	// Schema* right = stj->right; //FOR PRINTING RECORDS
 	
@@ -121,45 +122,204 @@ void* joinFunc(void * args){
 	Pipe *bqL = new Pipe(PIPE_BUFFER);
 	Pipe *bqR = new Pipe(PIPE_BUFFER);
 	Record tempR,tempL,resRec;
+	Record *tempRec,*tempRec2;
 	ComparisonEngine ce;
 	int FLAG_L = 1;
 	int FLAG_R = 1;
 	int commonAtts = selOp->GetSortOrders(omL,omR);
 
-	if(commonAtts <  1){
+	if(commonAtts <  1){ 
+		//FIXME:
 		//Nested as there are no common attributes
+		// vector<Record *> rightRec;
+		// FLAG_L = inPipeL->Remove(&tempL);
+		// FLAG_R = inPipeR->Remove(&tempR);
+		// int attrL = tempL.getNumAtts();
+		// int attrR = tempR.getNumAtts();		
+		// int* resultAttr = new int[attrL + attrR];
+		// for(int i = 0;i<attrL;i++) resultAttr[i] = i;
+		// for(int j = 0;j<attrR;j++) resultAttr[attrL + j] = j;
+		// while(FLAG_R){
+		// 	Record* temp = new Record();
+		// 	//tempR.Print(right);
+		// 	temp->Consume(&tempR);
+		// 	FLAG_R = inPipeR->Remove(&tempR);
+		// 	rightRec.push_back(temp);
+		// }
+		// int count  = 0 ;
+		// while(FLAG_L){
+		// 	cout<<count++<<endl;
+		// 	for(int i = 0;i<rightRec.size();i++){
+		// 		if(ce.Compare(&tempL,&omL,rightRec[i],&omR) == 0){
+		// 			// cout<<"...left record..."<<endl;
+		// 			// tempL.Print(left);
+		// 			// cout<<"....right record...."<<endl;
+		// 			// rightRec[i]->Print(right);
+		// 			// cout<<"......"<<endl;
+		// 			resRec.MergeRecords(&tempL,rightRec[i],attrL,attrR,resultAttr, attrL+attrR,attrL);
+		// 			outPipe->Insert(&resRec);
+		// 		}
+		// 	}
+		// 	FLAG_L = inPipeL->Remove(&tempL);
+		// }
+		// delete[] resultAttr;
+
+		//Above block nested approach leads to just insane memory consumption.
+		//Took over 11 GB for my RAM and didnt do it correctly.
+
+		
+		Page tempPage;
+
 		vector<Record *> rightRec;
-		FLAG_L = inPipeL->Remove(&tempL);
-		FLAG_R = inPipeR->Remove(&tempR);
-		int attrL = tempL.getNumAtts();
-		int attrR = tempR.getNumAtts();		
-		int* resultAttr = new int[attrL + attrR];
-		for(int i = 0;i<attrL;i++) resultAttr[i] = i;
-		for(int j = 0;j<attrR;j++) resultAttr[attrL + j] = j;
-		while(FLAG_R){
-			Record* temp = new Record();
-			//tempR.Print(right);
-			temp->Consume(&tempR);
-			FLAG_R = inPipeR->Remove(&tempR);
-			rightRec.push_back(temp);
-		}
-		int count  = 0 ;
-		while(FLAG_L){
-			cout<<count++<<endl;
-			for(int i = 0;i<rightRec.size();i++){
-				if(ce.Compare(&tempL,&omL,rightRec[i],&omR) == 0){
-					// cout<<"...left record..."<<endl;
-					// tempL.Print(left);
-					// cout<<"....right record...."<<endl;
-					// rightRec[i]->Print(right);
-					// cout<<"......"<<endl;
-					resRec.MergeRecords(&tempL,rightRec[i],attrL,attrR,resultAttr, attrL+attrR,attrL);
-					outPipe->Insert(&resRec);
+		vector<Record *> leftRec;
+		int FLAG_F = 0;
+		int FLAG_L2 = 0;
+		int FLAG_R2 = 0;
+		int counter = 0;
+		int counter2 = 0;
+		int currpage = 0;
+
+		File fl;
+		fl.Open(0,"join.bin");
+		
+		while(true){
+			if((FLAG_L2 = inPipeL->Remove(&tempL))&& (counter<npages-1)){
+				if(!tempPage.Append(&tempL)){
+
+					tempRec = new Record();
+					while (tempPage.GetFirst(tempRec)) {
+						leftRec.push_back(tempRec);
+						tempRec = new Record();			
+					}		
+					delVar(tempRec);
+					
+					tempPage.Append(&tempL);
+					counter++;
 				}
+			}else{
+				int scnComp = 0 ;
+				int scnPtr = 0;
+				Page tempPage2;
+				counter2 += leftRec.size();
+				
+				if(counter<npages-1){
+					tempRec = new Record();
+					while (tempPage.GetFirst(tempRec)) {
+						leftRec.push_back(tempRec);
+						tempRec = new Record();			
+					}		
+					delVar(tempRec);
+				}
+
+				while(true){
+					if(FLAG_F){
+						if (scnPtr < fl.GetLength() - 1) {
+							fl.GetPage(&tempPage2, scnPtr++);
+							tempRec = new Record();
+							while (tempPage2.GetFirst(tempRec)) {
+								rightRec.push_back(tempRec);
+								tempRec = new Record();
+							}
+							delVar(tempRec);
+							tempPage2.EmptyItOut();
+							
+						} else
+							scnComp = 1;
+					}else{
+						while ((FLAG_R2 = inPipeR->Remove(&tempR))
+								&& tempPage2.Append(&tempR)) {
+
+						}
+
+						Page temp_page;
+					
+					
+						tempRec = new Record();
+						tempRec2 = new Record();
+						while (tempPage2.GetFirst(tempRec)) {
+							tempRec2->Copy(tempRec);
+							rightRec.push_back(tempRec);
+							temp_page.Append(tempRec2);
+							tempRec = new Record();
+							tempRec2 = new Record();
+						}
+						delVar(tempRec);
+						delVar(tempRec2);
+						
+						fl.AddPage(&temp_page, currpage++);
+						temp_page.EmptyItOut();
+						tempPage2.EmptyItOut(); //
+					}
+
+					counter2 += rightRec.size();
+					bool FLAG_C=false;
+					int attrL,attrR;
+					int* resultAttr ;
+
+					for(int i =0;leftRec.size();i++){
+						for(int j=0; rightRec.size();j++){
+							cout<<i<<" "<<j<<endl;
+							if (ce.Compare(leftRec[i], rightRec[j],literal, selOp)) {
+								Record mgRec;
+								if(!FLAG_C){
+									attrL = leftRec[i]->getNumAtts();
+									attrR = rightRec[j]->getNumAtts();		
+									resultAttr = new int[attrL + attrR];
+									for(int i = 0;i<attrL;i++) resultAttr[i] = i;
+									for(int j = 0;j<attrR;j++) resultAttr[attrL + j] = j;
+									FLAG_C = true;
+								}
+
+								mgRec.MergeRecords(leftRec[i],rightRec[i],attrL,attrR,resultAttr, attrL+attrR,attrL);
+								outPipe->Insert(&mgRec);
+							}
+						}
+					}
+
+
+					for (int i = 0; i < rightRec.size(); i++) {
+						delVar( rightRec[i]);
+					}
+
+					rightRec.clear();
+
+					if (!FLAG_R2 && !FLAG_F) {
+						FLAG_F = 1;
+						break;
+					} else if (!FLAG_F) {
+						tempPage2.Append(&tempR);
+					}
+
+					if (scnComp) {
+						break;
+					}
+				}
+
+				for (int i = 0; i < leftRec.size(); i++) {
+					delVar(leftRec[i]);
+				}
+
+				leftRec.clear();
+
+				if (counter >= (npages - 1)) {
+					tempPage.Append(&tempL);
+					counter2++;
+					counter = 0;
+
+					//continue;
+				} else
+					break;
+
 			}
-			FLAG_L = inPipeL->Remove(&tempL);
 		}
-		delete[] resultAttr;
+
+		fl.Close();
+		remove("join.bin");
+
+
+
+
+
 	}else{
 		//try to find using points of commonality
 		// structBigQ* sbql = new structBigQ();
@@ -285,6 +445,36 @@ void* joinFunc(void * args){
 
 }
 
+//  void* joinFunc(void * args){
+// 	// stProject* stprj = (stProject*) args;
+// 	stJoin *stj = (stJoin*) args;
+// 	OrderMaker omLt, omRt;
+// 	ComparisonEngine ce;
+// 	Pipe* inPipeL=stj->inPipeL ;
+// 	Pipe* inPipeR=stj->inPipeR ;
+// 	Pipe * outPipe=stj->outPipe ;
+// 	CNF *selOp=stj->selOp ;
+// 	Record *literal=stj->literal ;
+// 	// Schema* left = stj->left;
+// 	// Schema* right = stj->right; //FOR PRINTING RECORDS
+	
+// 	//get numatts and see if they are more than zero.
+// 	bool flag = selOp->GetSortOrders(omLt,omRt);
+	
+	
+// 	//use block nested loop by default ... otherwise do fancy stuff
+// 	if(!flag){
+// 		//just generic block nested loop join prof taught in class
+
+
+// 	}else{
+// 		//this is going to get complicated here, but hopefully faster too
+
+// 	}
+	
+//  }
+
+
 void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal){
 	stJoin *stj = new stJoin();
 	stj->inPipeL = &inPipeL;
@@ -292,6 +482,7 @@ void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record 
 	stj->outPipe = &outPipe;
 	stj->selOp = &selOp;
 	stj->literal = &literal;
+	stj->pages = pages>0?pages:1;
 	// stj->left = left;
 	// stj->right = right;
 	pthread_create (&thread, NULL, joinFunc, (void *)stj);
@@ -425,6 +616,8 @@ void Sum::Use_n_Pages (int runlen) {
 	pages = runlen;
 
 }
+
+
 void * grpbyFunc(void * args){
 	stGroupBy* stgby = (stGroupBy*)args;
 	Pipe* inPipe = stgby->inPipe;
@@ -453,13 +646,17 @@ void * grpbyFunc(void * args){
 	int currNumAtts = 0;
 	char* s;
 	ComparisonEngine ce;
-	Schema tempsch("sum", 1, &attr);
+	
 	string intStr = "";
 	string doubleStr = "";
-	while(inPipe->Remove(&tempRec)){
+	Pipe *grpBypipe=new Pipe(PIPE_BUFFER);
+	BigQ bqG(*inPipe,*grpBypipe,*groupAtts,2);
+	Pipe* grpBypipe2 = new Pipe(PIPE_BUFFER);
+	BigQ bqG2(*grpBypipe,*grpBypipe2,*groupAtts,2);
+
+	if(grpBypipe2->Remove(&tempRec)){
 		Type t = computeMe->Apply(tempRec,temp_int,temp_double);
-		if(FLAG){
-			if(t == Int) {
+		if(t == Int) {
 				attr.myType = Int;
 				sumInt += temp_int;	
 			}
@@ -469,80 +666,208 @@ void * grpbyFunc(void * args){
 			}
 			FLAG  = false;
 			currNumAtts = tempRec.getNumAtts();
-			//tempRec2.Consume(&tempRec);
+			tempRec2.Consume(&tempRec);
+
+	}
+	Schema tempsch("sum", 1, &attr);
+	Record* resRec;
+	while(grpBypipe2->Remove(&tempRec)){
+		Type t = computeMe->Apply(tempRec,temp_int,temp_double);
+		
+		
+		if(!ce.Compare(&tempRec2,&tempRec,groupAtts)){
+			if(t == Double){
+			sumDouble += temp_double;
+			}
+			else if( t == Int){
+				sumInt += temp_int;			
+			}
+			else { 
+				cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
+			}
+
 		}
 		else{
-			if(!ce.Compare(&tempRec2,&tempRec,groupAtts)){
-				if(t == Double){
-				sumDouble += temp_double;
-				}
-				else if( t == Int){
-					sumInt += temp_int;			
-				}
-				else { 
-					cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
-				}
-
+			
+			if(attr.myType == Int){
+				std::ostringstream ss;
+				ss << sumInt;
+				intStr = ss.str() + "|";
+				s = (char *)intStr.c_str();
+				sumInt = temp_int;
 			}
-			else{
-				
-				if(attr.myType == Int){
-					std::ostringstream ss;
-					ss << sumInt;
-					intStr += ss.str() + "|";
-					s = (char *)intStr.c_str();
-					sumInt = temp_int;
-				}
-				else if(attr.myType == Double){
-					std::ostringstream ss;
-					ss << sumDouble;
-					doubleStr += ss.str() + "|";
-					s = (char *)doubleStr.c_str();
-					//sprintf(s,"%f|",sumDouble); //TODO: remove this line
-					sumDouble = temp_double;
-				}
-				else { 
-					cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
-				}
-				//FIXME: s should be cleared before this.
-				Record sumRec;
-				Record resRec;
-				sumRec.ComposeRecord(&tempsch,s);
-				tempRec2.Project (attArray, gbyNumAtts, currNumAtts);
-				resRec.MergeRecords (&sumRec, &tempRec2, 1, gbyNumAtts, gbyAList, gbyNumAtts+1, 1);
-				outPipe->Insert(&resRec);
-
+			else if(attr.myType == Double){
+				std::ostringstream ss;
+				ss << sumDouble;
+				doubleStr = ss.str() + "|";
+				s = (char *)doubleStr.c_str();
+				sumDouble = temp_double;
 			}
+			else { 
+				cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
+			}
+			//FIXME: s should be cleared before this.
+			
+			resRec = new Record();
+			resRec->ComposeRecord(&tempsch,s);
+			// tempRec2.Project (attArray, gbyNumAtts, currNumAtts);
+			// resRec.MergeRecords (&sumRec, &tempRec2, 1, gbyNumAtts, gbyAList, gbyNumAtts+1, 1);
+			outPipe->Insert(resRec);
+
 		}
+		
 		tempRec2.Consume(&tempRec);
 	}
 
 	if(attr.myType == Int) {
 		std::ostringstream ss;
 		ss << sumInt;
-		intStr += ss.str() + "|";
+		intStr = ss.str() + "|";
 		s = (char * )intStr.c_str(); 
 	}
 	else if(attr.myType == Double){
 		std::ostringstream ss;
 		ss << sumDouble;
-		doubleStr += ss.str() + "|";
+		doubleStr = ss.str() + "|";
 		s = (char * )doubleStr.c_str();
 	} 
 	else { 
 		cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
 	}
-	//FIXME: s should be cleared before this.
-	Record sumRec;
-	Record resRec;
-	sumRec.ComposeRecord(&tempsch,s);
-	tempRec2.Project (attArray, gbyNumAtts, currNumAtts);
-	resRec.MergeRecords (&sumRec, &tempRec2, 1, gbyNumAtts, gbyAList, gbyNumAtts+1, 1);
-	outPipe->Insert(&resRec);
+	resRec = new Record();
+	resRec->ComposeRecord(&tempsch,s);
+	// tempRec2.Project (attArray, gbyNumAtts, currNumAtts);
+	// resRec.MergeRecords (&sumRec, &tempRec2, 1, gbyNumAtts, gbyAList, gbyNumAtts+1, 1);
+	outPipe->Insert(resRec);
 	outPipe->ShutDown();
+	// delete inPipe;
+	// delete grpBypipe;
 	//delVar(attr.name);
 	delete []gbyAList;
 }
+
+
+
+
+
+// void * grpbyFunc(void * args){
+// 	stGroupBy* stgby = (stGroupBy*)args;
+// 	Pipe* inPipe = stgby->inPipe;
+// 	Pipe* outPipe = stgby->outPipe;
+// 	OrderMaker* groupAtts = stgby->groupAtts;
+// 	Function* computeMe = stgby->computeMe;
+// 	int attArray[MAX_ANDS];
+// 	groupAtts->getAttrs(attArray);
+// 	int gbyNumAtts = groupAtts->getNumAtts();
+// 	int* gbyAList = new int[MAX_ANDS + 1];
+
+// 	for(int i = 0;i<gbyNumAtts  +1;i++){
+// 		if(i == 0) gbyAList[i] = 0;
+// 		else gbyAList[i] = attArray[i-1];
+// 	}
+	
+// 	Record tempRec;
+// 	Record tempRec2;
+// 	Attribute attr;
+// 	int temp_int = 0;
+// 	int sumInt = 0;
+// 	double temp_double = 0.0;
+// 	double sumDouble = 0.0;
+// 	attr.name = "sum";
+// 	bool FLAG = true;
+// 	int currNumAtts = 0;
+// 	char* s;
+// 	ComparisonEngine ce;
+// 	Schema tempsch("sum", 1, &attr);
+// 	string intStr = "";
+// 	string doubleStr = "";
+// 	while(inPipe->Remove(&tempRec)){
+// 		Type t = computeMe->Apply(tempRec,temp_int,temp_double);
+// 		if(FLAG){
+// 			if(t == Int) {
+// 				attr.myType = Int;
+// 				sumInt += temp_int;	
+// 			}
+// 			else if(t == Double) {
+// 				attr.myType = Double;
+// 				sumDouble += temp_double;
+// 			}
+// 			FLAG  = false;
+// 			currNumAtts = tempRec.getNumAtts();
+// 			//tempRec2.Consume(&tempRec);
+// 		}
+// 		else{
+// 			if(!ce.Compare(&tempRec2,&tempRec,groupAtts)){
+// 				if(t == Double){
+// 				sumDouble += temp_double;
+// 				}
+// 				else if( t == Int){
+// 					sumInt += temp_int;			
+// 				}
+// 				else { 
+// 					cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
+// 				}
+
+// 			}
+// 			else{
+				
+// 				if(attr.myType == Int){
+// 					std::ostringstream ss;
+// 					ss << sumInt;
+// 					intStr += ss.str() + "|";
+// 					s = (char *)intStr.c_str();
+// 					sumInt = temp_int;
+// 				}
+// 				else if(attr.myType == Double){
+// 					std::ostringstream ss;
+// 					ss << sumDouble;
+// 					doubleStr += ss.str() + "|";
+// 					s = (char *)doubleStr.c_str();
+				
+// 					sumDouble = temp_double;
+// 				}
+// 				else { 
+// 					cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
+// 				}
+// 				//FIXME: s should be cleared before this.
+// 				Record sumRec;
+// 				Record resRec;
+// 				sumRec.ComposeRecord(&tempsch,s);
+// 				tempRec2.Project (attArray, gbyNumAtts, currNumAtts);
+// 				resRec.MergeRecords (&sumRec, &tempRec2, 1, gbyNumAtts, gbyAList, gbyNumAtts+1, 1);
+// 				outPipe->Insert(&resRec);
+
+// 			}
+// 		}
+// 		tempRec2.Consume(&tempRec);
+// 	}
+
+// 	if(attr.myType == Int) {
+// 		std::ostringstream ss;
+// 		ss << sumInt;
+// 		intStr += ss.str() + "|";
+// 		s = (char * )intStr.c_str(); 
+// 	}
+// 	else if(attr.myType == Double){
+// 		std::ostringstream ss;
+// 		ss << sumDouble;
+// 		doubleStr += ss.str() + "|";
+// 		s = (char * )doubleStr.c_str();
+// 	} 
+// 	else { 
+// 		cerr<<"Invalid type return from computeME->apply encountered in group by thread func "<<endl;
+// 	}
+// 	//FIXME: s should be cleared before this.
+// 	Record sumRec;
+// 	Record resRec;
+// 	sumRec.ComposeRecord(&tempsch,s);
+// 	tempRec2.Project (attArray, gbyNumAtts, currNumAtts);
+// 	resRec.MergeRecords (&sumRec, &tempRec2, 1, gbyNumAtts, gbyAList, gbyNumAtts+1, 1);
+// 	outPipe->Insert(&resRec);
+// 	outPipe->ShutDown();
+// 	//delVar(attr.name);
+// 	delete []gbyAList;
+// }
 
 void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe){
 	stGroupBy* stgby = new stGroupBy();

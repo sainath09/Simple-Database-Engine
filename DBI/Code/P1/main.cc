@@ -27,10 +27,13 @@ void setup () {
 		cerr << " Test settings files 'test.cat' missing \n";
 		exit (1);
 	}
-	cout << " \n** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **\n";
+	cout << " \n** IMPORTANT: MAKE SURE TO READ THE INFORMATION BELOW **\n";
+	cout<<	"\n-FILES: MAKE SURE THESE PATHS ARE CORRECT --------------------------------\n";
 	cout << " catalog location: \t" << gl_cat << endl;
 	cout << " tpch files dir: \t" << gl_tpch << endl;
 	cout << " heap files dir: \t" << gl_dbfile << endl;
+	cout<<	"\n-SET FLAGS  --------------------------------------------\n";
+	cout<< "";
 	cout << " \n\n";
 }
 

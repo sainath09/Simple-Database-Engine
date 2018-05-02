@@ -39,6 +39,7 @@ typedef struct{
 	Pipe* outPipe;
 	CNF* selOp;
 	Record* literal;
+	int pages;
 }stJoin;
 //structure to start a duplicate removal thread
 typedef struct{

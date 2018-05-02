@@ -58,10 +58,10 @@ void Statistics::AddAtt(char *relName, char *attName, long numDistincts)
 			//add the name of attribute and the number of distinct values				
 			tempS.AttMap[tempRel]  = numDistincts;
         } 
-        else cout << "ERROR!!!! in Retiriving subSet from map in AddAtt"<<endl;
+        // else cout << "ERROR!!!! in Retiriving subSet from map in AddAtt"<<endl;
 						
 	}
-    else cout<<"ERROR!!!! in Retiriving relation from map in AddAtt" << endl;
+    // else cout<<"ERROR!!!! in Retiriving relation from map in AddAtt" << endl;
 }
 
 void Statistics::CopyRel(char *oldName, char *newName)
@@ -96,10 +96,10 @@ void Statistics::CopyRel(char *oldName, char *newName)
 			subSetsMap[newsubSetNum] = tempsubSet;
 			
 		}
-        else cout << "ERROR!!!! in Retiriving subSet from map in copyRel"<<endl;
+        // else cout << "ERROR!!!! in Retiriving subSet from map in copyRel"<<endl;
 		
 	}
-    else cout << "ERROR!!!! in Retiriving Relation from map in copyRel"<<endl;
+    // else cout << "ERROR!!!! in Retiriving Relation from map in copyRel"<<endl;
 }
 	
 void Statistics::Read(const char *fromWhere){	
