@@ -371,10 +371,10 @@ void Execute::executeQuery(QPElement *treeroot){
     executeQuery(treeroot->left);
 
     ///FIXME: DELETE IN END
-    cout<<"Operation:"<<enumvals[treeroot->typeOps]<<endl;
-    cout<<" In Pipe 1:"<<treeroot->inPipe1<<endl;
-    cout<<" In Pipe 2:"<<treeroot->inPipe2<<endl;
-    cout<<" OutPipe:"<<treeroot->outPipe<<endl;
+    // cout<<"Operation:"<<enumvals[treeroot->typeOps]<<endl;
+    // cout<<" In Pipe 1:"<<treeroot->inPipe1<<endl;
+    // cout<<" In Pipe 2:"<<treeroot->inPipe2<<endl;
+    // cout<<" OutPipe:"<<treeroot->outPipe<<endl;
     int ops;
     ops=treeroot->typeOps;
     if(ops==Project){         
@@ -443,8 +443,9 @@ void Execute::printNDel(){
     {
         WriteOut w;
         FILE *f=fopen(Compiler::outFile,"w");
-        w.Run(*pipes[numPipes],f,*root->outSchema);
+        w.Run(*pipes[numPipes - 1],f,*root->outSchema);
         w.WaitUntilDone();
+        fclose(f);
     }
 
     for(int i=0;i<=numPipes;i++) delete pipes[i];

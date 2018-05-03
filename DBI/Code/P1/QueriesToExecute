@@ -1,3 +1,37 @@
+SELECT ps.ps_partkey ,
+ps.ps_suppkey ,
+ps.ps_availqty ,
+ps.ps_supplycost ,
+ps.ps_comment 
+ FROM partsupp AS ps WHERE (ps.ps_supplycost < 1.03)
+
+ Returned 21 Queries
+
+ ...............................................................................
+
+ SELECT p.p_partkey, p.p_name, p.p_retailprice
+FROM part AS p 
+WHERE (p.p_retailprice > 931.01) AND (p.p_retailprice < 931.3)
+
+
+Returned 12 Queries
+
+..................................................................................
+
+
+SELECT DISTINCT ps.ps_suppkey FROM partsupp AS ps WHERE (ps.ps_supplycost < 100.11)
+
+
+return 9996 records
+
+.............................................................................
+
+
+
+
+SELECT SUM (su.s_acctbal + (su.s_acctbal * 1.05)) FROM supplier AS su
+
+
 (q0)
 SELECT SUM (ps.ps_supplycost)
 FROM  supplier AS s, partsupp AS ps
@@ -69,6 +103,11 @@ WHERE (s.s_suppkey = ps.ps_suppkey) AND
 
 
 ANSWER: 9964 rows (1.51 sec)
+
+
+SELECT DISTINCT s.s_name
+FROM supplier AS s, part AS p
+WHERE (p.p_mfgr = 'Manufacturer#4')
 ===========================================================
 (q7)
 

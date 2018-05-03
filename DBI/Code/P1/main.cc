@@ -67,21 +67,27 @@ int main () {
 	setup();
 	//2. initialize catalog
 	while(true){
-	Catalog * cat = Catalog::instantiate();
-	cout<< "New Query(Press Ctrl+D to execute):";
-	//3. initialize parser
-	 Parser *par = new Parser(cat);
+		clock_t start_time;
+		double time = 0.0;
+		start_time = clock();
+		Catalog * cat = Catalog::instantiate();
+		cout<< "New Query(Press Ctrl+D to execute):";
+		//3. initialize parser
+		Parser *par = new Parser(cat);
 
-	//4. initialize optimizer
-	Optimizer *opt = new Optimizer(cat);
+		//4. initialize optimizer
+		Optimizer *opt = new Optimizer(cat);
 
-	//5. Execute???
-	Execute *exec = new Execute(cat);
+		//5. Execute???
+		Execute *exec = new Execute(cat);
 
-	//6. initialize Compiler
-	Compiler *comp = new Compiler(par,opt,exec,cat);
+		//6. initialize Compiler
+		Compiler *comp = new Compiler(par,opt,exec,cat);
 
-	comp->Compile();
+		comp->Compile();
+
+		time = (clock() - start_time)/(double)CLOCKS_PER_SEC;
+		cout<<"\nTime to execute query:"<<time<<endl<<endl;
 	}
 
 

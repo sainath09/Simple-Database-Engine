@@ -18,13 +18,13 @@ void Compiler::Compile()
         exec->init();
 
 
-       // if(!runOrPrint)
-        //exec->printTree(root);
+       if(!runOrPrint)
+        exec->printTree(root);
         //exec->levelOrderPrint(root);
-
-
+        else{
          exec->executeQuery(root);
          exec->printNDel();
+        }
     }
     else{
         cout<<"\nERROR:\nUnable to parse query. Please make sure the query meets our defined language.\n\n"<<endl;
