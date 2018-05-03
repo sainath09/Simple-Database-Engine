@@ -16,13 +16,13 @@
 using namespace std;
 typedef struct attStats{
 	int subSetNum;
-	long numTuples;
-	long numDistinct;
+	unsigned long long numTuples;
+	unsigned long long numDistinct;
 }attStats;
 typedef struct subSet{
 	int subSetNum;
-	map<string,long> AttMap;
-	long numTuples;
+	map<string,unsigned long long> AttMap;
+	unsigned long long numTuples;
 	vector<string> relations;
 }subSet;
 
@@ -37,7 +37,7 @@ public:
 	~Statistics();
 	//Uses UO Maps
 	void AddRel(char *relName, int numTuples);
-	void AddAtt(char *relName, char *attName, long numDistincts);
+	void AddAtt(char *relName, char *attName, unsigned long long numDistincts);
 	void CopyRel(char *oldName, char *newName);
 	//Read write Functions
 	void Read(const char *fromWhere);
@@ -48,7 +48,7 @@ public:
 
 	attStats getattStats(string attr);
 	void adjustSelectivityFactor(string attName, vector<string> &eachAtts, double& eachSelFactor, int code);
-	pair<pair<long, double>, vector<int> > calcEstimate(const struct AndList *andList);
+	pair<pair<unsigned long long, double>, vector<int> > calcEstimate(const struct AndList *andList);
 
 };
 

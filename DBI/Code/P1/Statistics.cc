@@ -35,7 +35,7 @@ void Statistics::AddRel(char *relName, int numTuples)
 	
 }
 
-void Statistics::AddAtt(char *relName, char *attName, long numDistincts)
+void Statistics::AddAtt(char *relName, char *attName, unsigned long long numDistincts)
 {	
 	//find existing relation if possible
 	//Strategy being add to object push object to correct place, twist here being now  you are pushing attributes not relations like above
@@ -127,9 +127,9 @@ void Statistics::Read(const char *fromWhere){
 		copy(istream_iterator<string>(iss),istream_iterator<string>(),back_inserter(temp));
 		// first two are the properties of subSetMap element
 		int subSetNumber = stoi(temp[0], NULL);
-		long numTuples = stoi(temp[1], NULL);
+		unsigned long long numTuples = stoi(temp[1], NULL);
 		// rest are all the mappings in AttMap map
-		map<string,long> attr;
+		map<string,unsigned long long> attr;
 		//so run a for loop from 3rd value and read odd elements of temp as key and even elements as the value till the end of line
 		for (int i=2;i<temp.size(); i+=2) {
 			attr[temp[i]] = stoi(temp[i+1], NULL);
@@ -225,7 +225,7 @@ void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJo
 
 
 	for(int i=0;i<s2.relations.size();i++){
-		// copy all values out of s2 for allsubSetMap and set them now as belonging to s1
+		// copy all values out of s2 for allsubSetMap and set them now as beunsigned long longing to s1
 		allsubSetMap.erase(s2.relations[i]);
 		allsubSetMap[s2.relations[i]]= s1.subSetNum;
 	}
@@ -311,9 +311,9 @@ void Statistics::adjustSelectivityFactor(string attName, vector<string> &eachAtt
 }
 
 //returns a weird data structure, may make it more elegant in next assignment
-pair<pair<long , double>, vector<int> > Statistics::calcEstimate(const struct AndList *andList) {
+pair<pair<unsigned long long , double>, vector<int> > Statistics::calcEstimate(const struct AndList *andList) {
 	//just declare some variables we will use later, -1 means all
-	long  numOfRows;
+	unsigned long long  numOfRows;
 	double totSelFactor = 1.0;
 
 	int subSetNum1 = -1;
@@ -351,8 +351,8 @@ pair<pair<long , double>, vector<int> > Statistics::calcEstimate(const struct An
 						return make_pair(make_pair(numOfRows, totSelFactor), ret);
 					}
 					//otherwise find the number of rows in each
-					long lRows = lStats.numTuples;
-					long rRows = rStats.numTuples;
+					unsigned long long lRows = lStats.numTuples;
+					unsigned long long rRows = rStats.numTuples;
 					//find which has more rows
 					int maxRows =  max(lStats.numDistinct, rStats.numDistinct);
 					//multiple rows as a join would and divide by max rows value
