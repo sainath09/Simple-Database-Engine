@@ -513,7 +513,7 @@ void* dupRemFunc(void* args){
 	OrderMaker om(mySchema);
 	Pipe* tempOpPipe = new Pipe(PIPE_BUFFER);
 	
-	BigQ sbq(*inPipe,*tempOpPipe,om,1);
+	BigQ sbq(*inPipe,*tempOpPipe,om,2);
 
 	bool FLAG_FIRST = true;
 	while(tempOpPipe->Remove(&nextRec)){

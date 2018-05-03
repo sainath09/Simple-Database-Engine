@@ -11,7 +11,7 @@ extern struct CreateTable *createTable;
 
 extern string gl_tpch;
 extern int mode;
-bool Compiler::runOrPrint = false; 
+bool Compiler::runOrPrint = true; 
 
 
 // pass the Query planner tree and the pipe info to the execute object

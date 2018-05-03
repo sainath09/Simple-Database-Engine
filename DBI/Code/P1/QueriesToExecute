@@ -48,7 +48,9 @@ WHERE (p.p_partkey = ps.ps_partkey) AND
 	  (s.s_suppkey = ps.ps_suppkey) AND
 	  (s.s_acctbal > 2500.00)
 
-ANSWER: 2.74243e+08 (5.91 sec)
+ANSWER: 2.74243e+08 (5.91 sec) 
+
+[3.90394e+06]
 
 ============================================================
 
@@ -90,7 +92,7 @@ WHERE (c.c_custkey = o.o_custkey) AND
 	  (c.c_name = 'Customer#000070919') AND
 	  (l.l_quantity > 30.00) AND (l.l_discount < 0.03)
 
-ANSWER: 0.0075 (55.4 sec)
+ANSWER: 0.0075 (55.4 sec) 0 
 ===========================================================
 
 (q6)
