@@ -129,7 +129,7 @@ int Heap::GetNext(Record &fetchme)
     if(!returnVal){
         if(currPageInd == heapLength - 1 && wBuffer->getNumRecs() == 0 ){
             //ran out of pages to read in memory 
-            cout<<"Ran out of records to read"<<endl;
+            // cout<<"Ran out of records to read"<<endl;
         }
         else if(currPageInd == heapLength - 1 && wBuffer->getNumRecs() != 0){
             //have some records in wBuffer

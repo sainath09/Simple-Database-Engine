@@ -88,7 +88,7 @@ void Optimizer::findOrder()
                     double cost = idToEstRes[estItr->first]->numTuples+idToEstRes[estItr->first]->calcCost;
                     string sequence = "";
                     sequence = getSeq(newrelationName);
-                    cout<<"\n expression:"<<newrelationName<<" cost:"<<cost<<" estimate:"<<val;
+                    cout<<"\nFor Strategy:"<<newrelationName<<"| Cost:"<<cost<<"| Estimate:"<<val<<endl;
                     if(sequence.compare("")==0){
                         EstResultNode *node = new EstResultNode(newrelationName,val,cost);
                         idToEstRes[newrelationName]=node;
@@ -120,8 +120,8 @@ void Optimizer::findOrder()
     //keep track of name 
     // cout<<"......Final Query....."<<endl;
     for(;estItr!=idToEstRes.end();estItr++ ){
-        if(estItr->first.length() < totTables) continue; //TODO: work around
-        cout<<"\n expression:"<<estItr->second->exp<<" cost:"<<estItr->second->calcCost<<" estimate:"<<estItr->second->numTuples;
+        if(estItr->first.length() < totTables) continue; 
+        cout<<"\nSelected Strategy:"<<estItr->second->exp<<"| Cost:"<<estItr->second->calcCost<<"| Estimate:"<<estItr->second->numTuples<<endl<<endl;
         resFromJoin = estItr->second->exp;
         // cout<<resFromJoin;
     }
@@ -246,7 +246,7 @@ void Optimizer::findUniqueTableForAndList()
         uniqueIdToTable[s] = table;
         tableToUniqueId[table]=s;
         //s = "";
-        cout<<"\n Table:"<< table <<" alias:"<<string(TempTable->aliasAs) << " ID: "<<s<<"\n"<<endl;
+        // cout<<"\n Table:"<< table <<" alias:"<<string(TempTable->aliasAs) << " ID: "<<s<<"\n"<<endl;
         // increment iterator over temptable
          TempTable = TempTable->next;
         i++;

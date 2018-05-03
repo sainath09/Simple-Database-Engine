@@ -1,6 +1,8 @@
 
 CC = g++  -Wall -std=c++11 -O2 -Wno-deprecated
 
+DIR = $(shell pwd)
+BIN = $(DIR)/bin
 
 tag = -i
 
@@ -105,3 +107,8 @@ clean:
 	rm -f y.tab.c
 	rm -f lex.yy.c
 	rm -f y.tab.h
+	rm -f *.bin
+
+cleanDB:
+	rm -f $(BIN)/*.bin
+	rm -f $(BIN)/*.bin.METAINF

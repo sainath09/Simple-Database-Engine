@@ -383,18 +383,18 @@ void Execute::executeQuery(QPElement *treeroot){
         int outputcnt=treeroot->pAtts->numAttsOut;
         int *ops=treeroot->pAtts->attsToKeep;
         project->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],ops,inputcnt,outputcnt);
-        project->WaitUntilDone();
+        //project->WaitUntilDone();
     }
 
     else if(ops==GroupBy){                
         groupby->Use_n_Pages(10);
         groupby->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->om,*treeroot->func);
-        groupby->WaitUntilDone();
+       // groupby->WaitUntilDone();
     }
     else if(ops==Sum){         
         sum->Use_n_Pages(10);
         sum->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->func);
-        sum->WaitUntilDone();
+        //sum->WaitUntilDone();
     }
     else if(ops==Join){         
         join[numjoin]->Use_n_Pages(10);
@@ -405,12 +405,12 @@ void Execute::executeQuery(QPElement *treeroot){
     else if(ops==Distinct){              
         dupremove->Use_n_Pages(10);
         dupremove->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->outSchema);
-        dupremove->WaitUntilDone();
+       // dupremove->WaitUntilDone();
     }
     else if (ops==SelectPipe){
         selectpipe[selectPipes]->Use_n_Pages(10);
         selectpipe[selectPipes]->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
-        selectpipe[selectPipes]->WaitUntilDone();
+       // selectpipe[selectPipes]->WaitUntilDone();
         selectPipes++;
     }
     else if(ops==SelectFile){
@@ -421,7 +421,7 @@ void Execute::executeQuery(QPElement *treeroot){
         strcpy(f,filepath.c_str());                
         dbfiles[currentDBFile]->Open(f);
         selectfile[currentDBFile]->Run(*dbfiles[currentDBFile],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
-        selectfile[currentDBFile]->WaitUntilDone();
+       // selectfile[currentDBFile]->WaitUntilDone();
         currentDBFile++;           
     }
     else{

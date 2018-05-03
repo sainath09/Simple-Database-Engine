@@ -1,5 +1,8 @@
 
-CC = g++ -std=c++11 -O2 -Wno-deprecated
+CC = g++  -Wall -std=c++11 -O2 -Wno-deprecated
+
+DIR = $(shell pwd)
+BIN = $(DIR)/bin
 
 tag = -i
 
@@ -98,8 +101,14 @@ lex.yy.o: Lexer.l
 	gcc  -c lex.yy.c
 
 clean: 
+	rm -f main
 	rm -f *.o
 	rm -f *.out
 	rm -f y.tab.c
 	rm -f lex.yy.c
 	rm -f y.tab.h
+	rm -f *.bin
+
+cleanDB:
+	rm -f $(BIN)/*.bin
+	rm -f $(BIN)/*.bin.METAINF
