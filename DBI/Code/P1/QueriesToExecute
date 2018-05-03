@@ -92,7 +92,7 @@ WHERE (c.c_custkey = o.o_custkey) AND
 	  (c.c_name = 'Customer#000070919') AND
 	  (l.l_quantity > 30.00) AND (l.l_discount < 0.03)
 
-ANSWER: 0.0075 (55.4 sec) 0 
+ANSWER: 0.0075 (55.4 sec) 0.03
 ===========================================================
 
 (q6)

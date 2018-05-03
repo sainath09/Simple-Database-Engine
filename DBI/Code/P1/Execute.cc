@@ -331,35 +331,35 @@ void Execute::printTree(QPElement* root){
     cout<<" In Pipe 1:"<<root->inPipe1<<endl;
     cout<<" In Pipe 2:"<<root->inPipe2<<endl;
     cout<<" OutPipe:"<<root->outPipe<<endl;
-    // Attribute *atts=root->outSchema->GetAtts();
-    // int numatts=root->outSchema->GetNumAtts();
-    // for(int i=0;i<numatts;i++){
-    //     cout<<atts[i].name<<" "<<types[atts[i].myType]<<endl;
-    // }
-    // if(root->cnf!=NULL){
-    //     //print CNF if present
-    //     cout<<"\n CNF : ";
-    //     root->cnf->Print();
-    //     cout<<endl;
-    // }   
-    // if(root->om!=NULL)
-    // {
-    //     // Print order Maker if Necessary
-    //     cout<<"\n OrderMaker : ";  
-    //     root->om->Print();
-    //     cout<<endl;
-    // }
-    // if(root->pAtts!=NULL){
-    //     //Print attributes
-    //     cout<<"\n Atts to keep : ";
-    //     struct NameList *attstokeep=attsToSelect;
-    //     while(attstokeep!=NULL)
-    //     {
-    //         cout<<" Att:"<<attstokeep->name<<endl;
-    //         attstokeep=attstokeep->next;
-    //     }
-    // }
-    // cout<<endl;
+    Attribute *atts=root->outSchema->GetAtts();
+    int numatts=root->outSchema->GetNumAtts();
+    for(int i=0;i<numatts;i++){
+        cout<<atts[i].name<<" "<<types[atts[i].myType]<<endl;
+    }
+    if(root->cnf!=NULL){
+        //print CNF if present
+        cout<<"\n CNF : ";
+        root->cnf->Print();
+        cout<<endl;
+    }   
+    if(root->om!=NULL)
+    {
+        // Print order Maker if Necessary
+        cout<<"\n OrderMaker : ";  
+        root->om->Print();
+        cout<<endl;
+    }
+    if(root->pAtts!=NULL){
+        //Print attributes
+        cout<<"\n Atts to keep : ";
+        struct NameList *attstokeep=attsToSelect;
+        while(attstokeep!=NULL)
+        {
+            cout<<" Att:"<<attstokeep->name<<endl;
+            attstokeep=attstokeep->next;
+        }
+    }
+    cout<<endl;
     //print right root atts
     
     printTree(root->right);
@@ -383,34 +383,34 @@ void Execute::executeQuery(QPElement *treeroot){
         int outputcnt=treeroot->pAtts->numAttsOut;
         int *ops=treeroot->pAtts->attsToKeep;
         project->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],ops,inputcnt,outputcnt);
-        // project->WaitUntilDone();
+        project->WaitUntilDone();
     }
 
     else if(ops==GroupBy){                
         groupby->Use_n_Pages(10);
         groupby->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->om,*treeroot->func);
-        // groupby->WaitUntilDone();
+        groupby->WaitUntilDone();
     }
     else if(ops==Sum){         
         sum->Use_n_Pages(10);
         sum->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->func);
-        // sum->WaitUntilDone();
+        sum->WaitUntilDone();
     }
     else if(ops==Join){         
         join[numjoin]->Use_n_Pages(10);
         join[numjoin]->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->inPipe2],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
-        // join[numjoin]->WaitUntilDone();
+        join[numjoin]->WaitUntilDone();
         numjoin++;
     }
     else if(ops==Distinct){              
         dupremove->Use_n_Pages(10);
         dupremove->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->outSchema);
-        // dupremove->WaitUntilDone();
+        dupremove->WaitUntilDone();
     }
     else if (ops==SelectPipe){
         selectpipe[selectPipes]->Use_n_Pages(10);
         selectpipe[selectPipes]->Run(*pipes[treeroot->inPipe1],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
-        // selectpipe[selectPipes]->WaitUntilDone();
+        selectpipe[selectPipes]->WaitUntilDone();
         selectPipes++;
     }
     else if(ops==SelectFile){
@@ -421,7 +421,7 @@ void Execute::executeQuery(QPElement *treeroot){
         strcpy(f,filepath.c_str());                
         dbfiles[currentDBFile]->Open(f);
         selectfile[currentDBFile]->Run(*dbfiles[currentDBFile],*pipes[treeroot->outPipe],*treeroot->cnf,*treeroot->tempRec);
-        // selectfile[currentDBFile]->WaitUntilDone();
+        selectfile[currentDBFile]->WaitUntilDone();
         currentDBFile++;           
     }
     else{
