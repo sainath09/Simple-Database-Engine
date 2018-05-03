@@ -256,9 +256,14 @@ void* joinFunc(void * args){
 					int attrL,attrR;
 					int* resultAttr ;
 
+
+					cout<<"Reached block nested loop join"<<endl;
+					exit(1);
+					//FIXME:
+					
 					for(int i =0;leftRec.size();i++){
 						for(int j=0; rightRec.size();j++){
-							cout<<i<<" "<<j<<endl;
+							// cout<<i<<" "<<j<<endl;
 							if (ce.Compare(leftRec[i], rightRec[j],literal, selOp)) {
 								Record mgRec;
 								if(!FLAG_C){

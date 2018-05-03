@@ -38,7 +38,7 @@ void setup () {
 }
 
 int main () {
-	//TODO: Help write main file please :)
+
 	char *fileName = "Statistics.txt";
 		Statistics s;
         char *relName[] = { "part", "partsupp", "supplier", "nation", "region"};
@@ -68,7 +68,7 @@ int main () {
 	//2. initialize catalog
 	while(true){
 	Catalog * cat = Catalog::instantiate();
-	cout<< "Give an sql Query to find best planner press (cntrl + D) after you end:"<<endl<<":";
+	cout<< "New Query(Press Ctrl+D to execute):";
 	//3. initialize parser
 	 Parser *par = new Parser(cat);
 

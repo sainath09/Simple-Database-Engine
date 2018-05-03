@@ -2,6 +2,8 @@
 #include "Statistics.h"
 
 
+
+//Function to create catalog object and to read stats
 Catalog::Catalog(){
     init();
     stats = new Statistics();
@@ -9,6 +11,8 @@ Catalog::Catalog(){
 } 
 
 Catalog* Catalog::cat = NULL;
+
+//Returns the static object if present or creates it and returns it
 Catalog* Catalog::instantiate(){
     if(cat==NULL)
     {
@@ -16,7 +20,10 @@ Catalog* Catalog::instantiate(){
     }
     return cat;
 }
+
 extern string gl_cat;
+
+
 void Catalog::init(){
  
     ifstream in(gl_cat.c_str()); 

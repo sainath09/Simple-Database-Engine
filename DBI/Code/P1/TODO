@@ -1,1 +1,9 @@
 MAke sure to check in meta inf that "sorted" is being read as 1 in sort.cc open 
+
+-FIX unnecessary couts in the following places.
+
+EXECUTEQUery
+ALIAS
+Getsequence
+
+

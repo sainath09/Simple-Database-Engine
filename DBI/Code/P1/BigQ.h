@@ -11,7 +11,7 @@
 #include <string>
 #include <queue>
 #include <math.h>
-
+// We use this function quite extensively, may move it if time allows.
 #define delVar(x) {delete x; x = NULL;}
 using namespace std;
 

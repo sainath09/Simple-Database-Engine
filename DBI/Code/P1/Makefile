@@ -1,5 +1,6 @@
 
-CC = g++ -std=c++11 -O2 -Wno-deprecated
+CC = g++  -Wall -std=c++11 -O2 -Wno-deprecated
+
 
 tag = -i
 
@@ -98,6 +99,7 @@ lex.yy.o: Lexer.l
 	gcc  -c lex.yy.c
 
 clean: 
+	rm -f main
 	rm -f *.o
 	rm -f *.out
 	rm -f y.tab.c

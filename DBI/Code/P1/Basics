@@ -84,4 +84,5 @@ Compiler->Compile()
 
 
 
+valgrind --leak-check=yes --log-file=/home/gaurav/Padai/DBI/Code/P1/mem ./main
 

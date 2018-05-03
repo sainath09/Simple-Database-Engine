@@ -1,4 +1,6 @@
 #include "Execute.h"
+
+//To actually run the commands, we need a lot of different moving pieces, lets bring all those in here
 extern string gl_dbfile;
 extern string gl_cat;
 extern string gl_tpch;
@@ -10,56 +12,73 @@ extern struct CreateTable *createTable;
 extern string gl_tpch;
 extern int mode;
 bool Compiler::runOrPrint = false; 
+
+
+// pass the Query planner tree and the pipe info to the execute object
 void Execute::setrootNPipe(QPElement* _root,int nP){
         root=_root;
         numPipes = nP; 
 }
 
+
+//Initialize the execute object, its selfcontained, everything should already be set up before we hit this function
 void Execute::init(){
+    //make a local copy of the tablelist struct
     struct TableList *tempTable = tables;
-        int totTables=0;
-        while(tempTable){
-            tempTable=tempTable->next;
-            totTables++;
-        }
+    int totTables=0;
+    //count the number of tables
+    while(tempTable){
+        tempTable=tempTable->next;
+        totTables++;
+    }
 
-        pipes = new Pipe*[numPipes+1];          
-        for(int i=0;i<=numPipes;i++) pipes[i] = new Pipe(PIPE_BUFFER);
+    //Create new pipes based on the information stored in setrootnpipe
+    pipes = new Pipe*[numPipes+1];          
+    for(int i=0;i<=numPipes;i++) pipes[i] = new Pipe(PIPE_BUFFER);
 
-        dbfiles = new DBFile*[totTables];
-        for(int i=0;i<totTables;i++) dbfiles[i]=new DBFile();
+    //Create new DBfile objects as necessary
+    dbfiles = new DBFile*[totTables];
+    for(int i=0;i<totTables;i++) dbfiles[i]=new DBFile();
 
-        selectfile= new class SelectFile*[totTables];
-        for(int i=0;i<totTables;i++) selectfile[i]=new class SelectFile();
-        currentDBFile = 0;
-        
-        selectpipe = new class SelectPipe*[totTables];
-        for(int i=0;i<totTables;i++) selectpipe[i]=new class SelectPipe();
-        selectPipes = 0;
+    //Do similarly for the rest too..
+    selectfile= new class SelectFile*[totTables];
+    for(int i=0;i<totTables;i++) selectfile[i]=new class SelectFile();
+    currentDBFile = 0;
+    
+    selectpipe = new class SelectPipe*[totTables];
+    for(int i=0;i<totTables;i++) selectpipe[i]=new class SelectPipe();
+    selectPipes = 0;
 
-        join = new class Join*[totTables];
-        for(int i=0;i<totTables;i++) join[i]=new class Join();
-        numjoin = 0;
-        
-        groupby = new class GroupBy();
+    join = new class Join*[totTables];
+    for(int i=0;i<totTables;i++) join[i]=new class Join();
+    numjoin = 0;
+    
+    //only one instance of the ones below.
+    groupby = new class GroupBy();
 
-        project = new class Project();
-        
-        sum = new class Sum();
-        
-        dupremove = new DuplicateRemoval();
+    project = new class Project();
+    
+    sum = new class Sum();
+    
+    dupremove = new DuplicateRemoval();
 
 }
+
+//Primary way to execute DDL querys
 void Execute::executeDataQuery(){
     if(deleteTable != NULL){
+        //For the Delete operation >>
         Catalog *c = cat;
         auto it = c->relToAttr.find(deleteTable);
+        //check if table name exists in the DB already
         if(it!=c->relToAttr.end()){
-            cout<<"\n\nTable Found. Tablename:"<<deleteTable<<endl;
+            //if its , then erase it and write new catalog file
+            cout<<"\n\nTable Found in DB. Tablename:"<<deleteTable<<endl;
             cat->relToAttr.erase(it);
             it =  cat->relToAttr.begin();
             ofstream out;
             out.open(gl_cat);
+            //use this format to write to file
             while(it!=c->relToAttr.end()){
                 out<<"\n";
                 out<<"BEGIN";
@@ -74,6 +93,8 @@ void Execute::executeDataQuery(){
                 {
                     out<<it->second[i]->attr.c_str();
                     out<<" ";
+                    //Notice the Endl at the end, it is very important to not mess with structure even though its fixed for us and our reader can ignore such typos.
+                    //Good programming principles dictate not having to do such things.
                     out<<it->second[i]->type.c_str()<<endl;
                 }
                 
@@ -229,6 +250,7 @@ void Execute::executeDataQuery(){
 
         }
         else{
+            //In case its sorted type, then bring in the ordermaker
             OrderMaker *om = new OrderMaker();
             int i = 0;
             struct NameList *sortatts = createTable->sortkeys;
@@ -274,23 +296,23 @@ void Execute::executeDataQuery(){
 }
         
 void Execute::levelOrderPrint(QPElement* root){
-    queue<QPElement*> q;
-    q.push(root);
-    while(!q.empty()){
-        QPElement* temp = q.front();
-        q.pop();
-        if(temp == NULL) cout<<"\nNULL\n";
-        else{
-            cout<<"Operation:"<<enumvals[temp->typeOps]<<endl;
-            cout<<" In Pipe 1:"<<temp->inPipe1<<endl;
-            cout<<" In Pipe 2:"<<temp->inPipe2<<endl;
-            cout<<" OutPipe:"<<temp->outPipe<<endl;
-            q.push(temp->left);
-            q.push(temp->right);
+    // queue<QPElement*> q;
+    // q.push(root);
+    // while(!q.empty()){
+    //     QPElement* temp = q.front();
+    //     q.pop();
+    //     if(temp == NULL) cout<<"\nNULL\n";
+    //     else{
+    //         cout<<"Operation:"<<enumvals[temp->typeOps]<<endl;
+    //         cout<<" In Pipe 1:"<<temp->inPipe1<<endl;
+    //         cout<<" In Pipe 2:"<<temp->inPipe2<<endl;
+    //         cout<<" OutPipe:"<<temp->outPipe<<endl;
+    //         q.push(temp->left);
+    //         q.push(temp->right);
 
-        }
+    //     }
 
-    }
+    // }
 
 }
 void Execute::printTree(QPElement* root){
@@ -347,6 +369,8 @@ void Execute::executeQuery(QPElement *treeroot){
     if(treeroot == NULL) return;
     executeQuery(treeroot->right);
     executeQuery(treeroot->left);
+
+    ///FIXME: DELETE IN END
     cout<<"Operation:"<<enumvals[treeroot->typeOps]<<endl;
     cout<<" In Pipe 1:"<<treeroot->inPipe1<<endl;
     cout<<" In Pipe 2:"<<treeroot->inPipe2<<endl;

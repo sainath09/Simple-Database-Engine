@@ -11,8 +11,8 @@
 //#include "Execute.h"
 
 //Execute is a class that holds the root of tree structure to execute.
-// We printed the tre using execute's printTree function
-//Other functions are required for assignemnt five
+// We printed the tree using execute's printTree function
+//Other functions are required for assignemnt five, they are included in execute data query
 class Execute
 {
     QPElement *root;    
@@ -42,7 +42,6 @@ public:
     void setrootNPipe(QPElement *_root,int numPipe);
     
     void printTree(QPElement *root);
-    //TODO: assignment 5
     void executeQuery(QPElement *root);
     
     void executeDataQuery();

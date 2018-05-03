@@ -1,31 +1,16 @@
-==============================================================================
-032608-1719
+Compiler holds all the steps invoved in the execution query together
+Steps involved in Query execution are :
+	Build the relations using catalog.cc and statistics.cc
+	Parse the query using parser.cc which inturn uses yyparser.
+	Optimize the query execution tree using Optimize.cc
+	Execute the query using Execute.cc
+This is the abstract view of what ever is happening in the project 4 & 5
 
-readme 
-=========
-Previous drivers are not included!
-
-This driver is for assignment 4.1 (Query Compiler)
-
-To compile the driver, type
-	make a4-1.out
-
-To run the driver, type 'test.out' followed by the query # you wish to execute
-	./a4-1.out [0-11]
-
-
-Using the Driver:
-==================
-I modify Lexer.l, please use this new version. 
-
-For those who use Solaris machines, do not delete included lex.yy.c, otherwise, there may have
-link error.
+//Compile has object reference to all other classes 
+it has a boolean array to keep track of what operations are present in query
+And reference to root of the QueryTree to pass on to execute.
 
 
 
-Submission Instructions: 
-========================= 
 
- Create directory a4-1. The turnin file should be called a4-1.tar.gz)
-The executable produced by your file should be called a4-1.out
--------------------------------------------------------------------------------
+

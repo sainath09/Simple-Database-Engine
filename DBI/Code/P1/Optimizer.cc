@@ -67,7 +67,6 @@ void Optimizer::findOrder()
         estItr = idToEstRes.begin();
         for(;estItr != idToEstRes.end();estItr++ ){
             if((int)estItr->first.length() != (i-1) ){
-                estItr++;
                 continue;
             }
             string relationName = estItr->first;
@@ -106,17 +105,20 @@ void Optimizer::findOrder()
         //Deleting all ids with length less than i - 1
         int len = i - 1;
         estItr=idToEstRes.begin();
-        for(;estItr!=idToEstRes.end();estItr++){
+        for(;estItr!=idToEstRes.end();){
             if((int)estItr->first.length()==len){
                 delete estItr->second;
                 string temp=estItr->first;
+                estItr++;
                 idToEstRes.erase(temp);
-            } 
+            } else{
+                estItr++;
+            }
         }
     }
     estItr=idToEstRes.begin();
     //keep track of name 
-    cout<<"......Final Query....."<<endl;
+    // cout<<"......Final Query....."<<endl;
     for(;estItr!=idToEstRes.end();estItr++ ){
         if(estItr->first.length() < totTables) continue; //TODO: work around
         cout<<"\n expression:"<<estItr->second->exp<<" cost:"<<estItr->second->calcCost<<" estimate:"<<estItr->second->numTuples;
@@ -131,7 +133,7 @@ void Optimizer::returnVectorizedAndList(string a,string b,vector<struct AndList 
     int length;    
     string tblList=a+b;
     int tempSize=tblList.size();
-    string tempFinal = tblList;
+    string tempFinal = a;
     for(auto it=andListToIds.begin();it!=andListToIds.end();it++){
         // start processing on the andlist
         //find some basic info
@@ -154,6 +156,7 @@ void Optimizer::returnVectorizedAndList(string a,string b,vector<struct AndList 
             if(remaining==0){
                 //now... sigh ... work on these andlists till its looks correct
                 bool flag=true;
+                tempFinal = a;
                 vector<struct AndList *>::iterator tempIt;
                 while(tempFinal.length()!=0){
                     if(idsToAndListGeneric.find(tempFinal)!=idsToAndListGeneric.end()){
@@ -243,7 +246,7 @@ void Optimizer::findUniqueTableForAndList()
         uniqueIdToTable[s] = table;
         tableToUniqueId[table]=s;
         //s = "";
-        cout<<"\n Table:"<<s<<" alias:"<<table;
+        cout<<"\n Table:"<< table <<" alias:"<<string(TempTable->aliasAs) << " ID: "<<s<<"\n"<<endl;
         // increment iterator over temptable
          TempTable = TempTable->next;
         i++;
@@ -376,13 +379,13 @@ bool Optimizer::isBothSeqSame(string first,string second)
     if((int)first.size() == (int)second.size()){
         sort(first.begin(),first.end());
         sort(second.begin(),second.end());
-        cout<<first <<" "<<second<<endl;
+        // cout<<first <<" "<<second<<endl;
         for(int i = 0;i<(int)first.size();i++){
             if(first[i] != second[i]) return false;
         }
     }
     else return false;
-    cout<<first<< " "<<second<<" Returning true"<<endl;
+    // cout<<first<< " "<<second<<" Returning true"<<endl;
     return true;
 }
 
