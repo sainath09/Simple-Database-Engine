@@ -11,7 +11,7 @@ using namespace std;
 
 
 string gl_cat = "" ,gl_dbfile = "" ,gl_tpch = "";
-const char *settings = "test.cat";
+const char *settings = "settings/test.cat";
 void setup () {
 	std::ifstream fp(settings);
 	if (fp.is_open()) {

@@ -107,9 +107,6 @@ WHERE (s.s_suppkey = ps.ps_suppkey) AND
 ANSWER: 9964 rows (1.51 sec)
 
 
-SELECT DISTINCT s.s_name
-FROM supplier AS s, part AS p
-WHERE (p.p_mfgr = 'Manufacturer#4')
 ===========================================================
 (q7)
 

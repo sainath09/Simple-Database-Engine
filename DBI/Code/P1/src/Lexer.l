@@ -10,7 +10,7 @@
 
 #include <string.h> // For strdup()
 #include <stdlib.h> // For malloc()
-#include "ParseTree.h"
+#include "src/ParseTree.h"
 #include "y.tab.h"
 
 //int yylineno = 1;
