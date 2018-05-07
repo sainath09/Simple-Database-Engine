@@ -1,0 +1,88 @@
+Questions:
+What does the line 433 do in comparison.cc
+how does page gets populated from a file .  is the code already written?
+how does record gets into a page. is the code already written?
+What is the difference between DBfile and file
+
+
+tpch
+To generate TPCH data, get the data generator from github
+
+mkdir ~/git; cd git; git clone https://github.com/electrum/tpch-dbgen.git (Links to an external site.)Links to an external site.
+Compile it: 
+make
+Generate 10MB data
+./dbgen -s 0.01
+(latter) Generate 1GB data
+./dbgen -s 1
+This will generate 8 *.tbl files containing the data in CSV format with | separator
+
+Dependencies::
+Linux:
+sudo apt install clang valgrind flex bison
+
+Mac:
+-   xcode-select --install
+-   Instal BREW :   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+-   brew install --HEAD valgrind
+-   brew install flex
+-   brew install bison
+-   brew link bison --force
+ brew install gdb
+
+How to Run
+Goto main.cc and change file location
+make ./main
+./main
+(l_orderkey > 27) AND (l_orderkey < 45) 
+and then press <control-D>
+
+
+(r_regionkey)
+(r_name)
+(s_suppkey)
+(ps_suppkey) AND (ps_partkey)
+(l_shipdate) AND (l_extendedprice) AND (l_quantity)
+
+
+./test.out | cat>>Result.log
+
+Git stuff::
+git init
+git pull https://github.com/gauravsingh90/DatabaseImplementation.git
+git remote add origin https://github.com/gauravsingh90/DatabaseImplementation.git
+git push --set-upstream origin master
+git config --global user.email "gaurav.koolz@gmail.com"
+git config --global credential.helper cache
+git config --global credential.helper 'cache --timeout=360000'
+
+-- fix gitignore problems
+git rm . -r --cached
+git add .
+git commit -m "fixed untracked files"
+
+
+Extensions:
+TODO highlight 
+https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight
+
+
+
+test4_2/main 
+Catalog::getInstance()
+...
+Compiler->Compile()
+    Compiler->chkParse() /Compiler::Parse()
+        par->parseAndCheck()
+        par->chkErrors()  -- not doing this
+        opt->SetQueryOps(queryOperations,QOPSSIZE,&root)
+     Optimize()
+        findOrder() / DetermineJoinOrder()
+             Preprocess(); --wtf is this?
+                Split()
+                FindTable()
+
+
+
+valgrind --leak-check=yes --log-file=/home/gaurav/Padai/DBI/Code/P1/mem ./main
+

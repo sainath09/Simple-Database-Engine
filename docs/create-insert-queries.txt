@@ -1,0 +1,219 @@
+BEGIN
+customer
+customer.tbl
+c_custkey Int
+c_name String
+c_address String
+c_nationkey Int
+c_phone String
+c_acctbal Double
+c_mktsegment String
+c_comment String
+END
+
+CREATE TABLE customer (c_custkey INTEGER,
+c_name STRING,
+c_address STRING,
+c_nationkey INTEGER,
+c_phone STRING,
+c_acctbal DOUBLE,
+c_mktsegment STRING,
+c_comment STRING
+) AS HEAP
+
+
+----------------
+
+BEGIN
+part
+part.tbl
+p_partkey Int
+p_name String
+p_mfgr String
+p_brand String
+p_type String
+p_size Int
+p_container String
+p_retailprice Double
+p_comment String
+END
+
+CREATE TABLE part (p_partkey INTEGER,
+p_name STRING,
+p_mfgr STRING,
+p_brand STRING,
+p_type STRING,
+p_size INTEGER,
+p_container STRING,
+p_retailprice DOUBLE,
+p_comment STRING
+) AS HEAP
+
+
+----------------
+
+BEGIN
+partsupp
+partsupp.tbl
+ps_partkey Int
+ps_suppkey Int
+ps_availqty Int
+ps_supplycost Double
+ps_comment String
+END
+
+CREATE TABLE partsupp (ps_partkey INTEGER,
+ps_suppkey INTEGER,
+ps_availqty INTEGER,
+ps_supplycost DOUBLE,
+ps_comment STRING
+) AS HEAP
+
+
+----------------
+
+BEGIN
+supplier
+supplier.tbl
+s_suppkey Int
+s_name String
+s_address String
+s_nationkey Int
+s_phone String
+s_acctbal Double
+s_comment String
+END
+
+CREATE TABLE supplier (s_suppkey INTEGER,
+s_name STRING,
+s_address STRING,
+s_nationkey INTEGER,
+s_phone STRING,
+s_acctbal DOUBLE,
+s_comment STRING
+) AS HEAP
+
+
+----------------
+
+BEGIN
+orders
+orders.tbl
+o_orderkey Int
+o_custkey Int
+o_orderstatus String
+o_totalprice Double
+o_orderdate String
+o_orderpriority String
+o_clerk String
+o_shippriority Int
+o_comment String
+END
+
+CREATE TABLE orders (o_orderkey INTEGER,
+o_custkey INTEGER,
+o_orderstatus STRING,
+o_totalprice DOUBLE,
+o_orderdate STRING,
+o_orderpriority STRING,
+o_clerk STRING,
+o_shippriority INTEGER,
+o_comment STRING
+) AS HEAP
+
+
+----------------
+
+BEGIN
+lineitem
+lineitem.tbl
+l_orderkey Int
+l_partkey Int
+l_suppkey Int
+l_linenumber Int
+l_quantity Double
+l_extendedprice Double
+l_discount Double
+l_tax Double
+l_returnflag String
+l_linestatus String
+l_shipdate String
+l_commitdate String
+l_receiptdate String
+l_shipinstruct String
+l_shipmode String
+l_comment String
+END
+
+CREATE TABLE lineitem (l_orderkey INTEGER,
+l_partkey INTEGER,
+l_suppkey INTEGER,
+l_linenumber INTEGER,
+l_quantity DOUBLE,
+l_extendedprice DOUBLE,
+l_discount DOUBLE,
+l_tax DOUBLE,
+l_returnflag STRING,
+l_linestatus STRING,
+l_shipdate STRING,
+l_commitdate STRING,
+l_receiptdate STRING,
+l_shipinstruct STRING,
+l_shipmode STRING,
+l_comment STRING
+) AS HEAP
+
+----------------------
+
+BEGIN
+nation
+nation.tbl
+n_nationkey Int
+n_name String
+n_regionkey Int
+n_comment String
+END
+
+CREATE TABLE nation (n_nationkey INTEGER,
+n_name STRING,
+n_regionkey INTEGER,
+n_comment STRING) AS HEAP
+-------------------
+
+BEGIN
+region
+region.tbl
+r_regionkey Int
+r_name String
+r_comment String
+END
+
+CREATE TABLE region (r_regionkey INTEGER,
+r_name STRING,
+r_comment STRING) AS HEAP
+
+
+INSERT region.tbl INTO region
+INSERT customer.tbl INTO customer
+INSERT nation.tbl INTO nation
+INSERT part.tbl INTO part
+INSERT partsupp.tbl INTO partsupp
+INSERT supplier.tbl INTO supplier
+INSERT orders.tbl INTO orders
+INSERT lineitem.tbl INTO lineitem
+
+DROP TABLE region
+DROP TABLE customer
+DROP TABLE nation
+DROP TABLE part
+DROP TABLE partsupp
+DROP TABLE supplier
+DROP TABLE orders
+DROP TABLE lineitem
+
+
+
+
+
+
+
