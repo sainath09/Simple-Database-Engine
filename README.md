@@ -23,3 +23,4 @@ If there are segmentaion faults-
 - Make sure your data abd bin file paths are correct.
 - Make sure catalog file is not deleted. 
 - Do not delete bin files. Drop them through the queries.
+
