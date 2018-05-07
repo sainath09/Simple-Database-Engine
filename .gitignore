@@ -1,38 +1,7 @@
-PLP/
-Mobility/
-Sainaths/
-workspace/
-DBI/Code/.~lock.A1.docx#
-DBI/Code/P1/lex.yy.c
-DBI/Code/P1/y.tab.c
-DBI/Code/P1/y.tab.h
-DBI/Code/P1/.vscode/
-*.DS_Store
-database-implementation-master.zip
-DBI/Code/~$A1.docx
-DBI/database-implementation-master/
+bin/*.o
+bin/*
 
-DBI/Code/P1/*.o
-DBI/Code/P1/*.bin
-DBI/Code/P1/*.METAINF
-DBI/Code/P1/*.out
-
-DBI/Code/P1/y.tab.c-e
-
-
-
-DBI/Assignment 2/~$A2.docx
-DBI/Code/.vscode/
-DBI/Code/P1/bin/
-DBI/Code/P1/data/
-DBI/Docs for Assignment 2/
-DBI/Database-system-implementation-15633f4d1914731d7e62758fed0ce863cd5e15e3/
-DBI/Database-system-implementation-15633f4d1914731d7e62758fed0ce863cd5e15e3.zip
-DBI/Code/P1/lex.yyfunc.c
-DBI/Code/P1/yyfunc.tab.c
-DBI/Code/P1/yyfunc.tab.h
-DBI/Submissions/
-DBI/Code/P1/Statistics.txt
-DBI/Code/P1/main
-DBI/Code/P1/Makefile
-DBI/Code/P1/.vscode/settings.json
+Statistics.txt
+*.c
+*.h
+data/*.tbl
