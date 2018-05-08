@@ -47,19 +47,19 @@ Most of the operations in the database are paralized.
 - duplicate removal - removes duplicate records after sorting using BigQ.
 
 ####  Example Queries 
-SELECT ps.ps_partkey ,
-	ps.ps_suppkey ,
-	ps.ps_availqty ,
-	ps.ps_supplycost ,
-	ps.ps_comment 
- 	FROM partsupp AS ps WHERE (ps.ps_supplycost < 1.03)
+SELECT ps.ps_partkey ,<br />
+	ps.ps_suppkey , <br />
+	ps.ps_availqty , <br />
+	ps.ps_supplycost , <br /> 
+	ps.ps_comment  <br />
+ 	FROM partsupp AS ps WHERE (ps.ps_supplycost < 1.03) <br />
  
-SELECT SUM (l.l_extendedprice * (1 - l.l_discount)), l.l_orderkey, o.o_orderdate, o.o_shippriority
-	    FROM customer AS c, orders AS o, lineitem AS l 
-	   WHERE (c.c_mktsegment = 'BUILDING') AND 
-           (c.c_custkey = o.o_custkey) AND (l.l_orderkey = o.o_orderkey) AND
-	   (l.l_orderkey < 100 OR o.o_orderkey < 100)
-	   GROUP BY l_orderkey, o_orderdate, o_shippriority
+SELECT SUM (l.l_extendedprice * (1 - l.l_discount)), l.l_orderkey, o.o_orderdate, o.o_shippriority <br /> 
+	    FROM customer AS c, orders AS o, lineitem AS l  <br />
+	   WHERE (c.c_mktsegment = 'BUILDING') AND <br /> 
+           (c.c_custkey = o.o_custkey) AND (l.l_orderkey = o.o_orderkey) AND <br /> 
+	   (l.l_orderkey < 100 OR o.o_orderkey < 100) <br />
+	   GROUP BY l_orderkey, o_orderdate, o_shippriority <br />
 
 #### Key Words
 Keywords | Keywords
@@ -116,7 +116,7 @@ You will be promted to enter queries to execute.
 There are some sample queires in 
   doc/create-insert-queries.txt and QueriesToExecute.
 
-  
+
 ###Limitations
 - All key words are case sensitive. You cannot go back and edit the query. This is the limitation from bison parser which we are working on fixing it.
 -  There are few seg faults due to Join operation.
