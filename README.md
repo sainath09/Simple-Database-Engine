@@ -112,22 +112,52 @@ make simpleDb
 ```
 ./bin/simpleDb
 ```
-You will be promted to enter queries to execute.
+You will be prompted to enter queries to execute.
 
-There are some sample queires in <br />
-  doc/create-insert-queries.txt and QueriesToExecute.
+There are some sample queires in doc/create-insert-queries.txt and doc/QueriesToExecute.
+### Create and Insert queries
+
+Below is the gif to demo the create and insert queries
+
+![](https://github.com/sainath09/Simple-Database-Engine/blob/master/docs/gifs/create-insert.gif)
+
+### Sample execution
+We provided the flexibility of storing the returned query records in a file or output them into the screen. 
+
+```
+SET OUTPUT <file_name> 
+```
+.....dumps the records into <file_name>
+- Make sure the empty file is already present in the current working directory.
+
+![](https://github.com/sainath09/Simple-Database-Engine/blob/master/docs/gifs/queries.gif)
+
+### Working of Sum operation
+
+![](https://github.com/sainath09/Simple-Database-Engine/blob/master/docs/gifs/sum.gif)
+
 
 <br />
-### Limitations
+
+### Limitations and known issues
 
 - All key words are case sensitive. You cannot go back and edit the query. This is the limitation from bison parser which we are working on fixing it.
 -  There are few seg faults due to Join operation.
-- Although me made sure all operations are done in parallel, Join operation take a lot more time than any other 
+- Although I made sure all operations are done in parallel, Join operation take a lot more time than any other 
 operation. So, We let the join thread complete before starting other processes.
+- Output records to a file need to be created before Seting output to the file or else it is creating a seg fault
 
-If there are segmentaion faults - 
+If there are segmentation faults - 
 - Make sure your data and bin file paths are correct.
 - Make sure catalog file is not deleted. 
 - Do not delete bin files. Drop them through the queries.
 - Clean the project and run again.
+
+Any improvements are welcome.
+
+
+
+
+
+
 
