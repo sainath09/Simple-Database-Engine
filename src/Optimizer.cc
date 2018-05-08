@@ -121,7 +121,10 @@ void Optimizer::findOrder()
     // cout<<"......Final Query....."<<endl;
     for(;estItr!=idToEstRes.end();estItr++ ){
         if(estItr->first.length() < totTables) continue; 
-        cout<<"\nSelected Strategy:"<<estItr->second->exp<<"| Cost:"<<estItr->second->calcCost<<"| Estimate:"<<estItr->second->numTuples<<endl<<endl;
+        cout<<"\nSelected Strategy:"<<estItr->second->exp
+            <<"| Cost:"<<estItr->second->calcCost
+            <<"| Estimate:"<<estItr->second->numTuples
+            <<endl<<endl;
         resFromJoin = estItr->second->exp;
         // cout<<resFromJoin;
     }

@@ -35,8 +35,9 @@ make main
 ./main
 ```
 You will be promted to enter queries to execute.
+
 -There are some sample queires in 
-  doc/create-inser-queries.txt and QueriesToExecute.
+  doc/create-insert-queries.txt and QueriesToExecute.
 
 If there are segmentaion faults - 
 - Make sure your data and bin file paths are correct.
