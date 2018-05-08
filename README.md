@@ -119,6 +119,7 @@ There are some sample queires in <br />
 
 <br />
 ### Limitations
+
 - All key words are case sensitive. You cannot go back and edit the query. This is the limitation from bison parser which we are working on fixing it.
 -  There are few seg faults due to Join operation.
 - Although me made sure all operations are done in parallel, Join operation take a lot more time than any other 
@@ -128,4 +129,5 @@ If there are segmentaion faults -
 - Make sure your data and bin file paths are correct.
 - Make sure catalog file is not deleted. 
 - Do not delete bin files. Drop them through the queries.
+- Clean the project and run again.
 
