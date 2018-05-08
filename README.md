@@ -13,34 +13,8 @@ We implemented 2 diffeerent types of data structures for storing it.
 - [ ]  We planned to implement B+ trees as in any other database engine but were not successful. Any one can use this code and implement B+ trees.
 
 
-### Required dependencies
-- This project requies flex lexer and bison parser.
-- It is build on clang C++11 compiler and was tested on unix machines.
-- If you are running on Mac, Coppy the MakeFile-Mac to MakeFile.
-- It is never tested on windows Operating system.
-######To install Dependencies on linux
-```
-sudo apt install clang valgrind flex bison
-```
-###### To install Dependencies on Mac
-```
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-```
-```
-brew install --HEAD valgrind
-```
-```
-brew install flex
-```
-```
-brew install bison
-```
-```
-brew link bison --force
-```
-```
-brew install gdb
-```
+
+
 ### Implementation Details
 
 We developed this engine incrementally.
@@ -88,11 +62,9 @@ SELECT SUM (l.l_extendedprice * (1 - l.l_discount)), l.l_orderkey, o.o_orderdate
 	   GROUP BY l_orderkey, o_orderdate, o_shippriority
 
 #### Key Words
-
-- SELECT
-- GROUP 
-- DISTINCT
-- BY
+------------- | ------------
+- SELECT | GROUP 
+- DISTINCT | BY
 - FROM
 - WHERE
 - SUM
@@ -142,10 +114,10 @@ This project is tested with 1 Gb data.
 
 To run the queries - 
 ```
-make simpleDb
+make main
 ```
 ```
-./bin/simpleDb
+./main
 ```
 You will be promted to enter queries to execute.
 
