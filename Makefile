@@ -11,10 +11,16 @@ ifdef linux
 tag = -n
 endif
 
-main:             Compiler.o Catalog.o Optimizer.o Execute.o Parser.o Statistics.o Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o Record.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o RelOp.o y.tab.o lex.yy.o  main.o
-	$(CC) -o main Compiler.o Catalog.o Optimizer.o Execute.o Parser.o Statistics.o Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o Record.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o RelOp.o y.tab.o lex.yy.o  main.o -lfl -lpthread
+simpleDb:    Compiler.o Catalog.o Optimizer.o Execute.o Parser.o Statistics.o\
+			 Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o Record.o \
+			 ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o RelOp.o\
+			  y.tab.o lex.yy.o  main.o
+	$(CC) -o simpleDb Compiler.o Catalog.o Optimizer.o Execute.o Parser.o \
+			 Statistics.o Function.o Comparison.o Sort.o Heap.o AbstractDBFile.o \
+			 Record.o ComparisonEngine.o Schema.o File.o BigQ.o DBFile.o Pipe.o \
+			  RelOp.o y.tab.o lex.yy.o  main.o -lfl -lpthread
 	mv *.o $(BIN)
-	mv main $(BIN)
+	mv simpleDb $(BIN)
 
 Compiler.o : $(SRC)/Compiler.cc
 	$(CC) -g -c $(SRC)/Compiler.cc
@@ -81,7 +87,8 @@ AbstractDBFile.o: $(SRC)/AbstractDBFile.cc
 	
 y.tab.o: $(SRC)/Parser.y
 	yacc -p "yy" -b "y" -d $(SRC)/Parser.y
-	sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
+	sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/\
+				# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
 	g++ -c y.tab.c
 		
 lex.yy.o: $(SRC)/Lexer.l
@@ -89,18 +96,8 @@ lex.yy.o: $(SRC)/Lexer.l
 	gcc  -c lex.yy.c -o lex.yy.o
 
 clean: 
-	rm -f $(BIN)/main
-	rm -f $(BIN)/*.o
-	rm -f $(BIN)/*.out
-	rm -f main
-	rm -f *.o
-	rm -f *.out
-	rm -f y.tab.c
-	rm -f lex.yy.c
-	rm -f y.tab.h
-	rm -f *.bin
+	rm -f $(BIN)/simpleDb $(BIN)/*.o $(BIN)/*.out simpleDb *.o *.out \
+				y.tab.c lex.yy.c y.tab.h *.bin
 
 cleanDB:
-	rm -f $(BIN)/catalog
-	rm -f $(BIN)/*.bin
-	rm -f $(BIN)/*.bin.METAINF
+	rm -f $(BIN)/catalog $(BIN)/*.bin $(BIN)/*.bin.METAINF
