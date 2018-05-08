@@ -62,27 +62,19 @@ SELECT SUM (l.l_extendedprice * (1 - l.l_discount)), l.l_orderkey, o.o_orderdate
 	   GROUP BY l_orderkey, o_orderdate, o_shippriority
 
 #### Key Words
+Keywords | Keywords
 ------------- | ------------
-- SELECT | GROUP 
-- DISTINCT | BY
-- FROM
-- WHERE
-- SUM
-- AS
-- AND
-- OR
-- CREATE 
-- TABLE
-- HEAP
-- SORTED
-- INSERT
-- INTO
-- DROP
-- SET
-- OUTPUT
-- STDOUT
-- NONE
-- ON
+SELECT | GROUP 
+DISTINCT | BY
+FROM | WHERE
+SUM | AS
+AND | OR
+CREATE | TABLE
+HEAP | SORTED
+INSERT | INTO
+DROP | SET
+OUTPUT | STDOUT
+NONE | ON
 #### Data Types supported
 - INTEGER
 - STRING
@@ -121,8 +113,9 @@ make main
 ```
 You will be promted to enter queries to execute.
 
--There are some sample queires in 
+There are some sample queires in 
   doc/create-insert-queries.txt and QueriesToExecute.
+
   
 ###Limitations
 - All key words are case sensitive. You cannot go back and edit the query. This is the limitation from bison parser which we are working on fixing it.
