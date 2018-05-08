@@ -80,7 +80,8 @@ NONE | ON
 - STRING
 - DOUBLE
 
-  We tested our code using 1 Gb TPCH-C data set.
+We tested our code using 1 Gb TPCH-C data set.
+<br />
 ###To Start Querying 
 
 Download the tpch data with the following commands.
@@ -106,17 +107,17 @@ This project is tested with 1 Gb data.
 
 To run the queries - 
 ```
-make main
+make simpleDb
 ```
 ```
-./main
+./bin/simpleDb
 ```
 You will be promted to enter queries to execute.
 
-There are some sample queires in 
+There are some sample queires in <br />
   doc/create-insert-queries.txt and QueriesToExecute.
 
-
+<br />
 ###Limitations
 - All key words are case sensitive. You cannot go back and edit the query. This is the limitation from bison parser which we are working on fixing it.
 -  There are few seg faults due to Join operation.
