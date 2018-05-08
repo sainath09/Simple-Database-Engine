@@ -1,4 +1,4 @@
-#Database Engine
+# Database Engine
 
 This is a simple in-memory database engine to run  SQL queries.
 
@@ -15,7 +15,7 @@ We implemented 2 diffeerent types of data structures for storing it.
 
 
 
-###Implementation Details
+### Implementation Details
 
 We developed this engine incrementally.
 *  We started it of with implementing the heap data base engine.
@@ -46,7 +46,7 @@ Most of the operations in the database are paralized.
 - Project - squezes the record to required columns by discarding others.
 - duplicate removal - removes duplicate records after sorting using BigQ.
 
-###Example Queries 
+### Example Queries 
 SELECT ps.ps_partkey ,<br />
 	ps.ps_suppkey , <br />
 	ps.ps_availqty , <br />
@@ -61,7 +61,7 @@ SELECT SUM (l.l_extendedprice * (1 - l.l_discount)), l.l_orderkey, o.o_orderdate
 	   (l.l_orderkey < 100 OR o.o_orderkey < 100) <br />
 	   GROUP BY l_orderkey, o_orderdate, o_shippriority <br />
 
-###Key Words
+### Key Words
 Keywords | Keywords
 ------------- | ------------
 SELECT | GROUP 
@@ -75,14 +75,14 @@ INSERT | INTO
 DROP | SET
 OUTPUT | STDOUT
 NONE | ON
-###Data Types supported
+### Data Types supported
 - INTEGER
 - STRING
 - DOUBLE
 
 We tested our code using 1 Gb TPCH-C data set.
 <br />
-###To Start Querying 
+### To Start Querying 
 
 Download the tpch data with the following commands.
 ```
@@ -118,7 +118,7 @@ There are some sample queires in <br />
   doc/create-insert-queries.txt and QueriesToExecute.
 
 <br />
-###Limitations
+### Limitations
 - All key words are case sensitive. You cannot go back and edit the query. This is the limitation from bison parser which we are working on fixing it.
 -  There are few seg faults due to Join operation.
 - Although me made sure all operations are done in parallel, Join operation take a lot more time than any other 
