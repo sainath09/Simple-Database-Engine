@@ -82,6 +82,14 @@ NONE | ON
 
 We tested our code using 1 Gb TPCH-C data set.
 <br />
+
+### Required dependencies 
+
+- The project is run on C++11 clang compiler 
+- It requires flex lexer and bison parser. To install these in linux 
+```
+sudo apt install clang flex bison
+```
 ### To Start Querying 
 
 Download the tpch data with the following commands.
