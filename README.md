@@ -46,7 +46,7 @@ Most of the operations in the database are paralized.
 - Project - squezes the record to required columns by discarding others.
 - duplicate removal - removes duplicate records after sorting using BigQ.
 
-####  Example Queries 
+###  Example Queries 
 SELECT ps.ps_partkey ,<br />
 	ps.ps_suppkey , <br />
 	ps.ps_availqty , <br />
@@ -61,7 +61,7 @@ SELECT SUM (l.l_extendedprice * (1 - l.l_discount)), l.l_orderkey, o.o_orderdate
 	   (l.l_orderkey < 100 OR o.o_orderkey < 100) <br />
 	   GROUP BY l_orderkey, o_orderdate, o_shippriority <br />
 
-#### Key Words
+### Key Words
 Keywords | Keywords
 ------------- | ------------
 SELECT | GROUP 
@@ -75,7 +75,7 @@ INSERT | INTO
 DROP | SET
 OUTPUT | STDOUT
 NONE | ON
-#### Data Types supported
+### Data Types supported
 - INTEGER
 - STRING
 - DOUBLE
